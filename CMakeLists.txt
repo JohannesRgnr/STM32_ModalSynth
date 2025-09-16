@@ -19,7 +19,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Set the project name
-set(CMAKE_PROJECT_NAME Minimal_SAI)
+set(CMAKE_PROJECT_NAME Modal_synth)
 
 # Enable compile command to ease indexing with e.g. clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
@@ -42,6 +42,8 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Src/help_func.c
         Core/Src/lcd.c
         Core/Src/usart.c
+        Core/Src/filters.c
+        Core/Src/filters.h
 
 
         #        Utilities/Fonts/font8.c
