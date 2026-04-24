@@ -105,14 +105,6 @@ int main(void)
 
   /* Enable the CPU Cache */
   CPU_CACHE_Enable();
-  /* Enable I-Cache---------------------------------------------------------*/
-  //SCB_EnableICache();
-
-  /* Enable D-Cache---------------------------------------------------------*/
-  //SCB_EnableDCache();
-
-  // SCB_InvalidateDCache_by_Addr((uint32_t*)0x20000000, 0x20000);
-  //SCB_InvalidateICache();
 
   /* MCU Configuration--------------------------------------------------------*/
 

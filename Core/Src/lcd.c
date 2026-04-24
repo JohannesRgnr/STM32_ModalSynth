@@ -40,7 +40,7 @@ void Display_Init(void)
 
 	/* Display LCD messages */
 	char str[32];
-	sprintf(str, "%d partials", harmonics);
+	sprintf(str, "partials");
 	// BSP_LCD_SetFont(&FontInconsolataNerdFont20);
 	BSP_LCD_DisplayStringAt(16, BSP_LCD_GetYSize()/2, (uint8_t *)str, CENTER_MODE);
 
