@@ -30,6 +30,8 @@
 #define TWOPI               6.28318530718f
 #define ONEOVERPI           (1.f/PI)
 
+
+
 //#define MIDI_MAX            127.f
 //#define MIDI_MAXi           127
 

@@ -1,8 +1,8 @@
 /**
- * @file oscillator.h
+* @file oscillator.h
  * @author Johannes R.
- * @brief 
- * @version 
+ * @brief
+ * @version
  * @date 10.09.25
  * @note
  */
@@ -14,7 +14,7 @@
 #include <stdbool.h>
 
 
-
+#define harmonics   380
 
 
 enum osc_type
@@ -37,12 +37,23 @@ typedef struct
     float output;
 } oscillator_t;
 
-
+typedef struct
+{
+    float level[harmonics];
+    float real[harmonics];
+    float imag[harmonics];
+    float realinc[harmonics];
+    float imaginc[harmonics];
+    float freq;
+    float output;
+} cordic_t;
 
 
 void  osc_init(oscillator_t * osc, float amp, float freq, float FMindex, float FMratio, float pw);
 float whiteNoise(oscillator_t *osc);
-float cordicAdditive(oscillator_t * osc);
+void cordicAdditiveInit(cordic_t *osc, float freq);
+float cordicAdditiveProcess(cordic_t * osc);
+float cordicAdditive(oscillator_t *osc);
 float sineAdditive(oscillator_t *osc);
 
 

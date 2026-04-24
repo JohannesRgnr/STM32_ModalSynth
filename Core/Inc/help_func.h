@@ -33,7 +33,7 @@
  * @param max
  * @return float
  */
-static inline float wrap(float value, float max)
+static inline float wrap(float value, const float max)
 {
     if (value < 0.f)
         value += max;
@@ -43,7 +43,7 @@ static inline float wrap(float value, float max)
     return value;
 }
 
-static inline float Crossfade(float a, float b, float fade)
+static inline float Crossfade(const float a, const float b, const float fade)
 {
     return a + (b - a) * fade;
 }

@@ -21,11 +21,15 @@
  */
 int16_t codecBuffer[BUFFER_SIZE]; // x samples X 2 channels (interleaved)
 
+oscillator_t osc1;
 
-float saw1, saw2;
-uint16_t saw1_freq = 55;
-uint16_t saw2_freq = 55;
-oscillator_t osc1, osc2;
+
+
+
+// float saw1, saw2;
+// uint16_t saw1_freq = 55;
+// uint16_t saw2_freq = 55;
+
 
 
 /**
@@ -35,18 +39,19 @@ oscillator_t osc1, osc2;
 void AUDIO_Init()
 {
     // initialize board audio device
-    BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_HEADPHONE, 30, BSP_AUDIO_FREQUENCY_44K);
+    BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_HEADPHONE, INITIAL_VOLUME, BSP_AUDIO_FREQUENCY_44K);
     BSP_AUDIO_OUT_SetAudioFrameSlot(CODEC_AUDIOFRAME_SLOT_02); // slots 0 and 2 activated for headphones out
-    
+
     BSP_AUDIO_OUT_Play((uint16_t *)codecBuffer, BUFFER_SIZE * 2);
 
     // initialize audio objects
- //   osc_init(&osc1, 1.0f, 1000, 0, 0, 0);
     osc_init(&osc1, 1.0f, 110, 0, 0, 0);
-    osc_init(&osc2, 1.0f, 110, 0, 0, 0);
+    // cordicAdditiveInit(&cordic1, 55);
+    // HAL_Delay(500);
+    // osc_init(&osc2, 1.0f, 110, 0, 0, 0);
 }
 
-void audioBlock(int16_t *output, int32_t samples)
+ void audioBlock(int16_t *output, const int32_t samples)
 {
     // int16_t* out = output;
     // 0.0000226757 is 1.0/44100.0
@@ -61,11 +66,14 @@ void audioBlock(int16_t *output, int32_t samples)
         // if (saw2 > 1.0f)
         //     saw2 = saw2 - 2.0f;
 
-        float sampleL = sineAdditive(&osc1);  // LEFT
-        float sampleR = cordicAdditive(&osc2);  // RIGHT
+       // float sampleL = cordicAdditiveProcess(&cordic1);  // LEFT
+       // float sampleL = cordicAdditiveProcess(&cordic1);
+        const float sampleL = cordicAdditive(&osc1);
+        const int16_t sampleOut = (int16_t)(32767.0f * sampleL);
+       // float sampleR = sampleL;  // RIGHT
 
-        output[i << 1] = ((int16_t) ((32767.0f) * sampleL));
-        output[(i << 1) + 1]  = ((int16_t) ((32767.0f) * sampleR));
+        output[i << 1] = sampleOut;
+        output[(i << 1) + 1]  = sampleOut;
     }
 }
 

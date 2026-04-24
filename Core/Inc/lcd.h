@@ -17,7 +17,7 @@
 void Display_Default(void);
 void Display_Init(void);
 void Display_partials(void);
-
+void Display_Init2(void);
 
 
 #endif //MINIMAL_SAI_LCD_H

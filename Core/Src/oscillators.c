@@ -14,7 +14,7 @@
 #include "oscillators.h"
 #include "LUTs.h"
 
-uint16_t harmonics = 50;
+
 
 void osc_init(oscillator_t *osc, float amp, float freq, float FMindex, float FMratio, float pw)
 {
@@ -43,17 +43,61 @@ float whiteNoise(oscillator_t *osc)
     // return 0.5f*((float)seed * 0.000000000465661f + -1.0f);
 }
 
+
+void cordicAdditiveInit(cordic_t *osc, const float freq)
+{
+    osc->freq = freq;
+
+
+    for (int i = 0; i < harmonics; i++)
+    {
+        osc->real[i] = 0.f;
+        osc->imag[i] = 1.f;
+
+        // osc->level[i] = 1.f / (float)(i + 1);
+        osc->level[i] = oneoverx[i];;
+        const float harmonicFrequency = osc->freq * (float)(i + 1);
+        const float phaseIncrement = 2.f * (float)(M_PI) * harmonicFrequency * TS;
+
+        osc->realinc[i] = cosf(phaseIncrement);
+        osc->imaginc[i] = sinf(phaseIncrement);
+    }
+}
 /**
  * An oscillator for additive synthesis
  * @param osc
  * @return Sum of sines
  */
+float cordicAdditiveProcess(cordic_t *osc)
+{
+    float sumImag = 0.f;
+
+
+    for (int i = 0; i < harmonics; i++)
+    {
+        const float oldreal = osc->real[i];
+
+        osc->real[i] = osc->real[i]*osc->realinc[i] - osc->imag[i]*osc->imaginc[i];
+        osc->imag[i] = oldreal*osc->imaginc[i] + osc->imag[i]*osc->realinc[i];
+        sumImag += osc->imag[i] * osc->level[i];
+
+    }
+
+    osc->output = sumImag * 0.1f;
+    return osc->output;
+}
+
+
+/** former version... weirdly more efficient ??
+ *
+ *
+ * */
 float cordicAdditive(oscillator_t *osc)
 {
     osc->phase = wrap(osc->phase, 1);
-
     const float sinphase = osc->phase;
     const float cosphase = wrap(sinphase + 0.25f, 1);
+    osc->phase += TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
 
     const float fx = lutLerp(lut_sine, LUT_SINE_SIZE,LUT_SINE_SIZE * (sinphase)); // linear-interpolated sinewave
     const float fy = lutLerp(lut_sine, LUT_SINE_SIZE,LUT_SINE_SIZE * (cosphase)); // linear-interpolated sinewave
@@ -64,7 +108,7 @@ float cordicAdditive(oscillator_t *osc)
     float x = 0.f, y = 1.f;
     float sumx = 0.f;
 
-    for (int i = 1; i <= harmonics; i++)
+    for (int i = 0; i < harmonics; i++)
     {
         const float level = osc->amp * oneoverx[i];
         const float oldx = x;
@@ -73,12 +117,9 @@ float cordicAdditive(oscillator_t *osc)
         y = oldx*fy + y*fx;
         sumx = sumx + (x * level);
     }
-    osc->output = sumx * ONEOVERPI;
-
-    osc->phase += TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+    osc->output = sumx * 0.1f;
     return osc->output;
 }
-
 
 float sineAdditive(oscillator_t *osc)
 {

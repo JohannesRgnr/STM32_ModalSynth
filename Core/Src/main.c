@@ -62,6 +62,7 @@ extern UART_HandleTypeDef huart1;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void PeriphCommonClock_Config(void);
+static void CPU_CACHE_Enable(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -103,12 +104,15 @@ int main(void)
   /* USER CODE END 1 */
 
   /* Enable the CPU Cache */
-
+  CPU_CACHE_Enable();
   /* Enable I-Cache---------------------------------------------------------*/
-  SCB_EnableICache();
+  //SCB_EnableICache();
 
   /* Enable D-Cache---------------------------------------------------------*/
-  SCB_EnableDCache();
+  //SCB_EnableDCache();
+
+  // SCB_InvalidateDCache_by_Addr((uint32_t*)0x20000000, 0x20000);
+  //SCB_InvalidateICache();
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -142,16 +146,20 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   HAL_UART_Transmit(&huart1, (uint8_t*)intro_string, strlen(intro_string), HAL_MAX_DELAY);
+
+
+
   /* Initialize the LCD */
   BSP_LCD_Init();
   /* Initialize the LCD Layers */
   BSP_LCD_LayerDefaultInit(LTDC_DEFAULT_ACTIVE_LAYER, LCD_FRAME_BUFFER);
   BSP_LCD_DisplayOn();
-  AUDIO_Init();
   // ConsoleInit();
   Display_Init();
 
  // HAL_Delay(1000);
+  AUDIO_Init();
+
 
 
   /* USER CODE END 2 */
@@ -268,6 +276,23 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
+
+
+
+/**
+  * @brief  CPU L1-Cache enable.
+  * @param  None
+  * @retval None
+  */
+static void CPU_CACHE_Enable(void)
+{
+  /* Enable I-Cache */
+  SCB_EnableICache();
+
+  /* Enable D-Cache */
+  SCB_EnableDCache();
+}
+
 #ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
