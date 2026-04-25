@@ -10,8 +10,8 @@
 #include "../Inc/touchscreen.h"
 
 
-
 uint16_t audioLevel = INITIAL_VOLUME;
+
 TS_StateTypeDef  TS_State;
 
 void Touchscreen(void){
@@ -22,7 +22,7 @@ void Touchscreen(void){
         uint16_t x = TS_State.touchX[0];
         uint16_t y = TS_State.touchY[0];
 
-
+        // Volume control in top-left and botton-left corners
         if (y < 50 && x < 50)
         {
             // /* Increase volume by 1% */
