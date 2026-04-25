@@ -42,14 +42,19 @@ void Display_Init(void)
 	char str[32];
 	sprintf(str, "partials");
 	// BSP_LCD_SetFont(&FontInconsolataNerdFont20);
-	BSP_LCD_DisplayStringAt(16, BSP_LCD_GetYSize()/2, (uint8_t *)str, CENTER_MODE);
+	BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)str, RIGHT_MODE);
 
-
+	// Display partials area
 	BSP_LCD_DrawRect(16, 16, BSP_LCD_GetXSize() - 32, BSP_LCD_GetYSize()/2 - 48);
 
-
+	// Display partials lines
 	BSP_LCD_DrawHLine(32, BSP_LCD_GetYSize()/2 - 48, BSP_LCD_GetXSize() - 64);
 	BSP_LCD_DrawVLine(32, 32, BSP_LCD_GetYSize()/2 - 80);
+
+
+
+	// Display touchscreen area for impulse triggering
+	BSP_LCD_DrawRect(16, BSP_LCD_GetYSize()/2 , BSP_LCD_GetXSize() - 32, BSP_LCD_GetYSize()/2 - 32);
 
 	// Display partials
 	Display_partials();

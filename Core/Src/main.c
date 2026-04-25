@@ -141,7 +141,7 @@ int main(void)
   HAL_UART_Transmit(&huart1, (uint8_t*)intro_string, strlen(intro_string), HAL_MAX_DELAY);
 
   /* Configure the Tamper push-button in GPIO Mode */
-  // BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
+  BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
 
   /* Initialize the LCD */
   BSP_LCD_Init();
@@ -167,7 +167,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+    Touchscreen();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
