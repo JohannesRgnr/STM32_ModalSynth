@@ -13,7 +13,7 @@
 /**
  * @brief A simple lowpass filter, useful to smooth data.
  * @param f
- * @param sample
+ * @param sample input sample
  * @param alpha alpha = 0: no filtering. alpha close to 1: strong smoothing/filtering
  * @return filtered sample
  */
@@ -26,7 +26,7 @@ float smoothingLP(onepoleLP_t *f, const float sample, const float alpha){
 /**
  * @brief a 2-pole resonating bandpass filter
  * @param f
- * @param sample
+ * @param sample input sample
  * @return filtered sample
  */
 float resonBP(reson_t *f, float sample)
