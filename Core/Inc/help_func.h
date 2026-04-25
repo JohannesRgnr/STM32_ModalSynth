@@ -33,7 +33,7 @@
  * @param max
  * @return float
  */
-static inline float wrap(float value, const float max)
+static float wrap(float value, const float max)
 {
     if (value < 0.f)
         value += max;
@@ -43,7 +43,7 @@ static inline float wrap(float value, const float max)
     return value;
 }
 
-static inline float Crossfade(const float a, const float b, const float fade)
+static float Crossfade(const float a, const float b, const float fade)
 {
     return a + (b - a) * fade;
 }
@@ -55,7 +55,7 @@ static inline float Crossfade(const float a, const float b, const float fade)
  * @param x
  * @return float
  */
-static inline float SoftClip(float x)
+static float SoftClip(float x)
 {
     if (x < -3.0f)
     {
@@ -78,5 +78,10 @@ float clip(float input, float lower, float upper);
 float lutLerp(const float *table, uint16_t table_size, float index); // linear interpolation within a given lookup table
 
 
+static float mtof(float note) // midi note to frequency (Hz)
+{
+    float frequency = 440.0f * expf(0.057762265f * (note - 69.0f));
+    return(frequency);
+}
 
 #endif //MINIMAL_SAI_HELP_FUNC_H
