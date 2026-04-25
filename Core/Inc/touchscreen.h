@@ -10,4 +10,9 @@
 #ifndef MODAL_SYNTH_TOUCHSCREEN_H
 #define MODAL_SYNTH_TOUCHSCREEN_H
 
+#include "stm32f769i_discovery_ts.h"
+
+
+
+
 #endif //MODAL_SYNTH_TOUCHSCREEN_H

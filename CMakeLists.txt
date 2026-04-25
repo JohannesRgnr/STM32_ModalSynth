@@ -45,9 +45,7 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Src/filters.c
         Core/Src/touchscreen.c
 
-
-
-        #        Utilities/Fonts/font8.c
+        # Utilities/Fonts/font8.c
 #        Utilities/Fonts/font12.c
 #        Utilities/Fonts/font16.c
 #        Utilities/Fonts/font20.c
@@ -73,10 +71,12 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Drivers/BSP/STM32F769I-Discovery/stm32f769i_discovery_audio.c
     Drivers/BSP/STM32F769I-Discovery/stm32f769i_discovery_sdram.c
     Drivers/BSP/STM32F769I-Discovery/stm32f769i_discovery_lcd.c
+    Drivers/BSP/STM32F769I-Discovery/stm32f769i_discovery_ts.c
     Drivers/BSP/Components/wm8994/wm8994.c
     Drivers/BSP/Components/otm8009a/otm8009a.c
     Drivers/BSP/Components/adv7533/adv7533.c
     Drivers/BSP/Components/nt35510/nt35510.c
+    Drivers/BSP/Components/ft6x06/ft6x06.c
     # Utilities/Fonts
     #Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dfsdm.c
 )
@@ -89,6 +89,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     Drivers/BSP/Components/adv7533
     Drivers/BSP/Components/otm8009a
     Drivers/BSP/Components/nt35510
+    Drivers/BSP/Components/ft6x06
     Drivers/CMSIS/Include
     Drivers/CMSIS/Core/Include
     Drivers/CMSIS/DSP/Include Drivers/CMSIS/Device/ST/STM32F7xx/Include

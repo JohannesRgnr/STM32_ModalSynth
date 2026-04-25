@@ -34,6 +34,7 @@
 #include "stm32f769i_discovery.h"
 #include "audio.h"
 #include "lcd.h"
+#include "touchscreen.h"
 #include "usart.h"
 /* USER CODE END Includes */
 
@@ -139,20 +140,25 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_UART_Transmit(&huart1, (uint8_t*)intro_string, strlen(intro_string), HAL_MAX_DELAY);
 
-
+  /* Configure the Tamper push-button in GPIO Mode */
+  // BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
 
   /* Initialize the LCD */
   BSP_LCD_Init();
   /* Initialize the LCD Layers */
   BSP_LCD_LayerDefaultInit(LTDC_DEFAULT_ACTIVE_LAYER, LCD_FRAME_BUFFER);
   BSP_LCD_DisplayOn();
-  // ConsoleInit();
+
   Display_Init();
+
+  /* Initialize the touchscreen */
+  BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
 
  // HAL_Delay(1000);
   AUDIO_Init();
 
 
+  // ConsoleInit();
 
   /* USER CODE END 2 */
 
