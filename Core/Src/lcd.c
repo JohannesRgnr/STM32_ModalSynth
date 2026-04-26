@@ -55,39 +55,20 @@ void Display_Init(void)
 	BSP_LCD_FillRect(32, BSP_LCD_GetYSize()/2 + 16, BSP_LCD_GetXSize() - 64, BSP_LCD_GetYSize()/2 - 64);
 
 	// Display partials
-	BSP_LCD_SetTextColor(LCD_COLOR_CYAN);
-	Display_partials(SawPartials, SawAmp);
+	Display_partials(SawPartials, SawAmp, LCD_COLOR_CYAN);
 }
 
-void Display_partials(const float *freqs, const float *amps)
+void Display_partials(const float *freqs, const float *amps, uint32_t color)
 {
-	const uint32_t hLength = BSP_LCD_GetXSize() - 64;
+	BSP_LCD_SetTextColor(color);
+	const float hLength = BSP_LCD_GetXSize() - 64;
 
 	for (int i = 0; i < 16; i++)
 	{
-		const uint32_t partialLength = (uint32_t)(128 * amps[i]);
-		BSP_LCD_DrawVLine((uint32_t)(freqs[i] * ((float)hLength / 16.f) + 16.0f), 80 + (128 - partialLength), partialLength);
+		const uint16_t partialLength = (uint16_t)(128 * amps[i]);
+		BSP_LCD_DrawVLine((uint16_t)(freqs[i] * (hLength / 16.f) + 16.0f), 80 + (128 - partialLength), partialLength);
 	}
-}
-
-void Display_Init2(void)
-{
-	/* Set LCD Foreground Layer  */
-	BSP_LCD_SelectLayer(LTDC_DEFAULT_ACTIVE_LAYER);
-
-	BSP_LCD_SetFont(&LCD_DEFAULT_FONT);
-
-	/* Clear the LCD */
-	BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
-	BSP_LCD_Clear(LCD_COLOR_BLACK);
-
-
-	/* Set the LCD Text Color */
 	BSP_LCD_SetTextColor(LCD_COLOR_LIGHTGRAY);
-
-	/* Display LCD messages */
-	char str[128];
-	sprintf(str, "SAI DEMO - %d voices additive synthesis", harmonics);
-	BSP_LCD_SetFont(&FontInconsolataNerdFont20);
-	BSP_LCD_DisplayStringAt(16, BSP_LCD_GetYSize()/2, (uint8_t *)str, CENTER_MODE);
 }
+
+

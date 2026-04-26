@@ -19,12 +19,13 @@
 
 
 /**
- * @brief Audio Buffer - x samples X 2 channels = 2 * x samples
+ * @brief Audio Buffer - x sexciterAmples X 2 channels = 2 * x sexciterAmples
  * @note Channels are interleaved - LRLRLRLRLRLRLRLRLRLRLR - audioBuffer[frame << 1] audioBuffer[(frame << 1) + 1]
  */
-int16_t codecBuffer[BUFFER_SIZE]; // x samples X 2 channels (interleaved)
+int16_t codecBuffer[BUFFER_SIZE]; // x sexciterAmples X 2 channels (interleaved)
 
 oscillator_t osc1;
+noise_t noise;
 line_t exciterAmp;
 
 /**
@@ -41,6 +42,7 @@ void AUDIO_Init()
 
     // initialize audio objects
     osc_init(&osc1, 1.0f, 110, 0, 0, 0);
+
     // cordicAdditiveInit(&cordic1, 55);
     // HAL_Delay(500);
     // osc_init(&osc2, 1.0f, 110, 0, 0, 0);
@@ -48,13 +50,30 @@ void AUDIO_Init()
 
  void audioBlock(int16_t *output, const int32_t samples)
 {
+    noise.amp = 0.8f;
 
     for (int i = 0; i < samples; i++)
     {
 
-        const float sampleL = cordicAdditive(&osc1);
-        const int16_t sampleOut = (int16_t)(32767.0f * sampleL);
-       // float sampleR = sampleL;  // RIGHT
+        float samp = whiteNoise(&noise);
+        /* Exciter */
+        exciterAmp.val += exciterAmp.inc;
+        if(exciterAmp.inc < 0.0f && exciterAmp.val < exciterAmp.dst)
+            exciterAmp.val = exciterAmp.dst;
+        if(exciterAmp.inc > 0.0f && exciterAmp.val > exciterAmp.dst)
+            exciterAmp.val = exciterAmp.dst;
+
+        samp = samp * exciterAmp.val * exciterAmp.val;
+
+        // exciterAmp.val += exciterAmp.inc;
+        // if(exciterAmp.inc < 0.0f && exciterAmp.val < exciterAmp.dst)
+        //     exciterAmp.val = exciterAmp.dst;
+        // if(exciterAmp.inc > 0.0f && exciterAmp.val > exciterAmp.dst)
+        //     exciterAmp.val = exciterAmp.dst;
+        // const float sexciterAmpleL = cordicAdditive(&osc1);
+
+        const int16_t sampleOut = (int16_t)(32767.0f * samp);
+       // float sexciterAmpleR = sexciterAmpleL;  // RIGHT
 
         output[i << 1] = sampleOut;
         output[(i << 1) + 1]  = sampleOut;
