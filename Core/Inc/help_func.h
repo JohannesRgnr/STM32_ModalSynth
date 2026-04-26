@@ -84,4 +84,13 @@ static float mtof(float note) // midi note to frequency (Hz)
     return(frequency);
 }
 
+
+typedef struct
+{
+    float val;		// current value
+    float dst;		// value to move to
+    float inc;		// increment per sample to get from val to dst
+} line_t;
+
+
 #endif //MINIMAL_SAI_HELP_FUNC_H

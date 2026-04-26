@@ -11,7 +11,10 @@
 
 #include<stdint.h>
 #include "audio.h"
+#include "consts.h"
+#include "help_func.h"
 #include "oscillators.h"
+#include "exciter.h"
 
 
 
@@ -22,15 +25,7 @@
 int16_t codecBuffer[BUFFER_SIZE]; // x samples X 2 channels (interleaved)
 
 oscillator_t osc1;
-
-
-
-
-// float saw1, saw2;
-// uint16_t saw1_freq = 55;
-// uint16_t saw2_freq = 55;
-
-
+line_t exciterAmp;
 
 /**
  * @brief Init audio
@@ -53,21 +48,10 @@ void AUDIO_Init()
 
  void audioBlock(int16_t *output, const int32_t samples)
 {
-    // int16_t* out = output;
-    // 0.0000226757 is 1.0/44100.0
-    // const float increment1 = (float)saw1_freq * 2.0f * 0.0000226757f;
-    // const float increment2 = (float)saw2_freq * 2.0f * 0.0000226757f;
+
     for (int i = 0; i < samples; i++)
     {
-        // saw1 += increment1;
-        // if (saw1 > 1.0f)
-        //     saw1 = saw1 - 2.0f;
-        // saw2 += increment2;
-        // if (saw2 > 1.0f)
-        //     saw2 = saw2 - 2.0f;
 
-       // float sampleL = cordicAdditiveProcess(&cordic1);  // LEFT
-       // float sampleL = cordicAdditiveProcess(&cordic1);
         const float sampleL = cordicAdditive(&osc1);
         const int16_t sampleOut = (int16_t)(32767.0f * sampleL);
        // float sampleR = sampleL;  // RIGHT
@@ -76,7 +60,6 @@ void AUDIO_Init()
         output[(i << 1) + 1]  = sampleOut;
     }
 }
-
 
 
 void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)

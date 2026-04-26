@@ -50,7 +50,7 @@ typedef struct
 
 
 void  osc_init(oscillator_t * osc, float amp, float freq, float FMindex, float FMratio, float pw);
-float whiteNoise(oscillator_t *osc);
+// float whiteNoise(oscillator_t *osc);
 void cordicAdditiveInit(cordic_t *osc, float freq);
 float cordicAdditiveProcess(cordic_t * osc);
 float cordicAdditive(oscillator_t *osc);

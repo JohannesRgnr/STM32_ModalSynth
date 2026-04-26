@@ -52,5 +52,4 @@ void audioBlock(int16_t *output, int32_t samples);
 
 
 
-
 #endif //MINIMAL_SAI_AUDIO_H

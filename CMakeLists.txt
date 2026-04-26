@@ -44,13 +44,15 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Src/usart.c
         Core/Src/filters.c
         Core/Src/touchscreen.c
+        Core/Src/exciter.c
 
-        # Utilities/Fonts/font8.c
+
+#        Utilities/Fonts/font8.c
 #        Utilities/Fonts/font12.c
 #        Utilities/Fonts/font16.c
 #        Utilities/Fonts/font20.c
 #        Utilities/Fonts/font24.c
-        #        Drivers/CMSIS/DSP/Source/CommonTables/arm_common_tables.c
+#        Drivers/CMSIS/DSP/Source/CommonTables/arm_common_tables.c
 #        Drivers/CMSIS/DSP/Source/FastMathFunctions/arm_sin_f32.c
 #        Drivers/CMSIS/DSP/Source/FastMathFunctions/arm_cos_f32.c
 

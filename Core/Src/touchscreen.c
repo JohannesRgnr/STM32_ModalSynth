@@ -17,6 +17,7 @@ TS_StateTypeDef  TS_State;
 void Touchscreen(void){
 
     BSP_TS_GetState(&TS_State);
+
     if (TS_State.touchDetected == 1)   /* If previous touch has not been released, we don't proceed any touch */
     {
         uint16_t x = TS_State.touchX[0];
@@ -48,4 +49,5 @@ void Touchscreen(void){
             // BSP_LCD_DisplayStringAt(230, BSP_LCD_GetYSize() - 16, (uint8_t *)FreqStr, LEFT_MODE);
         }
     }
+    HAL_Delay(10);
 }
