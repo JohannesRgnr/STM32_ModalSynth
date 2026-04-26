@@ -33,10 +33,8 @@ void Display_Init(void)
 	BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
 	BSP_LCD_Clear(LCD_COLOR_BLACK);
 
-
 	/* Set the LCD Text Color */
 	BSP_LCD_SetTextColor(LCD_COLOR_LIGHTGRAY);
-
 
 	/* Display LCD messages */
 	char str[32];
@@ -45,28 +43,30 @@ void Display_Init(void)
 	BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)str, RIGHT_MODE);
 
 	// Display partials area
-	BSP_LCD_DrawRect(16, 16, BSP_LCD_GetXSize() - 32, BSP_LCD_GetYSize()/2 - 48);
+	BSP_LCD_DrawRect(16, 16, BSP_LCD_GetXSize() - 32, BSP_LCD_GetYSize()/2 - 32);
 
-	// Display partials lines
-	BSP_LCD_DrawHLine(32, BSP_LCD_GetYSize()/2 - 48, BSP_LCD_GetXSize() - 64);
-	BSP_LCD_DrawVLine(32, 32, BSP_LCD_GetYSize()/2 - 80);
+	// Display freq and magnitude axes
+	BSP_LCD_DrawHLine(32, BSP_LCD_GetYSize()/2 - 32, BSP_LCD_GetXSize() - 64);
+	BSP_LCD_DrawVLine(32, 32, BSP_LCD_GetYSize()/2 - 64);
 
-
-
-	// Display touchscreen area for impulse triggering
+	// Display touchscreen area for note triggering
 	BSP_LCD_DrawRect(16, BSP_LCD_GetYSize()/2 , BSP_LCD_GetXSize() - 32, BSP_LCD_GetYSize()/2 - 32);
+	BSP_LCD_SetTextColor(LCD_COLOR_GRAY);
+	BSP_LCD_FillRect(32, BSP_LCD_GetYSize()/2 + 16, BSP_LCD_GetXSize() - 64, BSP_LCD_GetYSize()/2 - 64);
 
 	// Display partials
-	Display_partials();
+	BSP_LCD_SetTextColor(LCD_COLOR_CYAN);
+	Display_partials(SawPartials, SawAmp);
 }
 
-void Display_partials(void)
+void Display_partials(const float *freqs, const float *amps)
 {
-	BSP_LCD_SetTextColor(LCD_COLOR_GRAY);
 	const uint32_t hLength = BSP_LCD_GetXSize() - 64;
+
 	for (int i = 0; i < 16; i++)
 	{
-		BSP_LCD_DrawVLine(CB808Partials[i] * (hLength / 16.f) + 32, 64, 128);
+		const uint32_t partialLength = (uint32_t)(128 * amps[i]);
+		BSP_LCD_DrawVLine((uint32_t)(freqs[i] * ((float)hLength / 16.f) + 16.0f), 80 + (128 - partialLength), partialLength);
 	}
 }
 

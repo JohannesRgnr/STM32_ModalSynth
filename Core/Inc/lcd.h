@@ -16,7 +16,7 @@
 
 void Display_Default(void);
 void Display_Init(void);
-void Display_partials(void);
+void Display_partials(const float *freqs, const float *amps);
 void Display_Init2(void);
 
 
