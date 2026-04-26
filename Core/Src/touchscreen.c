@@ -8,7 +8,6 @@
  */
 
 #include "../Inc/touchscreen.h"
-
 #include "exciter.h"
 #include "help_func.h"
 

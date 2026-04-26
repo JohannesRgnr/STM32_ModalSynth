@@ -45,6 +45,8 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Src/filters.c
         Core/Src/touchscreen.c
         Core/Src/exciter.c
+        Core/Src/noise.c
+
 
 
 #        Utilities/Fonts/font8.c

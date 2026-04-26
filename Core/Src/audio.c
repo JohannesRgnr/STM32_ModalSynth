@@ -11,11 +11,9 @@
 
 #include<stdint.h>
 #include "audio.h"
-#include "consts.h"
 #include "help_func.h"
 #include "oscillators.h"
-#include "exciter.h"
-
+#include "noise.h"
 
 
 /**

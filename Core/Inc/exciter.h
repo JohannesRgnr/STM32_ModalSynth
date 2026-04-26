@@ -12,14 +12,9 @@
 
 #include "help_func.h"
 
-typedef struct
-{
-    float amp;
-    float output;
-} noise_t;
 
 
 void Trigger_Note(line_t *line);
-float whiteNoise(noise_t *osc);
+
 
 #endif //MODAL_SYNTH_EXCITER_H
