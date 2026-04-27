@@ -26,7 +26,7 @@ typedef struct
 }	reson_t;
 
 
-float smoothingLP(onepoleLP_t *f, float sample,  float alpha);
+float smoothingLP(onepoleLP_t *f, float sample, float alpha);
 float resonBP(reson_t *f, float sample);
 
 

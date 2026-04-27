@@ -10,9 +10,9 @@
 #include "../Inc/touchscreen.h"
 #include "exciter.h"
 #include "help_func.h"
+// #include "audio.h"
 
-
-uint16_t audioLevel = INITIAL_VOLUME;
+uint16_t audioLevel = 60;
 
 uint8_t wasTouched = 0;
 

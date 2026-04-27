@@ -7,8 +7,8 @@
  * @note
  */
 
-#ifndef MINIMAL_SAI_AUDIO_H
-#define MINIMAL_SAI_AUDIO_H
+#ifndef MODAL_SYNTH_AUDIO_H
+#define MODAL_SYNTH_AUDIO_H
 
 
 
@@ -52,4 +52,4 @@ void audioBlock(int16_t *output, int32_t samples);
 
 
 
-#endif //MINIMAL_SAI_AUDIO_H
+#endif //MODAL_SYNTH_AUDIO_H

@@ -47,7 +47,7 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Src/exciter.c
         Core/Src/noise.c
         Core/Src/filterbank.c
-
+        Core/Src/spectra.c
 
 
         #        Utilities/Fonts/font8.c

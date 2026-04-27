@@ -25,8 +25,8 @@ typedef struct
 }	filterbank_t;
 
 
+void filterbank_init(filterbank_t *f, const float *freqRatios, const float *amps);
 
-
-void Update_Filterbank(filterbank_t *f, const float *freqRatios, const float *amps);
+void filterbank_update(filterbank_t *f, const float *freqRatios, const float *amps);
 
 #endif //MODAL_SYNTH_FILTERBANK_H

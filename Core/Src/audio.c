@@ -11,10 +11,13 @@
 
 #include<stdint.h>
 #include "audio.h"
-#include "help_func.h"
-#include "oscillators.h"
-#include "noise.h"
 
+
+#include "filterbank.h"
+#include "help_func.h"
+// #include "oscillators.h"
+#include "noise.h"
+#include "spectra.h"
 
 /**
  * @brief Audio Buffer - x sexciterAmples X 2 channels = 2 * x sexciterAmples
@@ -22,9 +25,10 @@
  */
 int16_t codecBuffer[BUFFER_SIZE]; // x sexciterAmples X 2 channels (interleaved)
 
-oscillator_t osc1;
+// oscillator_t osc1;
 noise_t noise;
 line_t exciterAmp;
+filterbank_t filterbank;
 
 /**
  * @brief Init audio
@@ -35,15 +39,11 @@ void AUDIO_Init()
     // initialize board audio device
     BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_HEADPHONE, INITIAL_VOLUME, BSP_AUDIO_FREQUENCY_44K);
     BSP_AUDIO_OUT_SetAudioFrameSlot(CODEC_AUDIOFRAME_SLOT_02); // slots 0 and 2 activated for headphones out
-
     BSP_AUDIO_OUT_Play((uint16_t *)codecBuffer, BUFFER_SIZE * 2);
 
     // initialize audio objects
-    osc_init(&osc1, 1.0f, 110, 0, 0, 0);
+    filterbank_init(&filterbank, SawPartials, SawAmp);
 
-    // cordicAdditiveInit(&cordic1, 55);
-    // HAL_Delay(500);
-    // osc_init(&osc2, 1.0f, 110, 0, 0, 0);
 }
 
  void audioBlock(int16_t *output, const int32_t samples)

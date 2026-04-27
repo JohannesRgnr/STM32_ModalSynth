@@ -7,8 +7,8 @@
  * @note
  */
 
-#ifndef MINIMAL_SAI_HELP_FUNC_H
-#define MINIMAL_SAI_HELP_FUNC_H
+#ifndef MODAL_SYNTH_HELP_FUNC_H
+#define MODAL_SYNTH_HELP_FUNC_H
 
 
 #include <math.h>
@@ -93,4 +93,4 @@ typedef struct
 } line_t;
 
 
-#endif //MINIMAL_SAI_HELP_FUNC_H
+#endif //MODAL_SYNTH_HELP_FUNC_H

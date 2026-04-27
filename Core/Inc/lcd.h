@@ -7,8 +7,8 @@
  * @note
  */
 
-#ifndef MINIMAL_SAI_LCD_H
-#define MINIMAL_SAI_LCD_H
+#ifndef MODAL_SYNTH_LCD_H
+#define MODAL_SYNTH_LCD_H
 
 #include "stm32f769i_discovery_lcd.h"
 
@@ -20,4 +20,4 @@ void Display_partials(const float *freqRatios, const float *amps, uint32_t color
 
 
 
-#endif //MINIMAL_SAI_LCD_H
+#endif //MODAL_SYNTH_LCD_H

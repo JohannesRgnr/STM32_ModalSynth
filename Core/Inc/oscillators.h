@@ -10,8 +10,6 @@
 #ifndef MINIMAL_SAI_OSCILLATOR_H
 #define MINIMAL_SAI_OSCILLATOR_H
 
-#include <stdint.h>
-#include <stdbool.h>
 
 
 #define harmonics   380

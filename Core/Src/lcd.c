@@ -8,10 +8,15 @@
  */
 
 #include "../Inc/lcd.h"
-#include "spectra.h"
+
 #include <stdio.h>
 
 #include "oscillators.h"
+
+#include "spectra.h"
+
+
+
 
 void Display_Default(void)
 {
