@@ -7,8 +7,6 @@
  * @note
  */
 
-
-
 const float Bell1Partials[16]= {0.5f, 0.5f, 1.0f, 1.0f, 1.183f, 1.183f, 1.506f, 1.506f, 2.0f, 2.514f, 2.662f, 3.011f, 4.166f, 5.433f, 6.796f, 8.215f}; // Bell 1 (Default)
 const float GongPartials[16]= {1.0f, 1.0f, 1.59f, 1.59f, 2.14f, 2.14f, 2.3f, 2.3f, 2.65f, 2.92f, 3.16f, 3.5f, 3.6f, 3.65f, 4.06f, 4.15f}; // Gong or Cymbal
 const float ChordPartials[16] = {1.0f, 1.2189f, 1.505f, 2.05f, 2.378f, 2.98f, 3.01f, 3.567f, 4.0f, 4.49f, 4.756f, 5.03f, 5.945f, 6.05f, 7.5f}; // Minor Chord
