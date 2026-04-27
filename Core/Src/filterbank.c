@@ -19,11 +19,12 @@
 reson_t reson[BANDS];
 
 
+
 void filterbank_init(filterbank_t *f, const float *freqRatios, const float *amps)
 {
-    f->freq = 220;
+    f->freq = 110;
     f->previousFreq = f->freq;
-    f->decay = 4.0f;
+    f->decay = 8.0f;
     f->previousDecay = f->decay;
     for (int i = 0; i < BANDS; i++)
     {
@@ -59,4 +60,16 @@ void filterbank_update(filterbank_t *f, const float *freqRatios, const float *am
 
     f->previousFreq = f->freq;
     f->previousDecay = f->decay;
+}
+
+
+float filterbank_process(filterbank_t *f, const float sample)
+{
+    float SumOuts = 0.0f;
+    for(int i = 0; i < BANDS; i++)
+    {
+        SumOuts = SumOuts + resonBP(&reson[i], sample) * ONEOVERBANDS;
+    }
+
+    return SumOuts;
 }

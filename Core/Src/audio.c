@@ -42,14 +42,13 @@ void AUDIO_Init()
     BSP_AUDIO_OUT_Play((uint16_t *)codecBuffer, BUFFER_SIZE * 2);
 
     // initialize audio objects
-    filterbank_init(&filterbank, SawPartials, SawAmp);
+    noise.amp = 0.8f;
+    filterbank_init(&filterbank, Bell1Partials, ExpAmp);
 
 }
 
  void audioBlock(int16_t *output, const int32_t samples)
 {
-    noise.amp = 0.8f;
-
     for (int i = 0; i < samples; i++)
     {
 
@@ -61,8 +60,11 @@ void AUDIO_Init()
         if(exciterAmp.inc > 0.0f && exciterAmp.val > exciterAmp.dst)
             exciterAmp.val = exciterAmp.dst;
 
+        // generate noise burst
         samp = samp * exciterAmp.val * exciterAmp.val;
 
+        // going through filterbank
+        samp = filterbank_process(&filterbank, samp);
         // exciterAmp.val += exciterAmp.inc;
         // if(exciterAmp.inc < 0.0f && exciterAmp.val < exciterAmp.dst)
         //     exciterAmp.val = exciterAmp.dst;

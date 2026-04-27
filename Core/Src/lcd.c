@@ -60,7 +60,7 @@ void Display_Init(void)
 	BSP_LCD_FillRect(32, BSP_LCD_GetYSize()/2 + 16, BSP_LCD_GetXSize() - 64, BSP_LCD_GetYSize()/2 - 64);
 
 	// Display partials
-	Display_partials(SawPartials, SawAmp, LCD_COLOR_CYAN);
+	Display_partials(Bell1Partials, ExpAmp, LCD_COLOR_CYAN);
 }
 
 void Display_partials(const float *freqRatios, const float *amps, uint32_t color)

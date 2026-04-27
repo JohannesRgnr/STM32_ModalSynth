@@ -12,6 +12,7 @@
 
 
 #define BANDS 16
+#define ONEOVERBANDS (1.f/BANDS)
 
 
 typedef struct
@@ -28,5 +29,7 @@ typedef struct
 void filterbank_init(filterbank_t *f, const float *freqRatios, const float *amps);
 
 void filterbank_update(filterbank_t *f, const float *freqRatios, const float *amps);
+
+float filterbank_process(filterbank_t *f, float sample);
 
 #endif //MODAL_SYNTH_FILTERBANK_H
