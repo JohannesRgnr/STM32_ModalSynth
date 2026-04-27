@@ -21,6 +21,8 @@ typedef struct
     float s2;
     float r;
     float g;
+    float wd;
+    float wa;
 }	reson_t;
 
 

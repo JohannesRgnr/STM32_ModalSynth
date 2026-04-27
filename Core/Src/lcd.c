@@ -58,7 +58,7 @@ void Display_Init(void)
 	Display_partials(SawPartials, SawAmp, LCD_COLOR_CYAN);
 }
 
-void Display_partials(const float *freqs, const float *amps, uint32_t color)
+void Display_partials(const float *freqRatios, const float *amps, uint32_t color)
 {
 	BSP_LCD_SetTextColor(color);
 	const float hLength = BSP_LCD_GetXSize() - 64;
@@ -66,7 +66,7 @@ void Display_partials(const float *freqs, const float *amps, uint32_t color)
 	for (int i = 0; i < 16; i++)
 	{
 		const uint16_t partialLength = (uint16_t)(128 * amps[i]);
-		BSP_LCD_DrawVLine((uint16_t)(freqs[i] * (hLength / 16.f) + 16.0f), 80 + (128 - partialLength), partialLength);
+		BSP_LCD_DrawVLine((uint16_t)(freqRatios[i] * (hLength / 16.f) + 16.0f), 80 + (128 - partialLength), partialLength);
 	}
 	BSP_LCD_SetTextColor(LCD_COLOR_LIGHTGRAY);
 }

@@ -17,10 +17,10 @@ uint16_t audioLevel = INITIAL_VOLUME;
 uint8_t wasTouched = 0;
 
 extern line_t exciterAmp;
+TS_StateTypeDef  TS_State;
 
 void Touchscreen(void){
 
-    TS_StateTypeDef  TS_State;
     BSP_TS_GetState(&TS_State);
     // if (TS_State.touchDetected == 1)   /* If previous touch has not been released, we don't proceed any touch */
     // {
@@ -55,6 +55,8 @@ void Touchscreen(void){
     //     }
     //     HAL_Delay(10);
     // }
+
+    // one touch to trigger exciter
     if (wasTouched == 0)
     {
         if (TS_State.touchDetected == 1)
@@ -68,8 +70,6 @@ void Touchscreen(void){
                 // HAL_Delay(50);
             }
         }
-
     }
     wasTouched = TS_State.touchDetected;
-
 }

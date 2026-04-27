@@ -16,7 +16,7 @@
 
 void Display_Default(void);
 void Display_Init(void);
-void Display_partials(const float *freqs, const float *amps, uint32_t color);
+void Display_partials(const float *freqRatios, const float *amps, uint32_t color);
 
 
 
