@@ -46,3 +46,12 @@ float lutLerp(const float *table, uint16_t table_size, float index){
     // get the interpolated output
     return table[trunc] + (diff * frac);
 }
+
+
+
+float scale(const float lower_input, const float upper_input, const float lower_output, const float upper_output, const float value)
+{
+    float slope = (upper_output - lower_output) / (upper_input - lower_input);
+
+    return lower_output + slope * (value - lower_input);
+}

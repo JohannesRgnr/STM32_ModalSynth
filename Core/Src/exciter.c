@@ -19,7 +19,7 @@ void Trigger_Note(line_t *line)
     line->val = 0.8f;
     line->dst = 0.0f;
 
-    line->inc = (line->dst - line->val)/(0.05f * FS);
+    line->inc = (line->dst - line->val)/(0.02f * FS);
 }
 
 

@@ -9,14 +9,17 @@
 
 #include "../Inc/touchscreen.h"
 #include "exciter.h"
+#include "filterbank.h"
 #include "help_func.h"
-// #include "audio.h"
+#include "spectra.h"
+#include "audio.h"
 
 uint16_t audioLevel = 60;
 
 uint8_t wasTouched = 0;
 
 extern line_t exciterAmp;
+extern filterbank_t filterbank;
 TS_StateTypeDef  TS_State;
 
 void Touchscreen(void){
@@ -66,6 +69,9 @@ void Touchscreen(void){
            BSP_LCD_DrawRect(16, BSP_LCD_GetYSize()/2 , BSP_LCD_GetXSize() - 32, BSP_LCD_GetYSize()/2 - 32);
             if (x > 16 && y > BSP_LCD_GetYSize()/2 && x < (BSP_LCD_GetXSize() - 16) && (BSP_LCD_GetYSize() - 16))
             {
+                const float midiNote = scale(16, 768, 24, 90, x);
+                filterbank.freq = mtof(midiNote);
+                filterbank_update(&filterbank, Bell1Partials, ExpAmp);
                 Trigger_Note(&exciterAmp);
                 // HAL_Delay(50);
             }
