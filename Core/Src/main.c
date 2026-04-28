@@ -108,11 +108,6 @@ char *intro_string = "Entering main application... \r\n";
 int main(void)
 {
 
-  /* USER CODE BEGIN 1 */
-
-  /* USER CODE END 1 */
-
-  /* Enable the CPU Cache */
   CPU_CACHE_Enable();
 
   /* MCU Configuration--------------------------------------------------------*/

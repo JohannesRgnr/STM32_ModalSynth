@@ -5,9 +5,7 @@ Physical Modeling Modal synthesizer with touchscreen support and built-in effect
 WIP.
 
 
-
-
-## Copyright
+_____________________________________________________
 
 Except as otherwise noted, all files are
 
