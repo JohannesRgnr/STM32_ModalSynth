@@ -17,7 +17,6 @@
 uint16_t audioLevel = 60;
 
 uint8_t wasTouched = 0;
-
 extern line_t exciterAmp;
 extern filterbank_t filterbank;
 TS_StateTypeDef  TS_State;
@@ -84,7 +83,7 @@ void Touchscreen(void){
             uint16_t x = TS_State.touchX[0];
             uint16_t y = TS_State.touchY[0];
             const float midiNote = scale(16, 768, 24, 90, x);
-            const float duration = scale(BSP_LCD_GetYSize()/2,BSP_LCD_GetYSize() - 32, 1, 10, y);
+            const float duration = scale(BSP_LCD_GetYSize()/2,BSP_LCD_GetYSize() - 32, 4, 10, y);
             filterbank.freq = mtof(midiNote);
             filterbank.decay = duration;
             filterbank_update(&filterbank, Bell1Partials, ExpAmp);
