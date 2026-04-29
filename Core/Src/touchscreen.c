@@ -84,7 +84,9 @@ void Touchscreen(void){
             uint16_t x = TS_State.touchX[0];
             uint16_t y = TS_State.touchY[0];
             const float midiNote = scale(16, 768, 24, 90, x);
+            const float duration = scale(BSP_LCD_GetYSize()/2,BSP_LCD_GetYSize() - 32, 1, 10, y);
             filterbank.freq = mtof(midiNote);
+            filterbank.decay = duration;
             filterbank_update(&filterbank, Bell1Partials, ExpAmp);
         }
     }
