@@ -73,9 +73,21 @@ void Touchscreen(void){
                 filterbank.freq = mtof(midiNote);
                 filterbank_update(&filterbank, Bell1Partials, ExpAmp);
                 Trigger_Note(&exciterAmp);
-                // HAL_Delay(50);
+
             }
         }
     }
+    else
+    {
+        if (TS_State.touchDetected == 1)
+        {
+            uint16_t x = TS_State.touchX[0];
+            uint16_t y = TS_State.touchY[0];
+            const float midiNote = scale(16, 768, 24, 90, x);
+            filterbank.freq = mtof(midiNote);
+            filterbank_update(&filterbank, Bell1Partials, ExpAmp);
+        }
+    }
     wasTouched = TS_State.touchDetected;
+    // HAL_Delay(5);
 }
