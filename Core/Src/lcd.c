@@ -55,9 +55,9 @@ void Display_Init(void)
 	BSP_LCD_DrawVLine(32, 32, BSP_LCD_GetYSize()/2 - 64);
 
 	// Display touchscreen area for note triggering
-	BSP_LCD_DrawRect(16, BSP_LCD_GetYSize()/2 , BSP_LCD_GetXSize() - 32, BSP_LCD_GetYSize()/2 - 32);
+	BSP_LCD_DrawRect(16, BSP_LCD_GetYSize()/2 , BSP_LCD_GetXSize() - 32, BSP_LCD_GetYSize()/2 - 16);
 	BSP_LCD_SetTextColor(LCD_COLOR_GRAY);
-	BSP_LCD_FillRect(32, BSP_LCD_GetYSize()/2 + 16, BSP_LCD_GetXSize() - 64, BSP_LCD_GetYSize()/2 - 64);
+	BSP_LCD_FillRect(32, BSP_LCD_GetYSize()/2 + 16, BSP_LCD_GetXSize() - 64, BSP_LCD_GetYSize()/2 - 48);
 
 	// Display partials
 	Display_partials(Bell1Partials, ExpAmp, LCD_COLOR_CYAN);

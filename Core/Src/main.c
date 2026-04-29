@@ -44,6 +44,7 @@
 #include "lcd.h"
 #include "touchscreen.h"
 #include "usart.h"
+#include "usr_btn.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -146,6 +147,8 @@ int main(void)
   /* Configure the Tamper push-button in GPIO Mode */
   BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
 
+
+
   /* Initialize the LCD */
   BSP_LCD_Init();
   /* Initialize the LCD Layers */
@@ -171,6 +174,8 @@ int main(void)
   {
     /* USER CODE END WHILE */
     Touchscreen();
+    UserButton();
+
 
     /* USER CODE BEGIN 3 */
   }
