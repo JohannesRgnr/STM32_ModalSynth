@@ -48,6 +48,7 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Src/noise.c
         Core/Src/filterbank.c
         Core/Src/spectra.c
+        Core/Src/usr_btn.c
 
 
         #        Utilities/Fonts/font8.c
