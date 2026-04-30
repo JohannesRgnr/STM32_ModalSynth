@@ -67,7 +67,7 @@ void Touchscreen(void){
             uint16_t x = TS_State.touchX[0];
             uint16_t y = TS_State.touchY[0];
 
-            if (x > 32 && y > BSP_LCD_GetYSize()/2 + 16 && x < (BSP_LCD_GetXSize() - 32) && y <  (BSP_LCD_GetYSize() - 48))
+            if (x > 48 && y > BSP_LCD_GetYSize()/2 + 32 && x < (BSP_LCD_GetXSize() - 48) && y <  (BSP_LCD_GetYSize() - 48))
             {
                 // evaluate fundamental frequency
                 const float midiNote = scale(32, 768, 24, 90, x);
@@ -82,6 +82,8 @@ void Touchscreen(void){
                 Trigger_Note(&exciterAmp);
 
                 // redraw trigger area
+                // BSP_LCD_SetTextColor(COLOR_BACKGROUND);
+                // BSP_LCD_FillRect(0, BSP_LCD_GetYSize()/2 , BSP_LCD_GetXSize(), BSP_LCD_GetYSize()/2);
                 BSP_LCD_SetTextColor(COLOR_ELEMENTS);
                 BSP_LCD_DrawRect(16, BSP_LCD_GetYSize()/2 , BSP_LCD_GetXSize() - 32, BSP_LCD_GetYSize()/2 - 16);
                 BSP_LCD_SetTextColor(COLOR_PAD);
@@ -99,7 +101,7 @@ void Touchscreen(void){
             uint16_t x = TS_State.touchX[0];
             uint16_t y = TS_State.touchY[0];
 
-            if (x > 32 && y > BSP_LCD_GetYSize()/2 + 16 && x < (BSP_LCD_GetXSize() - 32) && y <  (BSP_LCD_GetYSize() - 48))
+            if (x > 48 && y > BSP_LCD_GetYSize()/2 + 32 && x < (BSP_LCD_GetXSize() - 48) && y <  (BSP_LCD_GetYSize() - 48))
             {
                 const float midiNote = scale(32, 768, 24, 90, x);
                 const float duration = scale(BSP_LCD_GetYSize()/2,BSP_LCD_GetYSize() - 32, 4, 10, y);
