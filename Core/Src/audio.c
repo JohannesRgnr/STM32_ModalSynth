@@ -13,19 +13,20 @@
 #include "audio.h"
 
 
+#include "consts.h"
 #include "filterbank.h"
 #include "help_func.h"
 #include "noise.h"
 #include "spectra.h"
 
 /**
- * @brief Audio Buffer - x samples X 2 channels = 2 * x sexciterAmples
+ * @brief Audio Buffer - x samples X 2 channels = 2 * x samples
  * @note Channels are interleaved - LRLRLRLRLRLRLRLRLRLRLR - audioBuffer[frame << 1] audioBuffer[(frame << 1) + 1]
  */
 int16_t codecBuffer[BUFFER_SIZE]; // x samples X 2 channels (interleaved)
 
 noise_t noise;
-line_t exciterAmp;
+line_t exciterAmp, freq;
 filterbank_t filterbank;
 
 /**
@@ -41,11 +42,13 @@ void AUDIO_Init()
 
     // initialize audio objects
     noise.amp = 0.8f;
-    filterbank_init(&filterbank, SawPartials, ConstAmp);
+    filterbank_init(&filterbank, SawPartials, SawAmp);
+    freq.val = freq.dst = 0.f;
 }
 
  void audioBlock(int16_t *output, const int32_t samples)
 {
+    freq.inc = (freq.dst - freq.val) * samples * TS;
     for (int i = 0; i < samples; i++)
     {
 
@@ -62,6 +65,7 @@ void AUDIO_Init()
         samp = samp * exciterAmp.val * exciterAmp.val;
 
         // going through filterbank
+        filterbank.freq = freq.val;
         samp = filterbank_process(&filterbank, samp);
 
         // float to int16 conversion
@@ -70,6 +74,9 @@ void AUDIO_Init()
         // output to circular buffer
         output[i << 1] = sampleOut;
         output[(i << 1) + 1]  = sampleOut;
+
+        // increment smoothed values (lines)
+        freq.val += freq.inc;
     }
 }
 

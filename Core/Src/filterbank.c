@@ -38,7 +38,7 @@ void filterbank_init(filterbank_t *f, const float *freqRatios, const float *amps
 
 
 /**
- * Update the filterbank parameters according to the new spectra specifications (freq ratios and amplitudes)
+ * Update the filterbank according to spectra specifications (freq ratios and amplitudes)
  * @param f instance of the filterbank
  * @param freqRatios partials frequency ratios
  * @param amps partials amplitudes
@@ -90,11 +90,11 @@ void filterbank_update(filterbank_t *f)
 
 float filterbank_process(filterbank_t *f, const float sample)
 {
-    float SumOuts = 0.0f;
+    float sumOuts = 0.0f;
     for(int i = 0; i < BANDS; i++)
     {
-        SumOuts = SumOuts + f->band_gains[i] * resonBP(&reson[i], sample) * ONEOVERBANDS;
+        sumOuts = sumOuts + f->band_gains[i] * resonBP(&reson[i], sample) * ONEOVERBANDS;
     }
 
-    return SumOuts;
+    return sumOuts;
 }
