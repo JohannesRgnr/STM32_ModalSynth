@@ -78,7 +78,7 @@ float clip(float input, float lower, float upper);
 float lutLerp(const float *table, uint16_t table_size, float index); // linear interpolation within a given lookup table
 
 
-inline float mtof(float note) // midi note to frequency (Hz)
+static inline float mtof(float note) // midi note to frequency (Hz)
 {
     const float frequency = 440.0f * expf(0.057762265f * (note - 69.0f));
     return(frequency);

@@ -21,15 +21,17 @@ typedef struct
     float previousFreq;
     float decay;
     float previousDecay;
-    float gain[BANDS];
-    float spectra[BANDS];
+    float band_gains[BANDS];
+    float band_freqratios[BANDS];
     float bp[BANDS];
 }	filterbank_t;
 
 
 void filterbank_init(filterbank_t *f, const float *freqRatios, const float *amps);
 
-void filterbank_update(filterbank_t *f, const float *freqRatios, const float *amps);
+void filterbank_newspectra(filterbank_t *f, const float *freqRatios, const float *amps);
+
+void filterbank_update(filterbank_t *f);
 
 float filterbank_process(filterbank_t *f, float sample);
 

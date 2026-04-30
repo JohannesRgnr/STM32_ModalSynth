@@ -58,8 +58,8 @@ void Touchscreen(void){
     //     HAL_Delay(10);
     // }
 
-    // one touch to trigger exciter
-    if (wasTouched == 0)
+
+    if (wasTouched == 0) // 1st touch since untouched = new note is triggered
     {
         if (TS_State.touchDetected == 1)
         {
@@ -70,13 +70,13 @@ void Touchscreen(void){
             {
                 const float midiNote = scale(16, 768, 24, 90, x);
                 filterbank.freq = mtof(midiNote);
-                filterbank_update(&filterbank, SawPartials, ExpAmp);
+                filterbank_update(&filterbank);
                 Trigger_Note(&exciterAmp);
 
             }
         }
     }
-    else
+    else // it was touched already
     {
         if (TS_State.touchDetected == 1)
         {
@@ -86,9 +86,10 @@ void Touchscreen(void){
             const float duration = scale(BSP_LCD_GetYSize()/2,BSP_LCD_GetYSize() - 32, 4, 10, y);
             filterbank.freq = mtof(midiNote);
             filterbank.decay = duration;
-            filterbank_update(&filterbank, SawPartials, ExpAmp);
+            filterbank_update(&filterbank);
         }
     }
     wasTouched = TS_State.touchDetected;
+
     // HAL_Delay(5);
 }
