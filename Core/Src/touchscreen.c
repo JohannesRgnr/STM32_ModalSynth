@@ -70,7 +70,7 @@ void Touchscreen(void){
             {
                 const float midiNote = scale(16, 768, 24, 90, x);
                 filterbank.freq = mtof(midiNote);
-                filterbank_update(&filterbank, Bell1Partials, ExpAmp);
+                filterbank_update(&filterbank, SawPartials, ExpAmp);
                 Trigger_Note(&exciterAmp);
 
             }
@@ -86,7 +86,7 @@ void Touchscreen(void){
             const float duration = scale(BSP_LCD_GetYSize()/2,BSP_LCD_GetYSize() - 32, 4, 10, y);
             filterbank.freq = mtof(midiNote);
             filterbank.decay = duration;
-            filterbank_update(&filterbank, Bell1Partials, ExpAmp);
+            filterbank_update(&filterbank, SawPartials, ExpAmp);
         }
     }
     wasTouched = TS_State.touchDetected;

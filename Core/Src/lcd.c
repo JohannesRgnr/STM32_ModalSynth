@@ -20,26 +20,28 @@
 
 void Display_Default(void)
 {
+
 	/* Default LCD settings */
-	  BSP_LCD_SetFont(&Font12);
-	  BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
-	  BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
+	BSP_LCD_SetFont(&Font12);
+	BSP_LCD_SetTextColor(COLOR_TEXT);
+	BSP_LCD_SetBackColor(COLOR_BACKGROUND);
 }
 
 
 void Display_Init(void)
 {
+
 	/* Set LCD Foreground Layer  */
 	BSP_LCD_SelectLayer(LTDC_DEFAULT_ACTIVE_LAYER);
 
 	// BSP_LCD_SetFont(&LCD_DEFAULT_FONT);
 
 	/* Clear the LCD */
-	BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
-	BSP_LCD_Clear(LCD_COLOR_BLACK);
+	BSP_LCD_SetBackColor(COLOR_BACKGROUND);
+	BSP_LCD_Clear(COLOR_BACKGROUND);
 
 	/* Set the LCD Text Color */
-	BSP_LCD_SetTextColor(LCD_COLOR_LIGHTGRAY);
+	BSP_LCD_SetTextColor(COLOR_TEXT);
 
 	/* Display LCD messages */
 	char str[32];
@@ -48,6 +50,7 @@ void Display_Init(void)
 	BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)str, RIGHT_MODE);
 
 	// Display partials area
+	BSP_LCD_SetTextColor(COLOR_ELEMENTS);
 	BSP_LCD_DrawRect(16, 16, BSP_LCD_GetXSize() - 32, BSP_LCD_GetYSize()/2 - 32);
 
 	// Display freq and magnitude axes
@@ -56,11 +59,11 @@ void Display_Init(void)
 
 	// Display touchscreen area for note triggering
 	BSP_LCD_DrawRect(16, BSP_LCD_GetYSize()/2 , BSP_LCD_GetXSize() - 32, BSP_LCD_GetYSize()/2 - 16);
-	BSP_LCD_SetTextColor(LCD_COLOR_GRAY);
+	BSP_LCD_SetTextColor(COLOR_PAD);
 	BSP_LCD_FillRect(32, BSP_LCD_GetYSize()/2 + 16, BSP_LCD_GetXSize() - 64, BSP_LCD_GetYSize()/2 - 48);
 
 	// Display partials
-	Display_partials(Bell1Partials, ExpAmp, LCD_COLOR_CYAN);
+	Display_partials(Bell1Partials, ExpAmp, COLOR_PARTIALS);
 }
 
 void Display_partials(const float *freqRatios, const float *amps, uint32_t color)
@@ -73,7 +76,7 @@ void Display_partials(const float *freqRatios, const float *amps, uint32_t color
 		const uint16_t partialLength = (uint16_t)(128 * amps[i]);
 		BSP_LCD_DrawVLine((uint16_t)(freqRatios[i] * (hLength / 16.f) + 16.0f), 80 + (128 - partialLength), partialLength);
 	}
-	BSP_LCD_SetTextColor(LCD_COLOR_LIGHTGRAY);
+	BSP_LCD_SetTextColor(COLOR_TEXT);
 }
 
 
