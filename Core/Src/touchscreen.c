@@ -13,11 +13,12 @@
 #include "help_func.h"
 #include "spectra.h"
 #include "audio.h"
+#include "lcd.h"
 
 uint16_t audioLevel = 60;
 
 uint8_t wasTouched = 0;
-extern line_t exciterAmp;
+extern line_t exciterAmp, freq;
 extern filterbank_t filterbank;
 TS_StateTypeDef  TS_State;
 
@@ -65,14 +66,29 @@ void Touchscreen(void){
         {
             uint16_t x = TS_State.touchX[0];
             uint16_t y = TS_State.touchY[0];
-            // BSP_LCD_DrawRect(16, BSP_LCD_GetYSize()/2 , BSP_LCD_GetXSize() - 32, BSP_LCD_GetYSize()/2 - 32);
-            if (x > 16 && y > BSP_LCD_GetYSize()/2 && x < (BSP_LCD_GetXSize() - 16) && (BSP_LCD_GetYSize() - 16))
+
+            if (x > 32 && y > BSP_LCD_GetYSize()/2 + 16 && x < (BSP_LCD_GetXSize() - 32) && y <  (BSP_LCD_GetYSize() - 48))
             {
-                const float midiNote = scale(16, 768, 24, 90, x);
-                filterbank.freq = mtof(midiNote);
+                // evaluate fundamental frequency
+                const float midiNote = scale(32, 768, 24, 90, x);
+                float frequency = mtof(midiNote);
+
+                // immediately jump to frequency
+                freq.val = frequency;
+                freq.dst = frequency;
+                filterbank.freq = frequency;
+
                 filterbank_update(&filterbank);
                 Trigger_Note(&exciterAmp);
 
+                // redraw trigger area
+                BSP_LCD_SetTextColor(COLOR_ELEMENTS);
+                BSP_LCD_DrawRect(16, BSP_LCD_GetYSize()/2 , BSP_LCD_GetXSize() - 32, BSP_LCD_GetYSize()/2 - 16);
+                BSP_LCD_SetTextColor(COLOR_PAD);
+                BSP_LCD_FillRect(32, BSP_LCD_GetYSize()/2 + 16, BSP_LCD_GetXSize() - 64, BSP_LCD_GetYSize()/2 - 48);
+                // draw trajectory
+                BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);
+                BSP_LCD_FillCircle(x, y, 12);
             }
         }
     }
@@ -82,14 +98,23 @@ void Touchscreen(void){
         {
             uint16_t x = TS_State.touchX[0];
             uint16_t y = TS_State.touchY[0];
-            const float midiNote = scale(16, 768, 24, 90, x);
-            const float duration = scale(BSP_LCD_GetYSize()/2,BSP_LCD_GetYSize() - 32, 4, 10, y);
-            filterbank.freq = mtof(midiNote);
-            filterbank.decay = duration;
-            filterbank_update(&filterbank);
+
+            if (x > 32 && y > BSP_LCD_GetYSize()/2 + 16 && x < (BSP_LCD_GetXSize() - 32) && y <  (BSP_LCD_GetYSize() - 48))
+            {
+                const float midiNote = scale(32, 768, 24, 90, x);
+                const float duration = scale(BSP_LCD_GetYSize()/2,BSP_LCD_GetYSize() - 32, 4, 10, y);
+
+                freq.dst = mtof(midiNote);
+                filterbank.decay = duration;
+                filterbank_update(&filterbank);
+
+                // draw trajectory
+                BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);
+                BSP_LCD_FillCircle(x, y, 12);
+            }
         }
     }
     wasTouched = TS_State.touchDetected;
 
-    // HAL_Delay(5);
+    HAL_Delay(5);
 }
