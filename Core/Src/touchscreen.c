@@ -70,7 +70,7 @@ void Touchscreen(void){
             if (x > 48 && y > BSP_LCD_GetYSize()/2 + 32 && x < (BSP_LCD_GetXSize() - 48) && y <  (BSP_LCD_GetYSize() - 48))
             {
                 // evaluate fundamental frequency
-                const float midiNote = scale(32, 768, 24, 90, x);
+                const float midiNote = scale(48, 752, 24, 90, x);
                 float frequency = mtof(midiNote);
 
                 // immediately jump to frequency
@@ -82,12 +82,7 @@ void Touchscreen(void){
                 Trigger_Note(&exciterAmp);
 
                 // redraw trigger area
-                // BSP_LCD_SetTextColor(COLOR_BACKGROUND);
-                // BSP_LCD_FillRect(0, BSP_LCD_GetYSize()/2 , BSP_LCD_GetXSize(), BSP_LCD_GetYSize()/2);
-                BSP_LCD_SetTextColor(COLOR_ELEMENTS);
-                BSP_LCD_DrawRect(16, BSP_LCD_GetYSize()/2 , BSP_LCD_GetXSize() - 32, BSP_LCD_GetYSize()/2 - 16);
-                BSP_LCD_SetTextColor(COLOR_PAD);
-                BSP_LCD_FillRect(32, BSP_LCD_GetYSize()/2 + 16, BSP_LCD_GetXSize() - 64, BSP_LCD_GetYSize()/2 - 48);
+                clearTriggerArea();
                 // draw trajectory
                 BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);
                 BSP_LCD_FillCircle(x, y, 12);
@@ -103,7 +98,7 @@ void Touchscreen(void){
 
             if (x > 48 && y > BSP_LCD_GetYSize()/2 + 32 && x < (BSP_LCD_GetXSize() - 48) && y <  (BSP_LCD_GetYSize() - 48))
             {
-                const float midiNote = scale(32, 768, 24, 90, x);
+                const float midiNote = scale(48, 752, 24, 90, x);
                 const float duration = scale(BSP_LCD_GetYSize()/2,BSP_LCD_GetYSize() - 32, 4, 10, y);
 
                 freq.dst = mtof(midiNote);
@@ -118,5 +113,14 @@ void Touchscreen(void){
     }
     wasTouched = TS_State.touchDetected;
 
-    HAL_Delay(5);
+    // HAL_Delay(5);
+}
+
+
+static void clearTriggerArea(void)
+{
+    BSP_LCD_SetTextColor(COLOR_ELEMENTS);
+    BSP_LCD_DrawRect(16, BSP_LCD_GetYSize()/2 , BSP_LCD_GetXSize() - 32, BSP_LCD_GetYSize()/2 - 16);
+    BSP_LCD_SetTextColor(COLOR_PAD);
+    BSP_LCD_FillRect(32, BSP_LCD_GetYSize()/2 + 16, BSP_LCD_GetXSize() - 64, BSP_LCD_GetYSize()/2 - 48);
 }

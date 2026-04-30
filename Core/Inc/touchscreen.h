@@ -17,5 +17,6 @@
 
 
 void Touchscreen(void);
+static void clearTriggerArea(void);
 
 #endif //MODAL_SYNTH_TOUCHSCREEN_H
