@@ -32,18 +32,18 @@ void filterbank_init(filterbank_t *f, const float *freqRatios, const float *amps
     f->decay = 8.0f;
     f->previousDecay = f->decay;
 
-    filterbank_newspectra(f, freqRatios, amps);
+    filterbank_spectrum(f, freqRatios, amps);
     filterbank_update(f);
 }
 
 
 /**
- * Update the filterbank according to spectra specifications (freq ratios and amplitudes)
+ * Update the filterbank according to spectrum specifications (freq ratios and amplitudes)
  * @param f instance of the filterbank
  * @param freqRatios partials frequency ratios
  * @param amps partials amplitudes
  */
-void filterbank_newspectra(filterbank_t *f, const float *freqRatios, const float *amps)
+void filterbank_spectrum(filterbank_t *f, const float *freqRatios, const float *amps)
 {
     for (int i = 0; i < BANDS; i++)
     {

@@ -29,7 +29,7 @@ typedef struct
 
 void filterbank_init(filterbank_t *f, const float *freqRatios, const float *amps);
 
-void filterbank_newspectra(filterbank_t *f, const float *freqRatios, const float *amps);
+void filterbank_spectrum(filterbank_t *f, const float *freqRatios, const float *amps);
 
 void filterbank_update(filterbank_t *f);
 
