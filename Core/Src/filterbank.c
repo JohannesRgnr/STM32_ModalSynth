@@ -44,17 +44,31 @@ void filterbank_update(filterbank_t *f, const float *freqRatios, const float *am
     {
         for (int i = 0; i < BANDS; i++)
         {
-            reson[i].r = 1.0f / (expf(f->decay));
+            reson[i].r = 1.0f / expf(f->decay);
         }
     }
     if (f->freq != f->previousFreq)
     {
-        for (int i = 0; i<16; i++)
+        for (int i = 0; i < BANDS; i++)
         {
-            reson[i].wd = TWOPI * f->freq * freqRatios[i];
-            reson[i].wa = 88200.0f * tanf(reson[i].wd * TS * 0.5f);
-            reson[i].g  = reson[i].wa * TS * 0.5f;
+            if ( f->freq * freqRatios[i] < 0.4 * FS) // safe NYQUIST limit
+            {
+                reson[i].wd = TWOPI * f->freq * freqRatios[i];
+                reson[i].wa = 88200.0f * tanf(reson[i].wd * TS * 0.5f);
+                reson[i].g  = reson[i].wa * TS * 0.5f;
+            }
+            else
+            {
+                reson[i].wd = 0.f;
+                reson[i].wa = 0.f;
+                reson[i].g  = 0.f;
+            }
         }
+    }
+
+    for (int i = 0; i < BANDS; i++)
+    {
+        f->gain[i] = amps[i];
     }
 
 
@@ -68,7 +82,7 @@ float filterbank_process(filterbank_t *f, const float sample)
     float SumOuts = 0.0f;
     for(int i = 0; i < BANDS; i++)
     {
-        SumOuts = SumOuts + resonBP(&reson[i], sample) * ONEOVERBANDS;
+        SumOuts = SumOuts + f->gain[i] * resonBP(&reson[i], sample) * ONEOVERBANDS;
     }
 
     return SumOuts;

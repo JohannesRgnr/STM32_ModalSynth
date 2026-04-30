@@ -21,6 +21,7 @@ typedef struct
     float previousFreq;
     float decay;
     float previousDecay;
+    float gain[BANDS];
     float spectra[BANDS];
     float bp[BANDS];
 }	filterbank_t;

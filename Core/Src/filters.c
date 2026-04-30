@@ -36,5 +36,5 @@ float resonBP(reson_t *f, const float sample)
     f->s1 = f->g * hp + bp; // state update in 1st integrator
     float lp = f->g * bp + f->s2;
     f->s2 = f->g * bp + lp; // state update in 2nd integrator
-    return(bp);
+    return bp;
 }
