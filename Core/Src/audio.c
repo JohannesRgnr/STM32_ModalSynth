@@ -103,8 +103,8 @@ void AUDIO_Init()
         reverbsend = reverb_amount*0.01f *(delayLOut*0.707f + delayROut*0.707f); // send to reverb
         reverb(reverbsend, &reverbLout, &reverbRout);
 
-        sampleL = delayLOut + reverbLout;
-        sampleR = delayROut + reverbRout;
+        sampleL = SoftClip(delayLOut + reverbLout);
+        sampleR = SoftClip(delayROut + reverbRout);
 
         // float to int16 conversion
         const int16_t sampleLOut = (int16_t)(32767.0f * sampleL);
