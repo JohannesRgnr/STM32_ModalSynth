@@ -82,7 +82,7 @@ void DelayWet_set(uint8_t val)
  * @param delayLOut
  * @param delayROut
  */
-void pingpongDelay_compute (float input_sample, float * delayLOut, float * delayROut)
+void pingpongDelay_process (float input_sample, float * delayLOut, float * delayROut)
 {
 	float delayed_sampleL, delayed_sampleR, sampleL, sampleR;
 

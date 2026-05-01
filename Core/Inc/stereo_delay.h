@@ -30,7 +30,7 @@ void 	Delay_init(void);
 void 	DelayFeedback_set(uint8_t val);
 void 	DelayWet_set(uint8_t val);
 void    Delay_time_set(uint32_t time_L, uint32_t time_R);
-void    pingpongDelay_compute(float x, float *delayLOut, float *delayROut);
+void    pingpongDelay_process(float x, float *delayLOut, float *delayROut);
 
 
 

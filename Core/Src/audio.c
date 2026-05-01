@@ -59,7 +59,7 @@ void AUDIO_Init()
     filterbank_init(&filterbank, Bell1Partials, ExpAmp);
     freq.val = freq.dst = 0.f;
     Delay_init();
-    Reverb_Init();
+    reverb_Init();
 }
 
  void audioBlock(int16_t *output, const int32_t samples)
@@ -90,11 +90,11 @@ void AUDIO_Init()
         samp = filterbank_process(&filterbank, samp);
 
         // Apply delay effect
-        pingpongDelay_compute(samp, &delayLOut, &delayROut);
+        pingpongDelay_process(samp, &delayLOut, &delayROut);
 
         // Send to Reverb
         reverbsend = reverb_amount*0.01f *(delayLOut*0.707f + delayROut*0.707f); // send to reverb
-        reverb(reverbsend, &reverbLout, &reverbRout);
+        reverb_process(reverbsend, &reverbLout, &reverbRout);
 
         // Soft Clip the outputs
         sampleL = SoftClip(delayLOut + reverbLout);

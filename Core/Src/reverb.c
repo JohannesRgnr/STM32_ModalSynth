@@ -35,7 +35,7 @@ ZDFLP_t lp2;
 
 
 
-void Reverb_Init(void) // Tom's code
+void reverb_Init(void) // Tom's code
 {
     uint32_t i;
 
@@ -73,8 +73,8 @@ void Reverb_Init(void) // Tom's code
 
 
 
-/* adapted from Tom's Dattorro reverb implementation */
-void reverb(float in,float *reverbLout,float *reverbRout)
+/* adapted from Tom Erbe's Dattorro reverb implementation */
+void reverb_process(float in,float *reverbLout,float *reverbRout)
 {
         float sampData;
         float outL, outR;
