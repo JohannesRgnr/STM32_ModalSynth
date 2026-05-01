@@ -50,6 +50,7 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Src/spectra.c
         Core/Src/usr_btn.c
         Core/Src/stereo_delay.c
+        Core/Src/reverb.c
 
 
 

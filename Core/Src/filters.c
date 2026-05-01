@@ -48,8 +48,8 @@ float resonBP(reson_t *f, const float sample)
 void SVF_LP_init(ZDFLP_t * filter){
     filter->s1 = 0.0f;
     filter->s2 = 0.0f;
-    filter->r = 0.65f;           // slight resonance
-    filter->cutoff = 1200;
+    filter->r = 0.5f;           // slight resonance
+    filter->cutoff = 2000.f;
 }
 
 

@@ -9,10 +9,6 @@
 
 #include "../Inc/lcd.h"
 
-#include <stdio.h>
-
-#include "oscillators.h"
-
 #include "spectra.h"
 
 

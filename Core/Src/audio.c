@@ -18,6 +18,7 @@
 #include "filters.h"
 #include "help_func.h"
 #include "noise.h"
+#include "reverb.h"
 #include "spectra.h"
 #include "stereo_delay.h"
 
@@ -33,9 +34,14 @@ filterbank_t filterbank;
 
 extern float feedback;
 extern float delay_wet;
+float reverb_amount;
+float reverbsend;
+extern float reverb_feedback;
 
 float delayLOut = 0 ;		// left output of ping pong delay
 float delayROut = 0;		// right output of ping pong delay
+
+float reverbLout, reverbRout;
 
 /**
  * @brief Init audio
@@ -53,12 +59,18 @@ void AUDIO_Init()
     filterbank_init(&filterbank, Bell1Partials, ExpAmp);
     freq.val = freq.dst = 0.f;
     Delay_init();
+    Reverb_Init();
 }
 
  void audioBlock(int16_t *output, const int32_t samples)
 {
     freq.inc = (freq.dst - freq.val) * samples * TS;
     float samp, sampleL, sampleR;
+
+    delay_wet = 0.5;
+    feedback = 0.8;
+    reverb_amount = 70;
+    reverb_feedback = 92;
 
     for (int i = 0; i < samples; i++)
     {
@@ -81,12 +93,18 @@ void AUDIO_Init()
 
 
         /************** Apply delay effect ****************/
-        delay_wet = 0.5;	// delay send value from pot #3
-        feedback = 0.8; // also increase feedback
+
 
         pingpongDelay_compute(samp, &delayLOut, &delayROut);
-        sampleL = delayLOut;
-        sampleR = delayROut;
+
+
+        /* Sending to Reverb */
+
+        reverbsend = reverb_amount*0.01f *(delayLOut*0.707f + delayROut*0.707f); // send to reverb
+        reverb(reverbsend, &reverbLout, &reverbRout);
+
+        sampleL = delayLOut + reverbLout;
+        sampleR = delayROut + reverbRout;
 
         // float to int16 conversion
         const int16_t sampleLOut = (int16_t)(32767.0f * sampleL);

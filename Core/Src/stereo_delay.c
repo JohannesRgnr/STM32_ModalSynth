@@ -9,7 +9,7 @@
 
 #include "../Inc/stereo_delay.h"
 #include "filters.h"
-
+#include "help_func.h"
 
 static float		delaylineL[DELAY_BUFF_SIZE + 2];
 static float		delaylineR[DELAY_BUFF_SIZE + 2];
