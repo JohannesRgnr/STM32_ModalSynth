@@ -42,7 +42,7 @@ void AUDIO_Init()
 
     // initialize audio objects
     noise.amp = 0.8f;
-    filterbank_init(&filterbank, SawPartials, SawAmp);
+    filterbank_init(&filterbank, Bell1Partials, ExpAmp);
     freq.val = freq.dst = 0.f;
 }
 

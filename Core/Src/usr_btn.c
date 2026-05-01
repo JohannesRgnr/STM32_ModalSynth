@@ -9,11 +9,14 @@
 
 #include "../Inc/usr_btn.h"
 
+#include "filterbank.h"
 #include "lcd.h"
 #include "spectra.h"
 
 
-uint8_t preset = 0;
+uint8_t preset = 1;
+
+extern filterbank_t filterbank;
 
 static uint8_t CheckForUserButton(void)
 {
@@ -26,12 +29,13 @@ static uint8_t CheckForUserButton(void)
     return 0;
 }
 
-void UserButton(void) // to choose "presets" = partials
+void UserButton(void) // to choose "presets" = partials freq ratios + gains
 {
     int i;
     if (CheckForUserButton())
     {
         Display_Default();
+        BSP_LCD_SetFont(&FontInconsolataNerdFont20);
         preset ++;
 
         if (preset > 5)
@@ -39,27 +43,39 @@ void UserButton(void) // to choose "presets" = partials
             preset = 1;
         }
 
+        BSP_LCD_SetTextColor(COLOR_BACKGROUND);
+        BSP_LCD_FillRect(33, 32, BSP_LCD_GetXSize() - 64, BSP_LCD_GetYSize()/2 - 64);
+        BSP_LCD_SetTextColor(COLOR_TEXT);
         switch ( preset )
         {
         case 1:
-
-            BSP_LCD_DisplayStringAt(318, BSP_LCD_GetYSize() - 16, (uint8_t *)"Current preset: Gong   ", LEFT_MODE);
+            BSP_LCD_DisplayStringAt(24, 32, (uint8_t *)"Bell   ", RIGHT_MODE);
+            Display_partials(Bell1Partials, ExpAmp, COLOR_PARTIALS);
+            filterbank_spectrum(&filterbank, Bell1Partials, ExpAmp);
             break;
         case 2:
 
-            BSP_LCD_DisplayStringAt(318, BSP_LCD_GetYSize() - 16, (uint8_t *)"Current preset: Bell   ", LEFT_MODE);
+            BSP_LCD_DisplayStringAt(24, 32, (uint8_t *)"Gong   ", RIGHT_MODE);
+            Display_partials(GongPartials, ExpAmp, COLOR_PARTIALS);
+            filterbank_spectrum(&filterbank, GongPartials, ExpAmp);
             break;
         case 3:
 
-            BSP_LCD_DisplayStringAt(318, BSP_LCD_GetYSize() - 16, (uint8_t *)"Current preset: Chord  ", LEFT_MODE);
+            BSP_LCD_DisplayStringAt(24, 32, (uint8_t *)"Chord  ", RIGHT_MODE);
+            Display_partials(ChordPartials, ExpAmp, COLOR_PARTIALS);
+            filterbank_spectrum(&filterbank, ChordPartials, ExpAmp);
             break;
         case 4:
 
-            BSP_LCD_DisplayStringAt(318, BSP_LCD_GetYSize() - 16, (uint8_t *)"Current preset: Saw    ", LEFT_MODE);
+            BSP_LCD_DisplayStringAt(24, 32, (uint8_t *)"Saw    ", RIGHT_MODE);
+            Display_partials(SawPartials, SawAmp, COLOR_PARTIALS);
+            filterbank_spectrum(&filterbank, SawPartials, SawAmp);
             break;
         case 5:
 
-            BSP_LCD_DisplayStringAt(318, BSP_LCD_GetYSize() - 16, (uint8_t *)"Current preset: Cowbell", LEFT_MODE);
+            BSP_LCD_DisplayStringAt(24, 32, (uint8_t *)"CB808  ", RIGHT_MODE);
+            Display_partials(CB808Partials, ConstAmp, COLOR_PARTIALS);
+            filterbank_spectrum(&filterbank, CB808Partials, ConstAmp);
             break;
         }
     }

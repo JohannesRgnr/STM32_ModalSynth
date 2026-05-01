@@ -22,7 +22,7 @@ void Display_Default(void)
 {
 
 	/* Default LCD settings */
-	BSP_LCD_SetFont(&Font12);
+	// BSP_LCD_SetFont(&Font16);
 	BSP_LCD_SetTextColor(COLOR_TEXT);
 	BSP_LCD_SetBackColor(COLOR_BACKGROUND);
 }
@@ -44,10 +44,12 @@ void Display_Init(void)
 	BSP_LCD_SetTextColor(COLOR_TEXT);
 
 	/* Display LCD messages */
-	char str[32];
-	sprintf(str, "partials");
-	// BSP_LCD_SetFont(&FontInconsolataNerdFont20);
-	BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)str, RIGHT_MODE);
+	BSP_LCD_SetFont(&FontInconsolataNerdFont20);
+	BSP_LCD_DisplayStringAt(24, 32, (uint8_t *)"Bell   ", RIGHT_MODE);
+	// char str[32];
+	// sprintf(str, "partials");
+
+	// BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)str, RIGHT_MODE);
 
 	// Display partials area
 	BSP_LCD_SetTextColor(COLOR_ELEMENTS);

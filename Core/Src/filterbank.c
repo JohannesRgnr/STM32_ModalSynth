@@ -72,7 +72,7 @@ void filterbank_update(filterbank_t *f)
             if ( f->freq * f->band_freqratios[i] < 0.4 * FS) // safe NYQUIST limit
             {
                 reson[i].wd = TWOPI * f->freq * f->band_freqratios[i];
-                reson[i].wa = 88200.0f * tanf(reson[i].wd * TS * 0.5f);
+                reson[i].wa = 2 * FS * tanf(reson[i].wd * TS * 0.5f);
                 reson[i].g  = reson[i].wa * TS * 0.5f;
             }
             else
