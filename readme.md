@@ -1,6 +1,4 @@
-Port of an old project on an STM32F769i-Disco board.
-
-Physical Modeling Modal synthesizer with touchscreen support and built-in effects.
+Physical Modeling Modal synthesizer on STM32F769i-Disco board, with touchscreen support and built-in effects.
 
 
 - 16-band resonator filterbank
