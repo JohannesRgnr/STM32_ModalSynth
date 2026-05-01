@@ -49,6 +49,8 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Src/filterbank.c
         Core/Src/spectra.c
         Core/Src/usr_btn.c
+        Core/Src/stereo_delay.c
+
 
 
         #        Utilities/Fonts/font8.c

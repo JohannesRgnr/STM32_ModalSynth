@@ -15,9 +15,11 @@
 
 #include "consts.h"
 #include "filterbank.h"
+#include "filters.h"
 #include "help_func.h"
 #include "noise.h"
 #include "spectra.h"
+#include "stereo_delay.h"
 
 /**
  * @brief Audio Buffer - x samples X 2 channels = 2 * x samples
@@ -28,6 +30,12 @@ int16_t codecBuffer[BUFFER_SIZE]; // x samples X 2 channels (interleaved)
 noise_t noise;
 line_t exciterAmp, freq;
 filterbank_t filterbank;
+
+extern float feedback;
+extern float delay_wet;
+
+float delayLOut = 0 ;		// left output of ping pong delay
+float delayROut = 0;		// right output of ping pong delay
 
 /**
  * @brief Init audio
@@ -44,15 +52,18 @@ void AUDIO_Init()
     noise.amp = 0.5f;
     filterbank_init(&filterbank, Bell1Partials, ExpAmp);
     freq.val = freq.dst = 0.f;
+    Delay_init();
 }
 
  void audioBlock(int16_t *output, const int32_t samples)
 {
     freq.inc = (freq.dst - freq.val) * samples * TS;
+    float samp, sampleL, sampleR;
+
     for (int i = 0; i < samples; i++)
     {
 
-        float samp = whiteNoise(&noise);
+        samp = whiteNoise(&noise);
 
         /* Exciter */
         exciterAmp.val += exciterAmp.inc;
@@ -68,12 +79,22 @@ void AUDIO_Init()
         filterbank.freq = freq.val;
         samp = filterbank_process(&filterbank, samp);
 
+
+        /************** Apply delay effect ****************/
+        delay_wet = 0.5;	// delay send value from pot #3
+        feedback = 0.8; // also increase feedback
+
+        pingpongDelay_compute(samp, &delayLOut, &delayROut);
+        sampleL = delayLOut;
+        sampleR = delayROut;
+
         // float to int16 conversion
-        const int16_t sampleOut = (int16_t)(32767.0f * samp);
+        const int16_t sampleLOut = (int16_t)(32767.0f * sampleL);
+        const int16_t sampleROut = (int16_t)(32767.0f * sampleR);
 
         // output to circular buffer
-        output[i << 1] = sampleOut;
-        output[(i << 1) + 1]  = sampleOut;
+        output[i << 1] = sampleLOut;
+        output[(i << 1) + 1]  = sampleROut;
 
         // increment smoothed values (lines)
         freq.val += freq.inc;

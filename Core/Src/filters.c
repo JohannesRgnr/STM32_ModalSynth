@@ -9,6 +9,10 @@
 
 #include "../Inc/filters.h"
 
+#include <math.h>
+
+#include "CONSTS.h"
+
 
 /**
  * @brief A simple lowpass filter, useful to smooth data.
@@ -37,4 +41,48 @@ float resonBP(reson_t *f, const float sample)
     float lp = f->g * bp + f->s2;
     f->s2 = f->g * bp + lp; // state update in 2nd integrator
     return bp;
+}
+
+
+
+void SVF_LP_init(ZDFLP_t * filter){
+    filter->s1 = 0.0f;
+    filter->s2 = 0.0f;
+    filter->r = 0.65f;           // slight resonance
+    filter->cutoff = 1200;
+}
+
+
+/**
+ * @brief calculate g coefficient for SVF
+ *
+ * @param freq
+ * @return float
+ */
+float freq_to_g(float freq)
+{
+    float wd = TWOPI * freq;
+    float wa = 2 * FS * tanf(wd * TS * 0.5f);
+    float g = wa * TS * 0.5f;
+    return g;
+}
+
+
+/**
+ * @brief 2-pole resonant state variable filter, in lowpass mode
+ *
+ * @param f
+ * @param sample
+ * @return float
+ */
+float SVF_LP_compute(ZDFLP_t *f, float sample)
+{
+    float bp, lp, hp;
+    f->g = freq_to_g(f->cutoff);
+    hp = (sample - 2.0f * f->r * f->s1 - f->g * f->s1 - f->s2) / (1.0f + 2.0f * f->r * f->g + f->g * f->g);
+    bp = f->g * hp + f->s1;
+    f->s1 = f->g * hp + bp; // state in 1st trapezoidal integrator
+    lp = f->g * bp + f->s2;
+    f->s2 = f->g * bp + lp; // state in 2nd trapezoidal integrator
+    return lp;
 }
