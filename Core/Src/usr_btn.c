@@ -44,8 +44,8 @@ void UserButton(void) // to choose "presets" = partials freq ratios + amplitudes
         }
 
         // clear partials display
-        BSP_LCD_SetTextColor(COLOR_BACKGROUND);
-        BSP_LCD_FillRect(33, 32, BSP_LCD_GetXSize() - 64, BSP_LCD_GetYSize()/2 - 64);
+        clearPartialsArea();
+
         BSP_LCD_SetTextColor(COLOR_TEXT);
 
         switch ( preset )

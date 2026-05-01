@@ -83,3 +83,18 @@ void Display_partials(const float *freqRatios, const float *amps, uint32_t color
 }
 
 
+void clearTriggerArea(void)
+{
+	BSP_LCD_SetTextColor(COLOR_ELEMENTS);
+	BSP_LCD_DrawRect(16, BSP_LCD_GetYSize()/2 , BSP_LCD_GetXSize() - 32, BSP_LCD_GetYSize()/2 - 16);
+	BSP_LCD_SetTextColor(COLOR_PAD);
+	BSP_LCD_FillRect(32, BSP_LCD_GetYSize()/2 + 16, BSP_LCD_GetXSize() - 64, BSP_LCD_GetYSize()/2 - 48);
+}
+
+
+void clearPartialsArea(void)
+{
+	BSP_LCD_SetTextColor(COLOR_BACKGROUND);
+	BSP_LCD_FillRect(33, 32, BSP_LCD_GetXSize() - 64, BSP_LCD_GetYSize()/2 - 64);
+}
+

@@ -23,7 +23,8 @@
 void Display_Default(void);
 void Display_Init(void);
 void Display_partials(const float *freqRatios, const float *amps, uint32_t color);
-
+void clearTriggerArea(void);
+void clearPartialsArea(void);
 
 
 #endif //MODAL_SYNTH_LCD_H
