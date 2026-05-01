@@ -11,7 +11,7 @@
 #include "exciter.h"
 #include "filterbank.h"
 #include "help_func.h"
-#include "spectra.h"
+// #include "spectra.h"
 #include "audio.h"
 #include "lcd.h"
 
