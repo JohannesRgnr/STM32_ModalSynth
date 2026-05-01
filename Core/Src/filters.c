@@ -28,12 +28,12 @@ float smoothingLP(onepoleLP_t *f, const float sample, const float alpha){
 }
 
 /**
- * @brief a 2-pole resonating bandpass filter
+ * @brief 2-pole resonant state variable filter, in bandpass mode
  * @param f
  * @param sample input sample
  * @return filtered sample
  */
-float resonBP(reson_t *f, const float sample)
+float SVF_BP_compute(reson_t *f, const float sample)
 {
     float hp = (sample - 2.0f * f->r * f->s1 - f->g * f->s1 - f->s2) / (1.0f + 2.0f * f->r * f->g + f->g * f->g);
     float bp = f->g * hp + f->s1;
@@ -56,12 +56,12 @@ void SVF_LP_init(ZDFLP_t * filter){
 /**
  * @brief calculate g coefficient for SVF
  *
- * @param freq
+ * @param freq_hz cutoff frequency in Hz
  * @return float
  */
-float freq_to_g(float freq)
+float freq_to_g(float freq_hz)
 {
-    float wd = TWOPI * freq;
+    float wd = TWOPI * freq_hz;
     float wa = 2 * FS * tanf(wd * TS * 0.5f);
     float g = wa * TS * 0.5f;
     return g;
@@ -70,7 +70,6 @@ float freq_to_g(float freq)
 
 /**
  * @brief 2-pole resonant state variable filter, in lowpass mode
- *
  * @param f
  * @param sample
  * @return float

@@ -79,14 +79,10 @@ void filterbank_update(filterbank_t *f)
         {
             if ( f->freq * f->band_freqratios[i] < 0.45 * FS) // safe NYQUIST limit
             {
-                reson[i].wd = TWOPI * f->freq * f->band_freqratios[i];
-                reson[i].wa = 2 * FS * tanf(reson[i].wd * TS * 0.5f);
-                reson[i].g  = reson[i].wa * TS * 0.5f;
+                reson[i].g = freq_to_g(f->freq * f->band_freqratios[i]);
             }
             else
             {
-                reson[i].wd = 0.f;
-                reson[i].wa = 0.f;
                 reson[i].g  = 0.f;
             }
         }
@@ -108,7 +104,7 @@ float filterbank_process(filterbank_t *f, const float sample)
     float sumOuts = 0.0f;
     for(int i = 0; i < BANDS; i++)
     {
-        sumOuts = sumOuts + f->band_gains[i] * resonBP(&reson[i], sample) * ONEOVERBANDS;
+        sumOuts = sumOuts + f->band_gains[i] * SVF_BP_compute(&reson[i], sample) * ONEOVERBANDS;
     }
 
     return sumOuts;

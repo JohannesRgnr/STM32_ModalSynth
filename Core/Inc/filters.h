@@ -21,8 +21,6 @@ typedef struct
     float s2;
     float r;
     float g;
-    float wd;
-    float wa;
 }	reson_t;
 
 
@@ -36,10 +34,10 @@ typedef struct
 } ZDFLP_t;
 
 float smoothingLP(onepoleLP_t *f, float sample, float alpha);
-float resonBP(reson_t *f, float sample);
+float SVF_BP_compute(reson_t *f, float sample);
 
 void  SVF_LP_init(ZDFLP_t *filter);
-float freq_to_g(float freq); // calculate g coefficient for SVF
+float freq_to_g(float freq_hz); // calculate g coefficient for SVF
 float SVF_LP_compute(ZDFLP_t *f, float sample);
 
 #endif //MODAL_SYNTH_FILTERS_H
