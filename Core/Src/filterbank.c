@@ -38,7 +38,7 @@ void filterbank_init(filterbank_t *f, const float *freqRatios, const float *amps
 
 
 /**
- * Update the filterbank according to spectrum specifications (freq ratios and amplitudes)
+ * Load new spectrum (freq ratios and amplitudes) into filterbank
  * @param f instance of the filterbank
  * @param freqRatios partials frequency ratios
  * @param amps partials amplitudes

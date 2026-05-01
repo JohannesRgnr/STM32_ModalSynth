@@ -29,7 +29,7 @@ static uint8_t CheckForUserButton(void)
     return 0;
 }
 
-void UserButton(void) // to choose "presets" = partials freq ratios + gains
+void UserButton(void) // to choose "presets" = partials freq ratios + amplitudes
 {
     int i;
     if (CheckForUserButton())
@@ -47,13 +47,13 @@ void UserButton(void) // to choose "presets" = partials freq ratios + gains
         BSP_LCD_SetTextColor(COLOR_BACKGROUND);
         BSP_LCD_FillRect(33, 32, BSP_LCD_GetXSize() - 64, BSP_LCD_GetYSize()/2 - 64);
         BSP_LCD_SetTextColor(COLOR_TEXT);
-        
+
         switch ( preset )
         {
         case 1:
             BSP_LCD_DisplayStringAt(24, 32, (uint8_t *)"Bell   ", RIGHT_MODE);
             Display_partials(Bell1Partials, ExpAmp, COLOR_PARTIALS);
-            filterbank_spectrum(&filterbank, Bell1Partials, ExpAmp);
+            filterbank_spectrum(&filterbank, Bell1Partials, RampAmp);
             break;
         case 2:
             BSP_LCD_DisplayStringAt(24, 32, (uint8_t *)"Gong   ", RIGHT_MODE);
