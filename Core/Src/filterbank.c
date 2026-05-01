@@ -88,6 +88,13 @@ void filterbank_update(filterbank_t *f)
     f->previousDecay = f->decay;
 }
 
+
+/**
+ * Process one sample with the filterbank
+ * @param f instance of the filterbank
+ * @param sample sample to process
+ * @return
+ */
 float filterbank_process(filterbank_t *f, const float sample)
 {
     float sumOuts = 0.0f;
