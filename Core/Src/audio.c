@@ -74,10 +74,8 @@ void AUDIO_Init()
 
     for (int i = 0; i < samples; i++)
     {
-
+        // Exciter
         samp = whiteNoise(&noise);
-
-        /* Exciter */
         exciterAmp.val += exciterAmp.inc;
         if(exciterAmp.inc < 0.0f && exciterAmp.val < exciterAmp.dst)
             exciterAmp.val = exciterAmp.dst;
@@ -91,18 +89,14 @@ void AUDIO_Init()
         filterbank.freq = freq.val;
         samp = filterbank_process(&filterbank, samp);
 
-
-        /************** Apply delay effect ****************/
-
-
+        // Apply delay effect
         pingpongDelay_compute(samp, &delayLOut, &delayROut);
 
-
-        /* Sending to Reverb */
-
+        // Send to Reverb
         reverbsend = reverb_amount*0.01f *(delayLOut*0.707f + delayROut*0.707f); // send to reverb
         reverb(reverbsend, &reverbLout, &reverbRout);
 
+        // Soft Clip the outputs
         sampleL = SoftClip(delayLOut + reverbLout);
         sampleR = SoftClip(delayROut + reverbRout);
 
