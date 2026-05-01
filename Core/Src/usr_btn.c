@@ -43,9 +43,11 @@ void UserButton(void) // to choose "presets" = partials freq ratios + gains
             preset = 1;
         }
 
+        // clear partials display
         BSP_LCD_SetTextColor(COLOR_BACKGROUND);
         BSP_LCD_FillRect(33, 32, BSP_LCD_GetXSize() - 64, BSP_LCD_GetYSize()/2 - 64);
         BSP_LCD_SetTextColor(COLOR_TEXT);
+        
         switch ( preset )
         {
         case 1:
@@ -54,25 +56,21 @@ void UserButton(void) // to choose "presets" = partials freq ratios + gains
             filterbank_spectrum(&filterbank, Bell1Partials, ExpAmp);
             break;
         case 2:
-
             BSP_LCD_DisplayStringAt(24, 32, (uint8_t *)"Gong   ", RIGHT_MODE);
             Display_partials(GongPartials, ExpAmp, COLOR_PARTIALS);
             filterbank_spectrum(&filterbank, GongPartials, ExpAmp);
             break;
         case 3:
-
             BSP_LCD_DisplayStringAt(24, 32, (uint8_t *)"Chord  ", RIGHT_MODE);
             Display_partials(ChordPartials, ExpAmp, COLOR_PARTIALS);
             filterbank_spectrum(&filterbank, ChordPartials, ExpAmp);
             break;
         case 4:
-
             BSP_LCD_DisplayStringAt(24, 32, (uint8_t *)"Saw    ", RIGHT_MODE);
             Display_partials(SawPartials, SawAmp, COLOR_PARTIALS);
             filterbank_spectrum(&filterbank, SawPartials, SawAmp);
             break;
         case 5:
-
             BSP_LCD_DisplayStringAt(24, 32, (uint8_t *)"CB808  ", RIGHT_MODE);
             Display_partials(CB808Partials, ConstAmp, COLOR_PARTIALS);
             filterbank_spectrum(&filterbank, CB808Partials, ConstAmp);

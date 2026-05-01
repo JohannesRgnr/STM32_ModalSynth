@@ -70,7 +70,8 @@ void Touchscreen(void){
             if (x > 48 && y > BSP_LCD_GetYSize()/2 + 32 && x < (BSP_LCD_GetXSize() - 48) && y <  (BSP_LCD_GetYSize() - 48))
             {
                 // evaluate fundamental frequency
-                const float midiNote = scale(48, 752, 24, 90, x);
+                float midiNote = scale(48, 752, 24, 90, x);
+                midiNote = clip(midiNote, 24, 90);
                 float frequency = mtof(midiNote);
 
                 // immediately jump to frequency
@@ -98,7 +99,8 @@ void Touchscreen(void){
 
             if (x > 48 && y > BSP_LCD_GetYSize()/2 + 32 && x < (BSP_LCD_GetXSize() - 48) && y <  (BSP_LCD_GetYSize() - 48))
             {
-                const float midiNote = scale(48, 752, 24, 90, x);
+                float midiNote = scale(48, 752, 24, 90, x);
+                midiNote = clip(midiNote, 24, 90);
                 const float duration = scale(BSP_LCD_GetYSize()/2,BSP_LCD_GetYSize() - 32, 4, 10, y);
 
                 freq.dst = mtof(midiNote);

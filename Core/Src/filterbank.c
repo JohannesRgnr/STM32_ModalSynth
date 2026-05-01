@@ -62,14 +62,22 @@ void filterbank_update(filterbank_t *f)
     {
         for (int i = 0; i < BANDS; i++)
         {
-            reson[i].r = 1.0f / expf(f->decay);
+            if ( f->freq * f->band_freqratios[i] < 0.45 * FS) // safe NYQUIST limit
+            {
+                reson[i].r = 1.0f / expf(f->decay);
+            }
+            else
+            {
+                reson[i].r = 0.0f;
+            }
+
         }
     }
     if (f->freq != f->previousFreq)
     {
         for (int i = 0; i < BANDS; i++)
         {
-            if ( f->freq * f->band_freqratios[i] < 0.4 * FS) // safe NYQUIST limit
+            if ( f->freq * f->band_freqratios[i] < 0.45 * FS) // safe NYQUIST limit
             {
                 reson[i].wd = TWOPI * f->freq * f->band_freqratios[i];
                 reson[i].wa = 2 * FS * tanf(reson[i].wd * TS * 0.5f);

@@ -41,7 +41,7 @@ void AUDIO_Init()
     BSP_AUDIO_OUT_Play((uint16_t *)codecBuffer, BUFFER_SIZE * 2);
 
     // initialize audio objects
-    noise.amp = 0.8f;
+    noise.amp = 0.5f;
     filterbank_init(&filterbank, Bell1Partials, ExpAmp);
     freq.val = freq.dst = 0.f;
 }
