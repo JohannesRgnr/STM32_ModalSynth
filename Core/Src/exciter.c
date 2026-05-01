@@ -12,8 +12,10 @@
 #include "consts.h"
 
 
-
-
+/**
+ * Linear decay envelope
+ * @param line
+ */
 void Trigger_Note(line_t *line)
 {
     line->val = 0.7f;

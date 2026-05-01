@@ -51,8 +51,8 @@ static float Crossfade(const float a, const float b, const float fade)
 
 /**
  * @brief Pade-approximation of tanh for soft clipping
- * @ from https://www.musicdsp.org/en/latest/Other/238-rational-tanh-approximation.html
- * @param x
+ * @from https://www.musicdsp.org/en/latest/Other/238-rational-tanh-approximation.html
+ * @param x float value to soft-clip
  * @return float
  */
 static float SoftClip(float x)
@@ -72,13 +72,13 @@ static float SoftClip(float x)
 }
 
 
-float clip(float input, float lower, float upper);
+inline float clip(float input, float lower, float upper);
 
 
 float lutLerp(const float *table, uint16_t table_size, float index); // linear interpolation within a given lookup table
 
 
-static inline float mtof(float note) // midi note to frequency (Hz)
+static float mtof(float note) // midi note to frequency (Hz)
 {
     const float frequency = 440.0f * expf(0.057762265f * (note - 69.0f));
     return(frequency);

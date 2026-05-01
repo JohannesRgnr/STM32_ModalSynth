@@ -45,7 +45,7 @@ void Display_Init(void)
 
 	/* Display LCD messages */
 	BSP_LCD_SetFont(&FontInconsolataNerdFont20);
-	BSP_LCD_DisplayStringAt(24, 32, (uint8_t *)"Bell   ", RIGHT_MODE);
+	BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)"Bell", RIGHT_MODE);
 	// char str[32];
 	// sprintf(str, "partials");
 

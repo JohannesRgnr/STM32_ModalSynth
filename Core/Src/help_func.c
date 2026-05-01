@@ -48,7 +48,15 @@ float lutLerp(const float *table, uint16_t table_size, float index){
 }
 
 
-
+/**
+ * Scale the input value from an input range to an output range
+ * @param lower_input
+ * @param upper_input
+ * @param lower_output
+ * @param upper_output
+ * @param value
+ * @return
+ */
 float scale(const float lower_input, const float upper_input, const float lower_output, const float upper_output, const float value)
 {
     float slope = (upper_output - lower_output) / (upper_input - lower_input);

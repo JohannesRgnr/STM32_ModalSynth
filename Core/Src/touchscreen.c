@@ -59,63 +59,64 @@ void Touchscreen(void){
     //     HAL_Delay(10);
     // }
 
+    uint16_t x = TS_State.touchX[0];
+    uint16_t y = TS_State.touchY[0];
 
-    if (wasTouched == 0) // 1st touch since untouched = new note is triggered
+    // if inside trigger area
+    if (x > 48 && y > BSP_LCD_GetYSize()/2 + 32 && x < (BSP_LCD_GetXSize() - 48) && y <  (BSP_LCD_GetYSize() - 48))
     {
-        if (TS_State.touchDetected == 1)
-        {
-            uint16_t x = TS_State.touchX[0];
-            uint16_t y = TS_State.touchY[0];
-
-            if (x > 48 && y > BSP_LCD_GetYSize()/2 + 32 && x < (BSP_LCD_GetXSize() - 48) && y <  (BSP_LCD_GetYSize() - 48))
-            {
-                // evaluate fundamental frequency
-                float midiNote = scale(48, 752, 24, 90, x);
-                midiNote = clip(midiNote, 24, 90);
-                float frequency = mtof(midiNote);
-
-                // immediately jump to frequency
-                freq.val = frequency;
-                freq.dst = frequency;
-                filterbank.freq = frequency;
-
-                filterbank_update(&filterbank);
-                Trigger_Note(&exciterAmp);
-
-                // redraw trigger area
-                clearTriggerArea();
-                // draw trajectory
-                BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);
-                BSP_LCD_FillCircle(x, y, 12);
-            }
-        }
+        ts_triggerArea(x, y, wasTouched);
     }
-    else // it was touched already
-    {
-        if (TS_State.touchDetected == 1)
-        {
-            uint16_t x = TS_State.touchX[0];
-            uint16_t y = TS_State.touchY[0];
 
-            if (x > 48 && y > BSP_LCD_GetYSize()/2 + 32 && x < (BSP_LCD_GetXSize() - 48) && y <  (BSP_LCD_GetYSize() - 48))
-            {
-                float midiNote = scale(48, 752, 24, 90, x);
-                midiNote = clip(midiNote, 24, 90);
-                const float duration = scale(BSP_LCD_GetYSize()/2,BSP_LCD_GetYSize() - 32, 4, 10, y);
-
-                freq.dst = mtof(midiNote);
-                filterbank.decay = duration;
-                filterbank_update(&filterbank);
-
-                // draw trajectory
-                BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);
-                BSP_LCD_FillCircle(x, y, 12);
-            }
-        }
-    }
     wasTouched = TS_State.touchDetected;
 
     // HAL_Delay(5);
 }
 
+/**
+ * Trigger new note when touched, or glide frequency and decay if already touched
+ * @param x x touch coordinate
+ * @param y y touch coordinate
+ * @param state currently touched or not
+ */
+static void ts_triggerArea(float x, float y, uint8_t state)
+{
+    if (state == 0)
+    {
+        if (TS_State.touchDetected == 1) // new touch
+        {
+            // evaluate fundamental frequency
+            float midiNote = scale(48, 752, 24, 90, x);
+            midiNote = clip(midiNote, 24, 90);
+            float frequency = mtof(midiNote);
 
+            // immediately jump to frequency
+            freq.val = frequency;
+            freq.dst = frequency;
+            filterbank.freq = frequency;
+
+            filterbank_update(&filterbank);
+            Trigger_Note(&exciterAmp);
+
+            // redraw trigger area
+            clearTriggerArea();
+            // draw trajectory
+            BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);
+            BSP_LCD_FillCircle(x, y, 12);
+        }
+    }
+    else  // was already touched
+    {
+        float midiNote = scale(48, 752, 24, 90, x);
+        midiNote = clip(midiNote, 24, 90);
+        const float duration = scale(BSP_LCD_GetYSize()/2,BSP_LCD_GetYSize() - 32, 4, 10, y);
+
+        freq.dst = mtof(midiNote);
+        filterbank.decay = duration;
+        filterbank_update(&filterbank);
+
+        // draw trajectory
+        BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);
+        BSP_LCD_FillCircle(x, y, 12);
+    }
+}
