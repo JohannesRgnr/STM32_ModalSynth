@@ -30,13 +30,10 @@ ZDFLP_t lp_R;
 
 void Delay_init(void)
 {
-	delay_time_L = INIT_DELAY_L;
-	delay_time_R = INIT_DELAY_R;
-
 	readptrL = delaylineL;
 	readptrR = delaylineR ;
-	writeptrL = delaylineL + delay_time_L;
-	writeptrR = delaylineR + delay_time_R;
+	writeptrL = delaylineL + INIT_DELAY_L;
+	writeptrR = delaylineR + INIT_DELAY_R;
 
 	SVF_LP_init(&lp_L);
 	SVF_LP_init(&lp_R);
@@ -114,6 +111,7 @@ void pingpongDelay_process (float input_sample, float * delayLOut, float * delay
 	if ((readptrR - delaylineR) >= DELAY_BUFF_SIZE)
 		readptrR = delaylineR;
 
-	*delayLOut = (delay_wet * sampleL + (1 - delay_wet) * input_sample); // linear crossfade
+	// linear crossfade
+	*delayLOut = (delay_wet * sampleL + (1 - delay_wet) * input_sample);
 	*delayROut = (delay_wet * sampleR + (1 - delay_wet) * input_sample);
 }
