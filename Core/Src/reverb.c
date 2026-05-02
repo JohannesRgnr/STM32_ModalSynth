@@ -26,7 +26,7 @@ int32_t delWP0, delWP1, delWP2, delWP3;
 float f_param_dsp0, f_param_dsp1, f_param_dsp2, f_param_dsp3;
 float lowPass0, lowPass1;
 float del2Out, del4Out;
-float reverb_feedback = 80;
+float reverb_feedback = 0.8;
 float sixteenbitout;
 
 // filters
@@ -78,7 +78,7 @@ void reverb_process(float in,float *reverbLout,float *reverbRout)
 {
         float sampData;
         float outL, outR;
-        f_param_dsp1 = reverb_feedback * 0.01f;
+        f_param_dsp1 = clip(reverb_feedback, 0.f, 1.f);
         // copy input
 
 

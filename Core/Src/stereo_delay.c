@@ -18,8 +18,8 @@ static float 		*writeptrL , *writeptrR ;
 static uint16_t		delay_time_L , delay_time_R;
 
 
-float		feedback  = INIT_FEEDB;
-float		delay_wet  = INIT_DELAY_WET;
+float delay_feedback	= INIT_FEEDB;
+float delay_wet	= INIT_DELAY_WET;
 
 ZDFLP_t lp_L;
 ZDFLP_t lp_R;
@@ -61,7 +61,7 @@ void Delay_time_set(uint32_t time_L, uint32_t time_R)
 
 void DelayFeedback_set(uint8_t val)
 {
-	feedback = val;
+	delay_feedback = val;
 }
 
 
@@ -88,8 +88,8 @@ void pingpongDelay_process (float input_sample, float * delayLOut, float * delay
 	delayed_sampleR = SVF_LP_compute(&lp_R, *readptrR);
 
 	// apply soft clipping
-	sampleL = SoftClip(feedback * delayed_sampleL);
-	sampleR = SoftClip(input_sample + feedback * delayed_sampleR);
+	sampleL = SoftClip(delay_feedback * delayed_sampleL);
+	sampleR = SoftClip(input_sample + delay_feedback * delayed_sampleR);
 
 	// write then update pointers
 	*writeptrL = sampleR;
@@ -112,6 +112,6 @@ void pingpongDelay_process (float input_sample, float * delayLOut, float * delay
 		readptrR = delaylineR;
 
 	// linear crossfade
-	*delayLOut = (delay_wet * sampleL + (1 - delay_wet) * input_sample);
-	*delayROut = (delay_wet * sampleR + (1 - delay_wet) * input_sample);
+	*delayLOut = delay_wet * sampleL + (1 - delay_wet) * input_sample;
+	*delayROut = delay_wet * sampleR + (1 - delay_wet) * input_sample;
 }

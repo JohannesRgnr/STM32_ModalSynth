@@ -32,7 +32,7 @@ noise_t noise;
 line_t exciterAmp, freq;
 filterbank_t filterbank;
 
-extern float feedback;
+extern float delay_feedback;
 extern float delay_wet;
 float reverb_amount;
 float reverbsend;
@@ -68,9 +68,9 @@ void AUDIO_Init()
     float samp, sampleL, sampleR;
 
     delay_wet = 0.5;
-    feedback = 0.8;
-    reverb_amount = 70;
-    reverb_feedback = 92;
+    delay_feedback = 0.6;
+    reverb_amount = 0.7;
+    reverb_feedback = 0.9;
 
     for (int i = 0; i < samples; i++)
     {
@@ -93,7 +93,7 @@ void AUDIO_Init()
         pingpongDelay_process(samp, &delayLOut, &delayROut);
 
         // Send to Reverb
-        reverbsend = reverb_amount*0.01f *(delayLOut*0.707f + delayROut*0.707f); // send to reverb
+        reverbsend = reverb_amount * (delayLOut*0.707f + delayROut*0.707f); // send to reverb
         reverb_process(reverbsend, &reverbLout, &reverbRout);
 
         // Soft Clip the outputs
