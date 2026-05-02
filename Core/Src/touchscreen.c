@@ -11,7 +11,6 @@
 #include "exciter.h"
 #include "filterbank.h"
 #include "help_func.h"
-// #include "spectra.h"
 #include "audio.h"
 #include "lcd.h"
 
@@ -63,7 +62,7 @@ void Touchscreen(void){
     uint16_t y = TS_State.touchY[0];
 
     // if inside trigger area
-    if (x > 48 && y > BSP_LCD_GetYSize()/2 + 32 && x < (BSP_LCD_GetXSize() - 48) && y <  (BSP_LCD_GetYSize() - 48))
+    if (x > 3 * BORDER && y > BSP_LCD_GetYSize()/2 + 2 * BORDER && x < (BSP_LCD_GetXSize() - 3 * BORDER) && y < (BSP_LCD_GetYSize() - 3 * BORDER))
     {
         ts_triggerArea(x, y, wasTouched);
     }

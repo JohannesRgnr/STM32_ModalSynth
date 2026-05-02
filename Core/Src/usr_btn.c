@@ -52,32 +52,32 @@ void UserButton(void) // to choose "presets" = partials freq ratios + amplitudes
         {
         case 1:
             BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)"Bell", RIGHT_MODE);
-            Display_partials(Bell1Partials, ExpAmp, COLOR_PARTIALS);
+            Display_partials(Bell1Partials, ExpAmp);
             filterbank_spectrum(&filterbank, Bell1Partials, RampAmp);
             break;
         case 2:
             BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)"Gong", RIGHT_MODE);
-            Display_partials(GongPartials, ExpAmp, COLOR_PARTIALS);
+            Display_partials(GongPartials, ExpAmp);
             filterbank_spectrum(&filterbank, GongPartials, ExpAmp);
             break;
         case 3:
             BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)"Chord", RIGHT_MODE);
-            Display_partials(ChordPartials, ExpAmp, COLOR_PARTIALS);
+            Display_partials(ChordPartials, ExpAmp);
             filterbank_spectrum(&filterbank, ChordPartials, ExpAmp);
             break;
         case 4:
             BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)"Sawtooth", RIGHT_MODE);
-            Display_partials(SawPartials, SawAmp, COLOR_PARTIALS);
+            Display_partials(SawPartials, SawAmp);
             filterbank_spectrum(&filterbank, SawPartials, SawAmp);
             break;
         case 5:
             BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)"Square", RIGHT_MODE);
-            Display_partials(SquarePartials, SquareAmp, COLOR_PARTIALS);
+            Display_partials(SquarePartials, SquareAmp);
             filterbank_spectrum(&filterbank, SquarePartials, SquareAmp);
             break;
         case 6:
             BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)"CB808", RIGHT_MODE);
-            Display_partials(CB808Partials, ConstAmp, COLOR_PARTIALS);
+            Display_partials(CB808Partials, ConstAmp);
             filterbank_spectrum(&filterbank, CB808Partials, ConstAmp);
             break;
         }
