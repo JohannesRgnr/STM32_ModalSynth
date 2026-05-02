@@ -48,15 +48,16 @@ void Display_Init(void)
 	// BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)str, RIGHT_MODE);
 
 	// Display partials area
-	BSP_LCD_SetTextColor(COLOR_ELEMENTS);
+	BSP_LCD_SetTextColor(GREY_UI);
 	BSP_LCD_DrawRect(BORDER, BORDER, PARTIALSAREAWIDTH, PARTIALSAREAHEIGHT);
 
 	// Display freq and magnitude axes
+	BSP_LCD_SetTextColor(GREY_UI);
 	BSP_LCD_DrawHLine(2 * BORDER, PARTIALSAREAHEIGHT, PARTIALSAREAWIDTH - 2 * BORDER);
 	BSP_LCD_DrawVLine(2 * BORDER, 2 * BORDER, PARTIALSAREAHEIGHT - 2 * BORDER);
 
 	// Display touchscreen area for note triggering
-	BSP_LCD_SetTextColor(COLOR_ELEMENTS);
+	BSP_LCD_SetTextColor(GREY_UI);
 	BSP_LCD_DrawRect(BORDER, BSP_LCD_GetYSize()/2 , BSP_LCD_GetXSize() - 2 * BORDER, BSP_LCD_GetYSize()/2 - 16);
 	BSP_LCD_SetTextColor(COLOR_PAD);
 	BSP_LCD_FillRect(2 * BORDER, BSP_LCD_GetYSize()/2 + BORDER, BSP_LCD_GetXSize() - 4 * BORDER, BSP_LCD_GetYSize()/2 - 3 * BORDER);
@@ -80,13 +81,13 @@ void Display_partials(const float *freqRatios, const float *amps)
 		const uint16_t partialXpos = (uint16_t)(freqRatios[i] * (hLength / BANDS) + 2 * BORDER);
 		const uint16_t partialLength = (uint16_t)(MAXPARTIALLENGTH * amps[i]);
 		uint32_t partialColor;
-		partialColor =  (uint32_t)(scale(0.f, 1.f, 0.4f, 1.f, amps[i]) * 0xFF) * 0x1000000 + 0xFFFFFF;
+		partialColor =  (uint32_t)(scale(0.f, 1.f, 0.6f, 1.f, amps[i]) * 0xFF) * 0x1000000 + BLUE_PARTIALS;
 
 		// display only if partial fits within the partials area
 		if (partialXpos < PARTIALSAREAWIDTH - 2 * BORDER)
 		{
 			BSP_LCD_SetTextColor(partialColor);
-			BSP_LCD_DrawVLine(partialXpos,   2 * BORDER+ (MAXPARTIALLENGTH - partialLength), partialLength);
+			BSP_LCD_DrawVLine(partialXpos,   3 * BORDER+ (MAXPARTIALLENGTH - partialLength), partialLength);
 		}
 	}
 }

@@ -15,15 +15,19 @@
 #define LCD_FRAME_BUFFER          SDRAM_DEVICE_ADDR
 
 #define COLOR_BACKGROUND            0xFF000000
-#define COLOR_ELEMENTS              0xFFC0C0C0
-#define COLOR_PAD                   0xFF808080
+#define GREY_UI                     0xFFC0C0C0
+#define COLOR_PAD                   0xFF707070
 #define COLOR_TEXT                  0xFFFFFFFF
-#define COLOR_PARTIALS              0xFFC0C0C0
+#define BLUE_PARTIALS               0x5983FC
+#define BLUE_UI                     0xFF3E60C1
+#define BLUE_UI_MAT                 0xFF2E4583
+#define BLUE_UI_MATTER              0xFF293556
+
 
 #define BORDER                      16
 #define PARTIALSAREAWIDTH           (BSP_LCD_GetXSize() / 2)
 #define PARTIALSAREAHEIGHT          (BSP_LCD_GetYSize() / 2.5)
-#define MAXPARTIALLENGTH            (PARTIALSAREAHEIGHT - 2 * BORDER)
+#define MAXPARTIALLENGTH            (PARTIALSAREAHEIGHT - 3 * BORDER)
 
 void Display_Default(void);
 void Display_Init(void);

@@ -78,7 +78,7 @@ void Touchscreen(void){
  * @param y y touch coordinate
  * @param state currently touched or not
  */
-static void ts_triggerArea(float x, float y, uint8_t state)
+static void ts_triggerArea(uint16_t x, uint16_t y, uint8_t state)
 {
     if (state == 0)
     {
@@ -100,7 +100,7 @@ static void ts_triggerArea(float x, float y, uint8_t state)
             // redraw trigger area
             clearTriggerArea();
             // draw trajectory
-            BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);
+            BSP_LCD_SetTextColor(BLUE_UI_MAT);
             BSP_LCD_FillCircle(x, y, 12);
         }
     }
@@ -108,14 +108,14 @@ static void ts_triggerArea(float x, float y, uint8_t state)
     {
         float midiNote = scale(48, 752, 24, 90, x);
         midiNote = clip(midiNote, 24, 90);
-        const float duration = scale(BSP_LCD_GetYSize()/2,BSP_LCD_GetYSize() - 32, 4, 10, y);
+        const float duration = scale(BSP_LCD_GetYSize()/2.0f,BSP_LCD_GetYSize() - 32, 4, 10, y);
 
         freq.dst = mtof(midiNote);
         filterbank.decay = duration;
         filterbank_update(&filterbank);
 
         // draw trajectory
-        BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);
+        BSP_LCD_SetTextColor(BLUE_UI_MAT);
         BSP_LCD_FillCircle(x, y, 12);
     }
 }
