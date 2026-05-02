@@ -51,7 +51,8 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Src/usr_btn.c
         Core/Src/stereo_delay.c
         Core/Src/reverb.c
-
+        Core/Src/spectrum_morph.c
+        Core/Src/spectrum_morph.h
 
 
         #        Utilities/Fonts/font8.c
