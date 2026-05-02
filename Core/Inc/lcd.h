@@ -21,7 +21,9 @@
 #define COLOR_PARTIALS              0xFFC0C0C0
 
 #define BORDER                      16
-#define MAXPARTIALLENGTH            128
+#define PARTIALSAREAWIDTH           (BSP_LCD_GetXSize() / 2)
+#define PARTIALSAREAHEIGHT          (BSP_LCD_GetYSize() / 2.5)
+#define MAXPARTIALLENGTH            (PARTIALSAREAHEIGHT - 2 * BORDER)
 
 void Display_Default(void);
 void Display_Init(void);

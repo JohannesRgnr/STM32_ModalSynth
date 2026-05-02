@@ -41,7 +41,7 @@ void Display_Init(void)
 
 	/* Display LCD messages */
 	BSP_LCD_SetFont(&FontInconsolataNerdFont20);
-	BSP_LCD_DisplayStringAt(2 * BORDER, 2 * BORDER, (uint8_t *)"Bell", RIGHT_MODE);
+	BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 2 * BORDER, (uint8_t *)"Bell", RIGHT_MODE);
 	// char str[32];
 	// sprintf(str, "partials");
 
@@ -49,11 +49,11 @@ void Display_Init(void)
 
 	// Display partials area
 	BSP_LCD_SetTextColor(COLOR_ELEMENTS);
-	BSP_LCD_DrawRect(BORDER, BORDER, BSP_LCD_GetXSize() - 2 * BORDER, BSP_LCD_GetYSize()/2 - 2 * BORDER);
+	BSP_LCD_DrawRect(BORDER, BORDER, PARTIALSAREAWIDTH, PARTIALSAREAHEIGHT);
 
 	// Display freq and magnitude axes
-	BSP_LCD_DrawHLine(2 * BORDER, BSP_LCD_GetYSize()/2 - 2 * BORDER, BSP_LCD_GetXSize() - 4 * BORDER);
-	BSP_LCD_DrawVLine(2 * BORDER, 2 * BORDER, BSP_LCD_GetYSize()/2 - 4 * BORDER);
+	BSP_LCD_DrawHLine(2 * BORDER, PARTIALSAREAHEIGHT, PARTIALSAREAWIDTH - 2 * BORDER);
+	BSP_LCD_DrawVLine(2 * BORDER, 2 * BORDER, PARTIALSAREAHEIGHT - 2 * BORDER);
 
 	// Display touchscreen area for note triggering
 	BSP_LCD_SetTextColor(COLOR_ELEMENTS);
@@ -73,20 +73,20 @@ void Display_Init(void)
  */
 void Display_partials(const float *freqRatios, const float *amps)
 {
-	const float hLength = BSP_LCD_GetXSize() - 4 * BORDER;
+	const float hLength = PARTIALSAREAWIDTH - 4 * BORDER;
 
 	for (int i = 0; i < BANDS; i++)
 	{
-		const uint16_t partialXpos = (uint16_t)(freqRatios[i] * (hLength / BANDS) + BORDER);
+		const uint16_t partialXpos = (uint16_t)(freqRatios[i] * (hLength / BANDS) + 2 * BORDER);
 		const uint16_t partialLength = (uint16_t)(MAXPARTIALLENGTH * amps[i]);
 		uint32_t partialColor;
 		partialColor =  (uint32_t)(scale(0.f, 1.f, 0.4f, 1.f, amps[i]) * 0xFF) * 0x1000000 + 0xFFFFFF;
 
 		// display only if partial fits within the partials area
-		if (partialXpos < BSP_LCD_GetXSize() - 2 * BORDER)
+		if (partialXpos < PARTIALSAREAWIDTH - 2 * BORDER)
 		{
 			BSP_LCD_SetTextColor(partialColor);
-			BSP_LCD_DrawVLine(partialXpos, 5 * BORDER + (MAXPARTIALLENGTH - partialLength), partialLength);
+			BSP_LCD_DrawVLine(partialXpos,   2 * BORDER+ (MAXPARTIALLENGTH - partialLength), partialLength);
 		}
 	}
 }
@@ -102,6 +102,6 @@ void clearTriggerArea(void)
 void clearPartialsArea(void)
 {
 	BSP_LCD_SetTextColor(COLOR_BACKGROUND);
-	BSP_LCD_FillRect(33, 32, BSP_LCD_GetXSize() - 64, BSP_LCD_GetYSize()/2 - 64);
+	BSP_LCD_FillRect(2 * BORDER + 1, 2 * BORDER, PARTIALSAREAWIDTH - 2 * BORDER, PARTIALSAREAHEIGHT - 2 * BORDER);
 }
 
