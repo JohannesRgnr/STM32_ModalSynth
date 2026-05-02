@@ -97,15 +97,17 @@ void filterbank_update(filterbank_t *f)
  * Process one sample with the filterbank
  * @param f instance of the filterbank
  * @param sample sample to process
- * @return
+ * @return processed sample
  */
 float filterbank_process(filterbank_t *f, const float sample)
 {
     float sumOuts = 0.0f;
+
+    // sum outputs of resonating filters
     for(int i = 0; i < BANDS; i++)
     {
-        sumOuts = sumOuts + f->band_gains[i] * SVF_BP_compute(&reson[i], sample) * ONEOVERBANDS;
+        sumOuts = sumOuts + f->band_gains[i] * SVF_BP_compute(&reson[i], sample);
     }
 
-    return sumOuts;
+    return sumOuts * ONEOVERBANDS;
 }
