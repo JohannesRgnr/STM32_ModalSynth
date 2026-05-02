@@ -24,7 +24,7 @@
 #define BLUE_UI_MATTER              0xFF293556
 
 
-#define BORDER                      16
+#define BORDER                      8
 #define PARTIALSAREAWIDTH           (BSP_LCD_GetXSize() / 2)
 #define PARTIALSAREAHEIGHT          (BSP_LCD_GetYSize() / 2.5)
 #define MAXPARTIALLENGTH            (PARTIALSAREAHEIGHT - 3 * BORDER)

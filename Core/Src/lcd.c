@@ -39,26 +39,33 @@ void Display_Init(void)
 	/* Set the LCD Text Color */
 	BSP_LCD_SetTextColor(COLOR_TEXT);
 
-	/* Display LCD messages */
-	BSP_LCD_SetFont(&FontInconsolataNerdFont20);
-	BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 2 * BORDER, (uint8_t *)"Bell", RIGHT_MODE);
 	// char str[32];
 	// sprintf(str, "partials");
 
 	// BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)str, RIGHT_MODE);
 
 	// Display partials area
-	BSP_LCD_SetTextColor(GREY_UI);
-	BSP_LCD_DrawRect(BORDER, BORDER, PARTIALSAREAWIDTH, PARTIALSAREAHEIGHT);
+	BSP_LCD_SetTextColor(COLOR_PAD);
+	BSP_LCD_FillRect(BORDER, BORDER, PARTIALSAREAWIDTH, PARTIALSAREAHEIGHT);
+	BSP_LCD_SetTextColor(COLOR_BACKGROUND);
+	BSP_LCD_FillRect(2 * BORDER, 2 * BORDER, PARTIALSAREAWIDTH - 2 * BORDER, PARTIALSAREAHEIGHT - 2 * BORDER);
+
+
+	/* Set the LCD Text Color */
+	BSP_LCD_SetTextColor(COLOR_TEXT);
+
+	/* Display LCD messages */
+	// BSP_LCD_SetFont(&FontInconsolataNerdFont32);
+	BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * BORDER, (uint8_t *)"Bell", RIGHT_MODE);
 
 	// Display freq and magnitude axes
-	BSP_LCD_SetTextColor(GREY_UI);
-	BSP_LCD_DrawHLine(2 * BORDER, PARTIALSAREAHEIGHT, PARTIALSAREAWIDTH - 2 * BORDER);
-	BSP_LCD_DrawVLine(2 * BORDER, 2 * BORDER, PARTIALSAREAHEIGHT - 2 * BORDER);
+	// BSP_LCD_SetTextColor(GREY_UI);
+	//BSP_LCD_DrawHLine(2 * BORDER, PARTIALSAREAHEIGHT, PARTIALSAREAWIDTH - 2 * BORDER);
+	//BSP_LCD_DrawVLine(2 * BORDER, 2 * BORDER, PARTIALSAREAHEIGHT - 2 * BORDER);
 
 	// Display touchscreen area for note triggering
 	BSP_LCD_SetTextColor(GREY_UI);
-	BSP_LCD_DrawRect(BORDER, BSP_LCD_GetYSize()/2 , BSP_LCD_GetXSize() - 2 * BORDER, BSP_LCD_GetYSize()/2 - 16);
+	BSP_LCD_DrawRect(BORDER, BSP_LCD_GetYSize()/2 , BSP_LCD_GetXSize() - 2 * BORDER, BSP_LCD_GetYSize()/2 - BORDER);
 	BSP_LCD_SetTextColor(COLOR_PAD);
 	BSP_LCD_FillRect(2 * BORDER, BSP_LCD_GetYSize()/2 + BORDER, BSP_LCD_GetXSize() - 4 * BORDER, BSP_LCD_GetYSize()/2 - 3 * BORDER);
 
@@ -96,7 +103,7 @@ void Display_partials(const float *freqRatios, const float *amps)
 void clearTriggerArea(void)
 {
 	BSP_LCD_SetTextColor(COLOR_PAD);
-	BSP_LCD_FillRect(32, BSP_LCD_GetYSize()/2 + 16, BSP_LCD_GetXSize() - 64, BSP_LCD_GetYSize()/2 - 48);
+	BSP_LCD_FillRect(2 * BORDER, BSP_LCD_GetYSize()/2 + BORDER, BSP_LCD_GetXSize() - 4 * BORDER, BSP_LCD_GetYSize()/2 - 3 * BORDER);
 }
 
 

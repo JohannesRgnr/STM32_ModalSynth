@@ -62,7 +62,7 @@ void Touchscreen(void){
     uint16_t y = TS_State.touchY[0];
 
     // if inside trigger area
-    if (x > 3 * BORDER && y > BSP_LCD_GetYSize()/2 + 2 * BORDER && x < (BSP_LCD_GetXSize() - 3 * BORDER) && y < (BSP_LCD_GetYSize() - 3 * BORDER))
+    if (x > 3 * BORDER && y > BSP_LCD_GetYSize()/2 + 2 * BORDER && x < (BSP_LCD_GetXSize() - 3 * BORDER) && y < (BSP_LCD_GetYSize() - 4 * BORDER))
     {
         ts_triggerArea(x, y, wasTouched);
     }
