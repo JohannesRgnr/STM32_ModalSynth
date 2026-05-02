@@ -16,5 +16,4 @@ Except as otherwise noted, all files are
 
     Copyright (c) 2026 Johannes Regnier
 
-For information on usage and redistribution, and for a DISCLAIMER OF ALL
-WARRANTIES, see LICENSE.
+For information on usage and redistribution, and for a Disclaimer of Warranty and Limitation of Liability, see LICENSE.
