@@ -10,6 +10,8 @@
 #ifndef MODAL_SYNTH_FILTERBANK_H
 #define MODAL_SYNTH_FILTERBANK_H
 
+#include "spectrum_morph.h"
+
 
 #define BANDS 16
 #define ONEOVERBANDS (1.f/BANDS)
@@ -26,10 +28,24 @@ typedef struct
     float bp[BANDS];
 }	filterbank_t;
 
+typedef struct
+{
+    float amps[BANDS];
+    float freqRatios[BANDS];
+    float xfade;
+}	spectrum_t;
 
-void filterbank_init(filterbank_t *f, const float *freqRatios, const float *amps);
 
-void filterbank_spectrum(filterbank_t *f, const float *freqRatios, const float *amps);
+void xfade_2Spectra(const float *freqRatios1, const float *freqRatios2, const float *amps1, const float *amps2, spectrum_t *s);
+void spectrum_init(spectrum_t *s, const float *freqRatios, const float *amps);
+
+//void filterbank_init(filterbank_t *f, const float *freqRatios, const float *amps);
+void filterbank_init(filterbank_t *f, spectrum_t *s);
+
+
+// void filterbank_spectrum(filterbank_t *f, const float *freqRatios, const float *amps);
+void filterbank_spectrum(filterbank_t *f, spectrum_t *s);
+
 
 void filterbank_update(filterbank_t *f);
 

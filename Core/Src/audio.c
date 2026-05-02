@@ -15,11 +15,11 @@
 
 #include "consts.h"
 #include "filterbank.h"
-#include "filters.h"
 #include "help_func.h"
 #include "noise.h"
 #include "reverb.h"
 #include "spectra.h"
+#include "spectrum_morph.h"
 #include "stereo_delay.h"
 
 /**
@@ -30,6 +30,7 @@ int16_t codecBuffer[BUFFER_SIZE]; // x samples X 2 channels (interleaved)
 
 noise_t noise;
 line_t exciterAmp, freq;
+spectrum_t spectrum;
 filterbank_t filterbank;
 
 extern float delay_feedback;
@@ -56,7 +57,9 @@ void AUDIO_Init()
 
     // initialize audio objects
     noise.amp = 0.5f;
-    filterbank_init(&filterbank, Bell1Partials, ExpAmp);
+    spectrum_init(&spectrum, SawPartials, SawAmp);
+    // xfade_2Spectra(Bell1Partials, SawPartials, ExpAmp, SawAmp, &spectrum);
+    filterbank_init(&filterbank, &spectrum);
     freq.val = freq.dst = 0.f;
     Delay_init();
     reverb_Init();
