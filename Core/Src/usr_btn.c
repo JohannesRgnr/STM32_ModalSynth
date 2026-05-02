@@ -38,7 +38,7 @@ void UserButton(void) // to choose "presets" = partials freq ratios + amplitudes
         BSP_LCD_SetFont(&FontInconsolataNerdFont20);
         preset ++;
 
-        if (preset > 5)
+        if (preset > NUMPRESETS)
         {
             preset = 1;
         }
@@ -66,11 +66,16 @@ void UserButton(void) // to choose "presets" = partials freq ratios + amplitudes
             filterbank_spectrum(&filterbank, ChordPartials, ExpAmp);
             break;
         case 4:
-            BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)"Saw", RIGHT_MODE);
+            BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)"Sawtooth", RIGHT_MODE);
             Display_partials(SawPartials, SawAmp, COLOR_PARTIALS);
             filterbank_spectrum(&filterbank, SawPartials, SawAmp);
             break;
         case 5:
+            BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)"Square", RIGHT_MODE);
+            Display_partials(SquarePartials, SquareAmp, COLOR_PARTIALS);
+            filterbank_spectrum(&filterbank, SquarePartials, SquareAmp);
+            break;
+        case 6:
             BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)"CB808", RIGHT_MODE);
             Display_partials(CB808Partials, ConstAmp, COLOR_PARTIALS);
             filterbank_spectrum(&filterbank, CB808Partials, ConstAmp);
