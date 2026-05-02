@@ -161,6 +161,8 @@ int main(void)
   BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
 
  // HAL_Delay(1000);
+
+  /* Initialize the audio */
   AUDIO_Init();
 
 

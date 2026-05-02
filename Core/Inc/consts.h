@@ -7,14 +7,14 @@
  * @note
  */
 
-#ifndef MINIMAL_SAI_CONSTS_H
-#define MINIMAL_SAI_CONSTS_H
+#ifndef MODAL_SYNTH_CONSTS_H
+#define MODAL_SYNTH_CONSTS_H
 
 
 #define FS                  44100.f     // selected samplerate
 /*  Actual samplerate is actually 41666 Hz (derived from I2S clock)..
-*   we take that into account for accurate tuning
-*                 0.2% off...   not so crucial, but well ....... */
+ *   we take that into account for accurate tuning
+ *                 0.2% off...   not so crucial, but well ....... */
 
 #define correctedFS         41666.f   // real samplerate (check STM32CubeMX configuration)
 
@@ -31,9 +31,4 @@
 #define ONEOVERPI           (1.f/PI)
 
 
-
-//#define MIDI_MAX            127.f
-//#define MIDI_MAXi           127
-
-
-#endif //MINIMAL_SAI_CONSTS_H
+#endif //MODAL_SYNTH_CONSTS_H
