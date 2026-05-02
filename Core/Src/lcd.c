@@ -9,6 +9,7 @@
 
 #include "../Inc/lcd.h"
 
+#include "filterbank.h"
 #include "spectra.h"
 
 
@@ -16,7 +17,6 @@
 
 void Display_Default(void)
 {
-
 	/* Default LCD settings */
 	// BSP_LCD_SetFont(&Font16);
 	BSP_LCD_SetTextColor(COLOR_TEXT);
@@ -26,7 +26,6 @@ void Display_Default(void)
 
 void Display_Init(void)
 {
-
 	/* Set LCD Foreground Layer  */
 	BSP_LCD_SelectLayer(LTDC_DEFAULT_ACTIVE_LAYER);
 
@@ -65,17 +64,29 @@ void Display_Init(void)
 	Display_partials(Bell1Partials, RampAmp, COLOR_PARTIALS);
 }
 
+
+/**
+ * Display spectrum components as vertical lines within the partials area
+ * @param freqRatios partials frequency ratios
+ * @param amps partials amplitudes
+ * @param color
+ */
 void Display_partials(const float *freqRatios, const float *amps, uint32_t color)
 {
 	BSP_LCD_SetTextColor(color);
 	const float hLength = BSP_LCD_GetXSize() - 64;
 
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < BANDS; i++)
 	{
-		const uint16_t partialLength = (uint16_t)(128 * amps[i]);
-		BSP_LCD_DrawVLine((uint16_t)(freqRatios[i] * (hLength / 16.f) + 16.0f), 80 + (128 - partialLength), partialLength);
+		const uint16_t partialXpos = (uint16_t)(freqRatios[i] * (hLength / BANDS) + 16.0f);
+		const uint16_t partialLength = (uint16_t)(MAXPARTIALLENGTH * amps[i]);
+
+		// display only if partial fits within the partials area
+		if (partialXpos < BSP_LCD_GetXSize() - 32)
+		{
+			BSP_LCD_DrawVLine(partialXpos, 80 + (MAXPARTIALLENGTH - partialLength), partialLength);
+		}
 	}
-	BSP_LCD_SetTextColor(COLOR_TEXT);
 }
 
 

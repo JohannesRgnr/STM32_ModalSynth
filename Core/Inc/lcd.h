@@ -20,6 +20,8 @@
 #define COLOR_TEXT                  0xFFFFFFFF
 #define COLOR_PARTIALS              0xFFC0C0C0
 
+#define MAXPARTIALLENGTH            128
+
 void Display_Default(void);
 void Display_Init(void);
 void Display_partials(const float *freqRatios, const float *amps, uint32_t color);
