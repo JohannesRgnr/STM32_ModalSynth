@@ -1511,7 +1511,7 @@ const uint8_t FontChicagoFLF16_Table [] = {
     0x00, 0x00, /* |                | */
 
     // @2560 'p' (16 pixels wide)
-
+    0x00, 0x00, /* |                | */
     0x00, 0x00, /* |                | */
     0x00, 0x00, /* |                | */
     0x1F, 0xC0, /* |   #######      | */
@@ -1527,7 +1527,7 @@ const uint8_t FontChicagoFLF16_Table [] = {
     0x1C, 0x00, /* |   ###          | */
     0x00, 0x00, /* |                | */
     0x00, 0x00, /* |                | */
-    0x00, 0x00, /* |                | */
+
 
 
     // @2592 'q' (16 pixels wide)
