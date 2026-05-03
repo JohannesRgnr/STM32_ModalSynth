@@ -19,6 +19,7 @@ uint16_t audioLevel = 60;
 uint8_t wasTouched = 0;
 extern line_t exciterAmp, freq;
 extern filterbank_t filterbank;
+extern spectrum_t spectrum;
 TS_StateTypeDef  TS_State;
 
 void Touchscreen(void){
@@ -64,14 +65,18 @@ void Touchscreen(void){
 
 
     // if inside trigger area
-    if (x > TRIGGERAREA_Left  && y > TRIGGERAREA_Top && x < TRIGGERAREA_Right && y < TRIGGERAREA_Bottom)
+    if (x > TRIGGERAREA_Left  && x < TRIGGERAREA_Right && y > TRIGGERAREA_Top  && y < TRIGGERAREA_Bottom)
     {
         ts_triggerArea(x, y, wasTouched);
+    }
+    else if (x > MORPHAREA_Left && x < MORPHAREA_Right && y > MORPHAREA_Top && y < MORPHAREA_Bottom)
+    {
+       ts_MorphArea(x, y, wasTouched);
     }
 
     wasTouched = TS_State.touchDetected;
 
-    // HAL_Delay(5);
+    HAL_Delay(6);
 }
 
 /**
@@ -120,4 +125,20 @@ static void ts_triggerArea(uint16_t x, uint16_t y, uint8_t state)
         BSP_LCD_SetTextColor(BLUE_UI_MAT);
         BSP_LCD_FillCircle(x, y, 8);
     }
+}
+
+
+static void ts_MorphArea(uint16_t x, uint16_t y, uint8_t state)
+{
+    if (TS_State.touchDetected == 1) // new touch
+    {
+        float xfade = scale(MORPHAREA_Left, MORPHAREA_Right, 0.0f, 1.0f, x);
+        spectrum_xfade(&spectrum, xfade);
+        filterbank_spectrum(&filterbank, &spectrum);
+        filterbank_update(&filterbank);
+        clearPartialsArea();
+        Display_partials(&spectrum);
+    }
+
+
 }

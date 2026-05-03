@@ -102,6 +102,8 @@ void Display_partials(spectrum_t *s)
 		{
 			BSP_LCD_SetTextColor(partialColor);
 			BSP_LCD_DrawVLine(partialXpos,   3 * PADDING+ (MAXPARTIALHEIGHT - partialHeight), partialHeight);
+			BSP_LCD_DrawVLine(partialXpos + 1,   3 * PADDING+ (MAXPARTIALHEIGHT - partialHeight), partialHeight);
+			BSP_LCD_DrawVLine(partialXpos + 2,   3 * PADDING+ (MAXPARTIALHEIGHT - partialHeight), partialHeight);
 		}
 	}
 }

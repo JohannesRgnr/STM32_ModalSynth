@@ -18,5 +18,7 @@
 
 void Touchscreen(void);
 static void ts_triggerArea(uint16_t x, uint16_t y, uint8_t state);
+static void ts_MorphArea(uint16_t x, uint16_t y, uint8_t state);
+
 
 #endif //MODAL_SYNTH_TOUCHSCREEN_H

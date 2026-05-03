@@ -39,12 +39,15 @@
 #define MORPHAREA_Y                 (PARTIALSAREAHEIGHT + 2 * PADDING)
 #define MORPHAREAWIDTH              PARTIALSAREAWIDTH
 #define MORPHAREAHEIGHT             (TRIGGERAREA_Y - PARTIALSAREAHEIGHT - 3 * PADDING)
+#define MORPHAREA_Left              MORPHAREA_X
+#define MORPHAREA_Right             (MORPHAREA_X + MORPHAREAWIDTH)
+#define MORPHAREA_Top               MORPHAREA_Y
+#define MORPHAREA_Bottom            (MORPHAREA_Y + MORPHAREAHEIGHT)
 
 #define TRIGGERAREA_X               8
 #define TRIGGERAREA_Y               300
 #define TRIGGERAREAWIDTH            (BSP_LCD_GetXSize() - TRIGGERAREA_X - PADDING)
 #define TRIGGERAREAHEIGHT           (BSP_LCD_GetYSize() - TRIGGERAREA_Y - PADDING)
-
 #define TRIGGERAREA_Left            (TRIGGERAREA_X + 2 * PADDING)
 #define TRIGGERAREA_Right           (TRIGGERAREAWIDTH - PADDING)
 #define TRIGGERAREA_Top             (TRIGGERAREA_Y + 2 * PADDING)
