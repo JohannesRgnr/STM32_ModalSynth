@@ -155,7 +155,7 @@ int main(void)
   BSP_LCD_LayerDefaultInit(LTDC_DEFAULT_ACTIVE_LAYER, LCD_FRAME_BUFFER);
   BSP_LCD_DisplayOn();
 
-  Display_Init();
+
 
   /* Initialize the touchscreen */
   BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
@@ -165,7 +165,7 @@ int main(void)
   /* Initialize the audio */
   AUDIO_Init();
 
-
+  Display_Init();
   // ConsoleInit();
 
   /* USER CODE END 2 */
