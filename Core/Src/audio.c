@@ -19,7 +19,6 @@
 #include "noise.h"
 #include "reverb.h"
 #include "spectra.h"
-#include "spectrum_morph.h"
 #include "stereo_delay.h"
 
 /**
@@ -57,8 +56,9 @@ void AUDIO_Init()
 
     // initialize audio objects
     noise.amp = 0.5f;
-    spectrum_init(&spectrum, SawPartials, SawAmp);
-    // xfade_2Spectra(Bell1Partials, SawPartials, ExpAmp, SawAmp, &spectrum);
+    spectrum_init(&spectrum, SawPartials, Bell1Partials, SawAmp, ExpAmp);
+    spectrum_xfade(&spectrum, 0.5f);
+
     filterbank_init(&filterbank, &spectrum);
     freq.val = freq.dst = 0.f;
     Delay_init();
@@ -67,13 +67,13 @@ void AUDIO_Init()
 
  void audioBlock(int16_t *output, const int32_t samples)
 {
-    freq.inc = (freq.dst - freq.val) * samples * TS;
+    freq.inc = (freq.dst - freq.val) * (float)samples * TS;
     float samp, sampleL, sampleR;
 
-    delay_wet = 0.5;
-    delay_feedback = 0.6;
-    reverb_amount = 0.7;
-    reverb_feedback = 0.9;
+    delay_wet = 0.5f;
+    delay_feedback = 0.6f;
+    reverb_amount = 0.7f;
+    reverb_feedback = 0.9f;
 
     for (int i = 0; i < samples; i++)
     {

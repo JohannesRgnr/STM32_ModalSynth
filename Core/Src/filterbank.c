@@ -13,62 +13,60 @@
 
 #include "consts.h"
 #include "filters.h"
-
+#include "help_func.h"
 
 
 reson_t reson[BANDS];
 
+
 /**
- * Linear Crossfade between 2 spectra
+ * Initialize a spectrum to a set of frequency ratios and amplitudes
+ * @param s
  * @param freqRatios1
  * @param freqRatios2
  * @param amps1
  * @param amps2
- * @param s Resulting Spectrum
  */
-void xfade_2Spectra(const float *freqRatios1, const float *freqRatios2, const float *amps1, const float *amps2, spectrum_t *s)
-{
-    for (int i = 0; i < BANDS; ++i)
-    {
-        s->freqRatios[i]    = (1.0f - s->xfade) * freqRatios1[i] + s->xfade * freqRatios2[i];
-        s->amps[i]          = (1.0f - s->xfade) * amps1[i] + s->xfade * amps2[i];
-    }
-}
-
-
-
-void spectrum_init(spectrum_t *s, const float *freqRatios, const float *amps)
+void spectrum_init(spectrum_t *s, const float *freqRatios1, const float *freqRatios2, const float *amps1, const float *amps2)
 {
     s->xfade = 0.0f;
+
     for (int i = 0; i < BANDS; ++i)
     {
-        s->freqRatios[i] = freqRatios[i];
-        s->amps[i] = amps[i];
+        s->freqRatios1[i] = freqRatios1[i];
+        s->amps1[i] = amps1[i];
+        s->freqRatios2[i] = freqRatios2[i];
+        s->amps2[i] = amps2[i];
+    }
+
+    spectrum_xfade(s, s->xfade);
+}
+
+
+/**
+ * Linear Crossfade between 2 spectra
+ * @param s Resulting Spectrum
+ * @param xfade crossfade value between 0. and 1.
+ */
+void spectrum_xfade(spectrum_t *s, float xfade)
+{
+    s->xfade = xfade;
+
+    for (int i = 0; i < BANDS; ++i)
+    {
+        s->freqRatios[i]    = Crossfade(s->freqRatios1[i], s->freqRatios2[i], s->xfade);
+        s->amps[i]          = Crossfade(s->amps1[i], s->amps2[i], s->xfade);
     }
 }
 
 
 
-
-// /**
-//  * Initialize the filterbank
-//  * @param f instance of the filterbank
-//  * @param freqRatios partials frequency ratios
-//  * @param amps partials amplitudes
-//  */
-// void filterbank_init(filterbank_t *f, const float *freqRatios, const float *amps)
-// {
-//     f->freq = 110;
-//     f->previousFreq = f->freq;
-//     f->decay = 8.0f;
-//     f->previousDecay = f->decay;
-//
-//     filterbank_spectrum(f, freqRatios, amps);
-//     filterbank_update(f);
-// }
-
-
-void filterbank_init(filterbank_t *f, spectrum_t *s)
+/**
+ * Initialize the filterbank
+ * @param f instance of the filterbank
+ * @param s instance of the spectrum
+ */
+void filterbank_init(filterbank_t *f, const spectrum_t *s)
 {
     f->freq = 110;
     f->previousFreq = f->freq;
@@ -80,23 +78,12 @@ void filterbank_init(filterbank_t *f, spectrum_t *s)
 }
 
 
-// /**
-//  * Load new spectrum (freq ratios and amplitudes) into filterbank
-//  * @param f instance of the filterbank
-//  * @param freqRatios partials frequency ratios
-//  * @param amps partials amplitudes
-//  */
-// void filterbank_spectrum(filterbank_t *f, const float *freqRatios, const float *amps)
-// {
-//     for (int i = 0; i < BANDS; i++)
-//     {
-//         f->band_freqratios[i] = freqRatios[i];
-//         f->band_gains[i] = amps[i];
-//     }
-// }
-
-
-void filterbank_spectrum(filterbank_t *f, spectrum_t *s)
+/**
+ * Load a spectrum into the filterbank
+ * @param f instance of the filterbank
+ * @param s instance of the spectrum
+ */
+void filterbank_spectrum(filterbank_t *f, const spectrum_t *s)
 {
     for (int i = 0; i < BANDS; i++)
     {
@@ -104,7 +91,6 @@ void filterbank_spectrum(filterbank_t *f, spectrum_t *s)
         f->band_gains[i] = s->amps[i];
     }
 }
-
 
 
 /**
@@ -154,7 +140,7 @@ void filterbank_update(filterbank_t *f)
  * @param sample sample to process
  * @return processed sample
  */
-float filterbank_process(filterbank_t *f, const float sample)
+float filterbank_process(const filterbank_t *f, const float sample)
 {
     float sumOuts = 0.0f;
 
