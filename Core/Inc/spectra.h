@@ -13,6 +13,7 @@
 #define NUMPRESETS  6
 
 extern const float Bell1Partials[]; // Bell 1 (Default)
+extern const float Bell2Partials[]; // Bell 2
 extern const float GongPartials[]; // Gong or Cymbal
 extern const float ChordPartials[]; // Minor Chord
 extern const float SawPartials[]; // Sawtooth (sort of...)

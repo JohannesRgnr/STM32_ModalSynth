@@ -7,7 +7,8 @@
  * @note
  */
 
-const float Bell1Partials[16]= {0.5f, 0.5f, 1.0f, 1.0f, 1.183f, 1.183f, 1.506f, 1.506f, 2.0f, 2.514f, 2.662f, 3.011f, 4.166f, 5.433f, 6.796f, 8.215f}; // Bell 1 (Default)
+const float Bell1Partials[16]= {1.000f, 2.006f, 2.406f, 3.012f, 4.012f, 4.329f, 5.153f, 5.235f, 5.341f, 5.782f, 6.035f, 7.582f, 7.776f, 8.371f, 8.382f, 8.529f}; // Bell 1 (Default)
+const float Bell2Partials[16]= {1.000f, 2.000f, 2.392f, 3.015f, 4.023f, 5.308f, 5.385f, 6.023f, 6.308f, 7.592f, 7.610f, 8.154f, 9.038f, 9.385f, 9.569f, 9.692f };
 const float GongPartials[16]= {1.0f, 1.01f, 1.59f, 1.582f, 2.14f, 2.143f, 2.3f, 2.308f, 2.65f, 2.92f, 3.16f, 3.5f, 3.6f, 3.65f, 4.06f, 4.15f}; // Gong or Cymbal
 const float ChordPartials[16] = {1.000f, 1.189f, 1.498f, 2.000f, 2.378f, 2.996f, 3.000f, 3.567f, 4.494f, 4.000f, 4.756f, 5.992f, 5.000f, 5.945f, 7.490f, 6.00f}; // Minor Chord
 const float SawPartials[16] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f , 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f}; // Sawtooth (sort of...)
