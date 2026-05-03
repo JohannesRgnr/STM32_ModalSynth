@@ -29,6 +29,7 @@ void Display_Init(void)
 	BSP_LCD_SelectLayer(LTDC_DEFAULT_ACTIVE_LAYER);
 
 	// BSP_LCD_SetFont(&LCD_DEFAULT_FONT);
+	BSP_LCD_SetFont(&FontChicagoFLF16);
 
 	/* Clear the LCD */
 	BSP_LCD_SetBackColor(COLOR_BACKGROUND);
