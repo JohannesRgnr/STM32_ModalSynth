@@ -8,6 +8,9 @@
  */
 
 #include "../Inc/touchscreen.h"
+
+#include <stdio.h>
+
 #include "exciter.h"
 #include "filterbank.h"
 #include "help_func.h"
@@ -62,7 +65,10 @@ void Touchscreen(void){
     uint16_t x = TS_State.touchX[0];
     uint16_t y = TS_State.touchY[0];
 
-
+    // char message[30];
+    // sprintf(message, "Touches: %d", TS_State.touchDetected);
+    // // BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+    // BSP_LCD_DisplayStringAt(30, 30, (uint8_t *)message, LEFT_MODE);
 
     // if inside trigger area
     if (x > TRIGGERAREA_Left  && x < TRIGGERAREA_Right && y > TRIGGERAREA_Top  && y < TRIGGERAREA_Bottom)
@@ -76,7 +82,7 @@ void Touchscreen(void){
 
     wasTouched = TS_State.touchDetected;
 
-    HAL_Delay(6);
+
 }
 
 /**
@@ -89,7 +95,7 @@ static void ts_triggerArea(uint16_t x, uint16_t y, uint8_t state)
 {
     if (state == 0)
     {
-        if (TS_State.touchDetected == 1) // new touch
+        if (TS_State.touchDetected == 1) // new single finger touch
         {
             // evaluate fundamental frequency
             float midiNote = scale(TRIGGERAREA_Left, TRIGGERAREA_Right, 24, 90, x);
@@ -110,20 +116,24 @@ static void ts_triggerArea(uint16_t x, uint16_t y, uint8_t state)
             BSP_LCD_SetTextColor(BLUE_UI_MAT);
             BSP_LCD_FillCircle(x, y, 8);
         }
+
     }
     else  // was already touched
     {
-        float midiNote = scale(TRIGGERAREA_Left, TRIGGERAREA_Right, 24, 90, x);
-        midiNote = clip(midiNote, 24, 90);
-        const float duration = scale(TRIGGERAREA_Top,TRIGGERAREA_Bottom, 4, 10, y);
+        if (TS_State.touchDetected == 1)
+        {
+            float midiNote = scale(TRIGGERAREA_Left, TRIGGERAREA_Right, 24, 90, x);
+            midiNote = clip(midiNote, 24, 90);
+            const float duration = scale(TRIGGERAREA_Top,TRIGGERAREA_Bottom, 4, 10, y);
 
-        freq.dst = mtof(midiNote);
-        filterbank.decay = duration;
-        filterbank_update(&filterbank);
+            freq.dst = mtof(midiNote);
+            filterbank.decay = duration;
+            filterbank_update(&filterbank);
 
-        // draw trajectory
-        BSP_LCD_SetTextColor(BLUE_UI_MAT);
-        BSP_LCD_FillCircle(x, y, 8);
+            // draw trajectory
+            BSP_LCD_SetTextColor(BLUE_UI_MAT);
+            BSP_LCD_FillCircle(x, y, 8);
+        }
     }
 }
 
@@ -132,13 +142,13 @@ static void ts_MorphArea(uint16_t x, uint16_t y, uint8_t state)
 {
     if (TS_State.touchDetected == 1) // new touch
     {
-        float xfade = scale(MORPHAREA_Left, MORPHAREA_Right, 0.0f, 1.0f, x);
+        float xfade = scale(MORPHAREA_Left + 50, MORPHAREA_Right - 50, 0.0f, 1.0f, x);
+        xfade = clip(xfade, 0.f, 1.f);
         spectrum_xfade(&spectrum, xfade);
         filterbank_spectrum(&filterbank, &spectrum);
         filterbank_update(&filterbank);
         clearPartialsArea();
         Display_partials(&spectrum);
+        HAL_Delay(20);
     }
-
-
 }

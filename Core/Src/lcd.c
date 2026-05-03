@@ -25,6 +25,8 @@ void Display_Default(void)
 
 void Display_Init(void)
 {
+	BSP_LCD_SetBrightness(100);
+
 	/* Set LCD Foreground Layer  */
 	BSP_LCD_SelectLayer(LTDC_DEFAULT_ACTIVE_LAYER);
 
@@ -45,7 +47,7 @@ void Display_Init(void)
 
 	// Display partials area
 	BSP_LCD_SetTextColor(COLOR_PAD);
-	BSP_LCD_FillRect(PARTIALAREA_X, PARTIALAREA_Y, PARTIALSAREAWIDTH, BSP_LCD_GetYSize() - TRIGGERAREAHEIGHT - 3 * PADDING);
+	BSP_LCD_FillRect(PARTIALAREA_X, PARTIALAREA_Y, PARTIALSAREAWIDTH, PARTIALSAREAHEIGHT);
 	BSP_LCD_SetTextColor(COLOR_BACKGROUND);
 	BSP_LCD_FillRect(PARTIALAREA_X + PADDING, PARTIALAREA_Y + PADDING, PARTIALSAREAWIDTH - 2 * PADDING, PARTIALSAREAHEIGHT - 2 * PADDING);
 
@@ -64,10 +66,10 @@ void Display_Init(void)
 
 	// Display morphing area
 	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP);
-	BSP_LCD_SetBackColor(COLOR_PAD);
-	// BSP_LCD_FillRect(MORPHAREA_X, MORPHAREA_Y, MORPHAREAWIDTH, MORPHAREAHEIGHT);
+	BSP_LCD_SetBackColor(COLOR_PAD_TRANSP);
+	BSP_LCD_FillRect(MORPHAREA_X, MORPHAREA_Y, MORPHAREAWIDTH, MORPHAREAHEIGHT);
 	BSP_LCD_SetTextColor(COLOR_TEXT);
-	BSP_LCD_DisplayStringAt(BSP_LCD_GetXSize() - 0.5*MORPHAREAWIDTH, MORPHAREA_Y + 0.33 * MORPHAREAHEIGHT, (uint8_t *)"<<<< morph >>>>", CENTER_MODE);
+	BSP_LCD_DisplayStringAt(BSP_LCD_GetXSize(), MORPHAREA_Y + 0.4 * MORPHAREAHEIGHT, (uint8_t *)"<<<< morph >>>>", CENTER_MODE);
 
 
 	// Display touchscreen area for note triggering
@@ -88,6 +90,7 @@ void Display_Init(void)
  */
 void Display_partials(spectrum_t *s)
 {
+	BSP_LCD_SelectLayer(1);
 	const float hLength = PARTIALSAREAWIDTH - 4 * PADDING;
 
 	for (int i = 0; i < BANDS; i++)
@@ -95,17 +98,16 @@ void Display_partials(spectrum_t *s)
 		const uint16_t partialXpos = (uint16_t)(s->freqRatios[i] * (hLength / BANDS) + 2 * PADDING);
 		const uint16_t partialHeight = (uint16_t)(MAXPARTIALHEIGHT * s->amps[i]);
 		uint32_t partialColor;
-		partialColor =  (uint32_t)(scale(0.f, 1.f, 0.6f, 1.f, s->amps[i]) * 0xFF) * 0x1000000 + BLUE_PARTIALS;
+		partialColor =  (uint32_t)(scale(0.f, 1.f, 0.5f, 1.f, s->amps[i]) * 0xFF) * 0x1000000 + BLUE_PARTIALS;
 
 		// display only if partial fits within the partials area
 		if (partialXpos < PARTIALSAREAWIDTH - 2 * PADDING)
 		{
 			BSP_LCD_SetTextColor(partialColor);
-			BSP_LCD_DrawVLine(partialXpos,   3 * PADDING+ (MAXPARTIALHEIGHT - partialHeight), partialHeight);
-			BSP_LCD_DrawVLine(partialXpos + 1,   3 * PADDING+ (MAXPARTIALHEIGHT - partialHeight), partialHeight);
-			BSP_LCD_DrawVLine(partialXpos + 2,   3 * PADDING+ (MAXPARTIALHEIGHT - partialHeight), partialHeight);
+			BSP_LCD_FillRect(partialXpos, 3 * PADDING+ (MAXPARTIALHEIGHT - partialHeight), 6, partialHeight);
 		}
 	}
+
 }
 
 

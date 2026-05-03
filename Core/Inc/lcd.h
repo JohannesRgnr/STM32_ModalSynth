@@ -37,7 +37,7 @@
 
 #define MORPHAREA_X                 8
 #define MORPHAREA_Y                 (PARTIALSAREAHEIGHT + 2 * PADDING)
-#define MORPHAREAWIDTH              PARTIALSAREAWIDTH
+#define MORPHAREAWIDTH              (BSP_LCD_GetXSize() - MORPHAREA_X - PADDING)
 #define MORPHAREAHEIGHT             (TRIGGERAREA_Y - PARTIALSAREAHEIGHT - 3 * PADDING)
 #define MORPHAREA_Left              MORPHAREA_X
 #define MORPHAREA_Right             (MORPHAREA_X + MORPHAREAWIDTH)
