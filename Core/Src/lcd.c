@@ -11,10 +11,8 @@
 
 #include "filterbank.h"
 #include "help_func.h"
-#include "spectra.h"
 
-
-
+extern spectrum_t spectrum;
 
 void Display_Default(void)
 {
@@ -70,7 +68,7 @@ void Display_Init(void)
 	BSP_LCD_FillRect(2 * BORDER, BSP_LCD_GetYSize()/2 + BORDER, BSP_LCD_GetXSize() - 4 * BORDER, BSP_LCD_GetYSize()/2 - 3 * BORDER);
 
 	// Display partials
-	Display_partials(Bell1Partials, RampAmp);
+	Display_partials(&spectrum);
 }
 
 
@@ -79,16 +77,16 @@ void Display_Init(void)
  * @param freqRatios partials frequency ratios
  * @param amps partials amplitudes
  */
-void Display_partials(const float *freqRatios, const float *amps)
+void Display_partials(spectrum_t *s)
 {
 	const float hLength = PARTIALSAREAWIDTH - 4 * BORDER;
 
 	for (int i = 0; i < BANDS; i++)
 	{
-		const uint16_t partialXpos = (uint16_t)(freqRatios[i] * (hLength / BANDS) + 2 * BORDER);
-		const uint16_t partialLength = (uint16_t)(MAXPARTIALLENGTH * amps[i]);
+		const uint16_t partialXpos = (uint16_t)(s->freqRatios[i] * (hLength / BANDS) + 2 * BORDER);
+		const uint16_t partialLength = (uint16_t)(MAXPARTIALLENGTH * s->amps[i]);
 		uint32_t partialColor;
-		partialColor =  (uint32_t)(scale(0.f, 1.f, 0.6f, 1.f, amps[i]) * 0xFF) * 0x1000000 + BLUE_PARTIALS;
+		partialColor =  (uint32_t)(scale(0.f, 1.f, 0.6f, 1.f, s->amps[i]) * 0xFF) * 0x1000000 + BLUE_PARTIALS;
 
 		// display only if partial fits within the partials area
 		if (partialXpos < PARTIALSAREAWIDTH - 2 * BORDER)

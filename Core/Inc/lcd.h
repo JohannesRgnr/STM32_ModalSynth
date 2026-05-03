@@ -10,6 +10,7 @@
 #ifndef MODAL_SYNTH_LCD_H
 #define MODAL_SYNTH_LCD_H
 
+#include "filterbank.h"
 #include "stm32f769i_discovery_lcd.h"
 
 #define LCD_FRAME_BUFFER          SDRAM_DEVICE_ADDR
@@ -31,7 +32,7 @@
 
 void Display_Default(void);
 void Display_Init(void);
-void Display_partials(const float *freqRatios, const float *amps);
+void Display_partials(spectrum_t *s);
 void clearTriggerArea(void);
 void clearPartialsArea(void);
 
