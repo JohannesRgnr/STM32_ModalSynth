@@ -51,6 +51,8 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Src/usr_btn.c
         Core/Src/stereo_delay.c
         Core/Src/reverb.c
+        Utilities/Fonts/FontChicagoFLF16.c
+        Utilities/Fonts/FontChicagoFLF20.c
 
 
         #        Utilities/Fonts/font8.c
