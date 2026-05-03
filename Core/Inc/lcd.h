@@ -29,9 +29,9 @@
 
 #define PADDING                     8
 
-#define PARTIALAREA_X               8
+#define PARTIALAREA_X               150
 #define PARTIALAREA_Y               8
-#define PARTIALSAREAWIDTH           (BSP_LCD_GetXSize() / 1.5)
+#define PARTIALSAREAWIDTH           500
 #define PARTIALSAREAHEIGHT          (BSP_LCD_GetYSize() / 2.5)
 #define MAXPARTIALHEIGHT            (PARTIALSAREAHEIGHT - PARTIALAREA_Y  - 2 * PADDING)
 

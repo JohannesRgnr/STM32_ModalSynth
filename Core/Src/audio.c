@@ -56,7 +56,7 @@ void AUDIO_Init()
 
     // initialize audio objects
     noise.amp = 0.5f;
-    spectrum_init(&spectrum, SawPartials, Bell2Partials, SawAmp, ExpAmp);
+    spectrum_init(&spectrum, SquarePartials, Bell2Partials, SquareAmp, ExpAmp);
     spectrum_xfade(&spectrum, 0.5f);
 
     filterbank_init(&filterbank, &spectrum);

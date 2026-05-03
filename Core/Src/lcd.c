@@ -94,18 +94,18 @@ void Display_Init(void)
 void Display_partials(spectrum_t *s)
 {
 	// BSP_LCD_SelectLayer(1);
-	const float hLength = PARTIALSAREAWIDTH - 4 * PADDING;
+	const float hLength = PARTIALSAREAWIDTH - PADDING;
 
 	for (int i = 0; i < BANDS; i++)
 	{
-		const uint16_t partialXpos = (uint16_t)(s->freqRatios[i] * (hLength / BANDS) + 2 * PADDING);
+		const uint16_t partialXpos = (uint16_t)(s->freqRatios[i] * (hLength / BANDS) + PARTIALAREA_X);
 		const uint16_t partialHeight = (uint16_t)(MAXPARTIALHEIGHT * s->amps[i]);
 
 		// Color transparency as function of the partial amplitude
 		uint32_t partialColor = (uint32_t)(scale(0.f, 1.f, 0.5f, 1.f, s->amps[i]) * 0xFF) * 0x1000000 + BLUE_PARTIALS;
 
 		// display only if partial fits within the partials area
-		if (partialXpos < PARTIALSAREAWIDTH)
+		if (partialXpos < PARTIALAREA_X + PARTIALSAREAWIDTH - PADDING)
 		{
 			BSP_LCD_SetTextColor(partialColor);
 			BSP_LCD_FillRect(partialXpos, 3 * PADDING+ (MAXPARTIALHEIGHT - partialHeight), 6, partialHeight);
@@ -129,8 +129,7 @@ void clearTriggerArea(void)
 void clearPartialsArea(void)
 {
 	BSP_LCD_SetTextColor(COLOR_BACKGROUND);
-	BSP_LCD_FillRect(PARTIALAREA_X + PADDING, PARTIALAREA_Y + PADDING, PARTIALSAREAWIDTH - 2 * PADDING,
-	                 PARTIALSAREAHEIGHT - 2 * PADDING);
+	BSP_LCD_FillRect(PARTIALAREA_X, PARTIALAREA_Y, PARTIALSAREAWIDTH, PARTIALSAREAHEIGHT );
 }
 
 void clearMorphArea(void)
