@@ -82,6 +82,8 @@ extern sFONT FontMenlo32;
 extern sFONT FontInconsolataNerdFont20;
 extern sFONT FontInconsolataNerdFont32;
 
+extern sFONT FontChicagoFLF16;
+extern sFONT FontChicagoFLF20;
 
 /**
   * @}
