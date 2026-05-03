@@ -24,14 +24,14 @@
 #define BLUE_UI_MAT                 0xFF2E4583
 #define BLUE_UI_MATTER              0xFF293556
 #define COLOR_PAD_TRANSP            0xCC707070
-
+#define ORANGE_UI                   0xCCEF8354
 
 
 #define PADDING                     8
 
 #define PARTIALAREA_X               8
 #define PARTIALAREA_Y               8
-#define PARTIALSAREAWIDTH           (BSP_LCD_GetXSize() / 2)
+#define PARTIALSAREAWIDTH           (BSP_LCD_GetXSize() / 1.5)
 #define PARTIALSAREAHEIGHT          (BSP_LCD_GetYSize() / 2.5)
 #define MAXPARTIALHEIGHT            (PARTIALSAREAHEIGHT - PARTIALAREA_Y  - 2 * PADDING)
 
@@ -58,6 +58,7 @@ void Display_Init(void);
 void Display_partials(spectrum_t *s);
 void clearTriggerArea(void);
 void clearPartialsArea(void);
+void clearMorphArea(void);
 
 
 #endif //MODAL_SYNTH_LCD_H

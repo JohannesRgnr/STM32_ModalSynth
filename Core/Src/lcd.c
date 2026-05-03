@@ -47,7 +47,7 @@ void Display_Init(void)
 
 	// Display partials area
 	BSP_LCD_SetTextColor(COLOR_PAD);
-	BSP_LCD_FillRect(PARTIALAREA_X, PARTIALAREA_Y, PARTIALSAREAWIDTH, PARTIALSAREAHEIGHT);
+	// BSP_LCD_FillRect(PARTIALAREA_X, PARTIALAREA_Y, PARTIALSAREAWIDTH, PARTIALSAREAHEIGHT);
 	BSP_LCD_SetTextColor(COLOR_BACKGROUND);
 	BSP_LCD_FillRect(PARTIALAREA_X + PADDING, PARTIALAREA_Y + PADDING, PARTIALSAREAWIDTH - 2 * PADDING, PARTIALSAREAHEIGHT - 2 * PADDING);
 
@@ -57,7 +57,7 @@ void Display_Init(void)
 
 	/* Display LCD messages */
 	// BSP_LCD_SetFont(&FontInconsolataNerdFont32);
-	BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * PADDING, (uint8_t *)"Bell", RIGHT_MODE);
+	// BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * PADDING, (uint8_t *)"Bell", RIGHT_MODE);
 
 	// Display freq and magnitude axes
 	// BSP_LCD_SetTextColor(GREY_UI);
@@ -69,14 +69,17 @@ void Display_Init(void)
 	BSP_LCD_SetBackColor(COLOR_PAD_TRANSP);
 	BSP_LCD_FillRect(MORPHAREA_X, MORPHAREA_Y, MORPHAREAWIDTH, MORPHAREAHEIGHT);
 	BSP_LCD_SetTextColor(COLOR_TEXT);
-	BSP_LCD_DisplayStringAt(BSP_LCD_GetXSize(), MORPHAREA_Y + 0.4 * MORPHAREAHEIGHT, (uint8_t *)"<<<< morph >>>>", CENTER_MODE);
+	BSP_LCD_DisplayStringAt(2* PADDING, MORPHAREA_Y + MORPHAREAHEIGHT - 24, (uint8_t *)"morph pad", RIGHT_MODE);
 
 
 	// Display touchscreen area for note triggering
+	BSP_LCD_SetBackColor(COLOR_PAD);
 	BSP_LCD_SetTextColor(GREY_UI);
-	BSP_LCD_DrawRect(TRIGGERAREA_X, TRIGGERAREA_Y, TRIGGERAREAWIDTH, TRIGGERAREAHEIGHT);
+	// BSP_LCD_DrawRect(TRIGGERAREA_X, TRIGGERAREA_Y, TRIGGERAREAWIDTH, TRIGGERAREAHEIGHT);
 	BSP_LCD_SetTextColor(COLOR_PAD);
-	BSP_LCD_FillRect(TRIGGERAREA_X + PADDING, TRIGGERAREA_Y + PADDING, TRIGGERAREAWIDTH - 2 * PADDING, TRIGGERAREAHEIGHT - 2 * PADDING);
+	BSP_LCD_FillRect(TRIGGERAREA_X, TRIGGERAREA_Y, TRIGGERAREAWIDTH, TRIGGERAREAHEIGHT);
+	BSP_LCD_SetTextColor(COLOR_TEXT);
+	BSP_LCD_DisplayStringAt(2 * PADDING, TRIGGERAREA_Y + TRIGGERAREAHEIGHT - 24, (uint8_t *)"trigger pad", RIGHT_MODE);
 
 	// Display partials
 	Display_partials(&spectrum);
@@ -90,18 +93,19 @@ void Display_Init(void)
  */
 void Display_partials(spectrum_t *s)
 {
-	BSP_LCD_SelectLayer(1);
+	// BSP_LCD_SelectLayer(1);
 	const float hLength = PARTIALSAREAWIDTH - 4 * PADDING;
 
 	for (int i = 0; i < BANDS; i++)
 	{
 		const uint16_t partialXpos = (uint16_t)(s->freqRatios[i] * (hLength / BANDS) + 2 * PADDING);
 		const uint16_t partialHeight = (uint16_t)(MAXPARTIALHEIGHT * s->amps[i]);
-		uint32_t partialColor;
-		partialColor =  (uint32_t)(scale(0.f, 1.f, 0.5f, 1.f, s->amps[i]) * 0xFF) * 0x1000000 + BLUE_PARTIALS;
+
+		// Color transparency as function of the partial amplitude
+		uint32_t partialColor = (uint32_t)(scale(0.f, 1.f, 0.5f, 1.f, s->amps[i]) * 0xFF) * 0x1000000 + BLUE_PARTIALS;
 
 		// display only if partial fits within the partials area
-		if (partialXpos < PARTIALSAREAWIDTH - 2 * PADDING)
+		if (partialXpos < PARTIALSAREAWIDTH)
 		{
 			BSP_LCD_SetTextColor(partialColor);
 			BSP_LCD_FillRect(partialXpos, 3 * PADDING+ (MAXPARTIALHEIGHT - partialHeight), 6, partialHeight);
@@ -114,8 +118,11 @@ void Display_partials(spectrum_t *s)
 void clearTriggerArea(void)
 {
 	BSP_LCD_SetTextColor(COLOR_PAD);
-	BSP_LCD_FillRect(TRIGGERAREA_X + PADDING, TRIGGERAREA_Y + PADDING, TRIGGERAREAWIDTH - 2 * PADDING,
-	                 TRIGGERAREAHEIGHT - 2 * PADDING);
+	BSP_LCD_SetBackColor(COLOR_PAD);
+	BSP_LCD_FillRect(TRIGGERAREA_X, TRIGGERAREA_Y, TRIGGERAREAWIDTH, TRIGGERAREAHEIGHT);
+
+	BSP_LCD_SetTextColor(COLOR_TEXT);
+	BSP_LCD_DisplayStringAt(2 * PADDING, TRIGGERAREA_Y + TRIGGERAREAHEIGHT - 24, (uint8_t *)"trigger pad", RIGHT_MODE);
 }
 
 
@@ -126,3 +133,11 @@ void clearPartialsArea(void)
 	                 PARTIALSAREAHEIGHT - 2 * PADDING);
 }
 
+void clearMorphArea(void)
+{
+	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP);
+	BSP_LCD_SetBackColor(COLOR_PAD_TRANSP);
+	BSP_LCD_FillRect(MORPHAREA_X, MORPHAREA_Y, MORPHAREAWIDTH, MORPHAREAHEIGHT);
+	BSP_LCD_SetTextColor(COLOR_TEXT);
+	BSP_LCD_DisplayStringAt(2* PADDING, MORPHAREA_Y + MORPHAREAHEIGHT - 24, (uint8_t *)"morph pad", RIGHT_MODE);
+}

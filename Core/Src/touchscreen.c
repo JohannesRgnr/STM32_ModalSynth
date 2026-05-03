@@ -142,13 +142,21 @@ static void ts_MorphArea(uint16_t x, uint16_t y, uint8_t state)
 {
     if (TS_State.touchDetected == 1) // new touch
     {
-        float xfade = scale(MORPHAREA_Left + 50, MORPHAREA_Right - 50, 0.0f, 1.0f, x);
+        float xfade = scale(MORPHAREA_Left + 20, MORPHAREA_Right - 20, 0.0f, 1.0f, x);
         xfade = clip(xfade, 0.f, 1.f);
         spectrum_xfade(&spectrum, xfade);
         filterbank_spectrum(&filterbank, &spectrum);
         filterbank_update(&filterbank);
-        clearPartialsArea();
-        Display_partials(&spectrum);
+
+
+        if ( x > MORPHAREA_Left + 20 && x < MORPHAREA_Right - 20 )
+        {
+            clearPartialsArea();
+            clearMorphArea();
+            Display_partials(&spectrum);
+            BSP_LCD_SetTextColor(ORANGE_UI);
+            BSP_LCD_FillRect(x, MORPHAREA_Y, 6, MORPHAREAHEIGHT);
+        }
         HAL_Delay(20);
     }
 }
