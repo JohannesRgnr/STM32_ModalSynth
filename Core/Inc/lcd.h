@@ -23,6 +23,8 @@
 #define BLUE_UI                     0xFF3E60C1
 #define BLUE_UI_MAT                 0xFF2E4583
 #define BLUE_UI_MATTER              0xFF293556
+#define COLOR_PAD_TRANSP            0xCC707070
+
 
 
 #define PADDING                     8
@@ -32,6 +34,11 @@
 #define PARTIALSAREAWIDTH           (BSP_LCD_GetXSize() / 2)
 #define PARTIALSAREAHEIGHT          (BSP_LCD_GetYSize() / 2.5)
 #define MAXPARTIALHEIGHT            (PARTIALSAREAHEIGHT - PARTIALAREA_Y  - 2 * PADDING)
+
+#define MORPHAREA_X                 8
+#define MORPHAREA_Y                 (PARTIALSAREAHEIGHT + 2 * PADDING)
+#define MORPHAREAWIDTH              PARTIALSAREAWIDTH
+#define MORPHAREAHEIGHT             (TRIGGERAREA_Y - PARTIALSAREAHEIGHT - 3 * PADDING)
 
 #define TRIGGERAREA_X               8
 #define TRIGGERAREA_Y               300
