@@ -77,7 +77,7 @@ void UserButton(void) // to choose "presets" = partials freq ratios + amplitudes
             filterbank_spectrum(&filterbank, &spectrum);
             break;
         case 6:
-            BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * BORDER, (uint8_t *)"CB808", RIGHT_MODE);
+            BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * BORDER, (uint8_t *)"808 Cowbell", RIGHT_MODE);
             Display_partials(&spectrum);
             filterbank_spectrum(&filterbank, &spectrum);
             break;
