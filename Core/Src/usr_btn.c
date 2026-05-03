@@ -35,7 +35,6 @@ void UserButton(void) // to choose "presets" = partials freq ratios + amplitudes
     if (CheckForUserButton())
     {
         Display_Default();
-        // BSP_LCD_SetFont(&FontInconsolataNerdFont20);
         preset ++;
 
         if (preset > NUMPRESETS)
@@ -52,32 +51,32 @@ void UserButton(void) // to choose "presets" = partials freq ratios + amplitudes
         {
         default:
         case 1:
-            BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * BORDER, (uint8_t *)"Bell", RIGHT_MODE);
+            BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * PADDING, (uint8_t *)"Bell", RIGHT_MODE);
             Display_partials(&spectrum);
             filterbank_spectrum(&filterbank, &spectrum);
             break;
         case 2:
-            BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * BORDER, (uint8_t *)"Gong", RIGHT_MODE);
+            BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * PADDING, (uint8_t *)"Gong", RIGHT_MODE);
             Display_partials(&spectrum);
             filterbank_spectrum(&filterbank, &spectrum);
             break;
         case 3:
-            BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * BORDER, (uint8_t *)"Chord", RIGHT_MODE);
+            BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * PADDING, (uint8_t *)"Chord", RIGHT_MODE);
             Display_partials(&spectrum);
             filterbank_spectrum(&filterbank, &spectrum);
             break;
         case 4:
-            BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * BORDER, (uint8_t *)"Sawtooth", RIGHT_MODE);
+            BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * PADDING, (uint8_t *)"Sawtooth", RIGHT_MODE);
             Display_partials(&spectrum);
             filterbank_spectrum(&filterbank, &spectrum);
             break;
         case 5:
-            BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * BORDER, (uint8_t *)"Square", RIGHT_MODE);
+            BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * PADDING, (uint8_t *)"Square", RIGHT_MODE);
             Display_partials(&spectrum);
             filterbank_spectrum(&filterbank, &spectrum);
             break;
         case 6:
-            BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * BORDER, (uint8_t *)"808 Cowbell", RIGHT_MODE);
+            BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * PADDING, (uint8_t *)"808 Cowbell", RIGHT_MODE);
             Display_partials(&spectrum);
             filterbank_spectrum(&filterbank, &spectrum);
             break;

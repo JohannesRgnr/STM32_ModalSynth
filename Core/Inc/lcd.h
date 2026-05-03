@@ -25,10 +25,23 @@
 #define BLUE_UI_MATTER              0xFF293556
 
 
-#define BORDER                      8
+#define PADDING                     8
+
+#define PARTIALAREA_X               8
+#define PARTIALAREA_Y               8
 #define PARTIALSAREAWIDTH           (BSP_LCD_GetXSize() / 2)
 #define PARTIALSAREAHEIGHT          (BSP_LCD_GetYSize() / 2.5)
-#define MAXPARTIALLENGTH            (PARTIALSAREAHEIGHT - 3 * BORDER)
+#define MAXPARTIALHEIGHT            (PARTIALSAREAHEIGHT - PARTIALAREA_Y  - 2 * PADDING)
+
+#define TRIGGERAREA_X               8
+#define TRIGGERAREA_Y               300
+#define TRIGGERAREAWIDTH            (BSP_LCD_GetXSize() - TRIGGERAREA_X - PADDING)
+#define TRIGGERAREAHEIGHT           (BSP_LCD_GetYSize() - TRIGGERAREA_Y - PADDING)
+
+#define TRIGGERAREA_Left            (TRIGGERAREA_X + 2 * PADDING)
+#define TRIGGERAREA_Right           (TRIGGERAREAWIDTH - PADDING)
+#define TRIGGERAREA_Top             (TRIGGERAREA_Y + 2 * PADDING)
+#define TRIGGERAREA_Bottom          (TRIGGERAREA_Y + TRIGGERAREAHEIGHT - 2 * PADDING)
 
 void Display_Default(void);
 void Display_Init(void);

@@ -61,8 +61,10 @@ void Touchscreen(void){
     uint16_t x = TS_State.touchX[0];
     uint16_t y = TS_State.touchY[0];
 
+
+
     // if inside trigger area
-    if (x > 3 * BORDER && y > BSP_LCD_GetYSize()/2 + 2 * BORDER && x < (BSP_LCD_GetXSize() - 3 * BORDER) && y < (BSP_LCD_GetYSize() - 4 * BORDER))
+    if (x > TRIGGERAREA_Left  && y > TRIGGERAREA_Top && x < TRIGGERAREA_Right && y < TRIGGERAREA_Bottom)
     {
         ts_triggerArea(x, y, wasTouched);
     }
@@ -85,7 +87,7 @@ static void ts_triggerArea(uint16_t x, uint16_t y, uint8_t state)
         if (TS_State.touchDetected == 1) // new touch
         {
             // evaluate fundamental frequency
-            float midiNote = scale(48, 752, 24, 90, x);
+            float midiNote = scale(TRIGGERAREA_Left, TRIGGERAREA_Right, 24, 90, x);
             midiNote = clip(midiNote, 24, 90);
             float frequency = mtof(midiNote);
 
@@ -101,14 +103,14 @@ static void ts_triggerArea(uint16_t x, uint16_t y, uint8_t state)
             clearTriggerArea();
             // draw trajectory
             BSP_LCD_SetTextColor(BLUE_UI_MAT);
-            BSP_LCD_FillCircle(x, y, 12);
+            BSP_LCD_FillCircle(x, y, 8);
         }
     }
     else  // was already touched
     {
-        float midiNote = scale(48, 752, 24, 90, x);
+        float midiNote = scale(TRIGGERAREA_Left, TRIGGERAREA_Right, 24, 90, x);
         midiNote = clip(midiNote, 24, 90);
-        const float duration = scale(BSP_LCD_GetYSize()/2.0f,BSP_LCD_GetYSize() - 32, 4, 10, y);
+        const float duration = scale(TRIGGERAREA_Top,TRIGGERAREA_Bottom, 4, 10, y);
 
         freq.dst = mtof(midiNote);
         filterbank.decay = duration;
@@ -116,6 +118,6 @@ static void ts_triggerArea(uint16_t x, uint16_t y, uint8_t state)
 
         // draw trajectory
         BSP_LCD_SetTextColor(BLUE_UI_MAT);
-        BSP_LCD_FillCircle(x, y, 12);
+        BSP_LCD_FillCircle(x, y, 8);
     }
 }
