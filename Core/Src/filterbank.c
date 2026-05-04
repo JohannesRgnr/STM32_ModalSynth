@@ -60,6 +60,34 @@ void spectrum_xfade(spectrum_t *s, float xfade)
 }
 
 
+/**
+ * Load a spectrum into the left or right slot
+ * @param s
+ * @param freqRatios
+ * @param amps
+ * @param leftOrRight
+ */
+void spectrum_load(spectrum_t *s, const float *freqRatios, const float *amps, uint8_t leftOrRight)
+{
+    if (leftOrRight == LEFT_SPECTRUM)
+    {
+        for (int i = 0; i < BANDS; i++)
+        {
+            s->freqRatios1[i] = freqRatios[i];
+            s->amps1[i] = amps[i];
+        }
+    }
+    else if (leftOrRight == RIGHT_SPECTRUM)
+    {
+        for (int i = 0; i < BANDS; i++)
+        {
+            s->freqRatios2[i] = freqRatios[i];
+            s->amps2[i] = amps[i];
+        }
+    }
+}
+
+
 
 /**
  * Initialize the filterbank
