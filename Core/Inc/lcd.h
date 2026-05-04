@@ -18,7 +18,8 @@
 #define COLOR_BACKGROUND            0xFF000000
 #define GREY_UI                     0xFFC0C0C0
 #define COLOR_PAD                   0xFF707070
-#define COLOR_TEXT                  0xFFCCCCCC
+#define COLOR_TEXT_ACTIVE           0xFFCCCCCC
+#define COLOR_TEXT_INACTIVE         0xFF707070
 #define BLUE_PARTIALS               0x5983FC
 #define BLUE_UI                     0xFF3E60C1
 #define BLUE_UI_MAT                 0xFF2E4583
@@ -53,9 +54,16 @@
 #define TRIGGERAREA_Top             (TRIGGERAREA_Y + 2 * PADDING)
 #define TRIGGERAREA_Bottom          (TRIGGERAREA_Y + TRIGGERAREAHEIGHT - 2 * PADDING)
 
+#define MENUBARHEIGHT               48
+#define MENUBAR_ITEMS               5
+#define ITEM_WIDTH                  (BSP_LCD_GetXSize() / MENUBAR_ITEMS)
+
+
+
 void Display_Default(void);
 void Display_Init(void);
 void Display_partials(spectrum_t *s);
+void Display_morphBar(uint16_t x);
 void clearTriggerArea(void);
 void clearPartialsArea(void);
 // void clearMorphArea(void);

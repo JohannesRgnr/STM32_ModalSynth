@@ -85,6 +85,13 @@ void spectrum_load(spectrum_t *s, const float *freqRatios, const float *amps, ui
             s->amps2[i] = amps[i];
         }
     }
+
+    // update resulting spectrum
+    for (int i = 0; i < BANDS; ++i)
+    {
+        s->freqRatios[i]    = Crossfade(s->freqRatios1[i], s->freqRatios2[i], s->xfade);
+        s->amps[i]          = Crossfade(s->amps1[i], s->amps2[i], s->xfade);
+    }
 }
 
 

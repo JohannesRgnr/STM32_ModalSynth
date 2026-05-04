@@ -18,7 +18,7 @@ void Display_Default(void)
 {
 	/* Default LCD settings */
 	// BSP_LCD_SetFont(&Font16);
-	BSP_LCD_SetTextColor(COLOR_TEXT);
+	BSP_LCD_SetTextColor(COLOR_TEXT_ACTIVE);
 	BSP_LCD_SetBackColor(COLOR_BACKGROUND);
 }
 
@@ -58,26 +58,26 @@ void Display_Init(void)
 
 	// Display menu bar
 	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP1);
-	BSP_LCD_FillRect(0, 0, TRIGGERAREAWIDTH, 48);
+	BSP_LCD_FillRect(0, 0, BSP_LCD_GetXSize(), MENUBARHEIGHT);
 	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP2);
-	BSP_LCD_FillRect(0, 48, TRIGGERAREAWIDTH, 5);
+	BSP_LCD_FillRect(0, MENUBARHEIGHT, BSP_LCD_GetXSize(), 5);
 
 	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP3);
-	BSP_LCD_DrawVLine(160, 0, 48);
-	BSP_LCD_DrawVLine(320, 0, 48);
-	BSP_LCD_DrawVLine(480, 0, 48);
-	BSP_LCD_DrawVLine(640, 0, 48);
+	BSP_LCD_DrawVLine(ITEM_WIDTH, 0, 48);
+	BSP_LCD_DrawVLine(ITEM_WIDTH * 2, 0, 48);
+	BSP_LCD_DrawVLine(ITEM_WIDTH * 3, 0, 48);
+	BSP_LCD_DrawVLine(ITEM_WIDTH * 4, 0, 48);
 
-
-	BSP_LCD_SetBackColor(0x00000000);
+	// fill menu items
+	BSP_LCD_SetBackColor(COLOR_PAD_TRANSP1);
 	BSP_LCD_SetFont(&FontChicagoFLF16);
 	BSP_LCD_SetTextColor(ORANGE_TEXT);
-	BSP_LCD_DisplayStringAt(80 - BSP_LCD_GetXSize()/2, 20, (uint8_t *)"Bell 2", CENTER_MODE);
-	BSP_LCD_DisplayStringAt(240 - BSP_LCD_GetXSize()/2 , 20, (uint8_t *)"Square", CENTER_MODE);
-	BSP_LCD_SetTextColor(COLOR_TEXT);
-	BSP_LCD_DisplayStringAt(400 - BSP_LCD_GetXSize()/2, 20, (uint8_t *)"LFO", CENTER_MODE);
-	BSP_LCD_DisplayStringAt(560 - BSP_LCD_GetXSize()/2, 20, (uint8_t *)"Delay", CENTER_MODE);
-	BSP_LCD_DisplayStringAt(720 - BSP_LCD_GetXSize()/2, 20, (uint8_t *)"Reverb", CENTER_MODE);
+	BSP_LCD_DisplayStringAt((ITEM_WIDTH/2) - BSP_LCD_GetXSize()/2, 20, (uint8_t *)"Bell 1", CENTER_MODE);
+	BSP_LCD_DisplayStringAt(3 * (ITEM_WIDTH/2) - BSP_LCD_GetXSize()/2 , 20, (uint8_t *)"Saw", CENTER_MODE);
+	BSP_LCD_SetTextColor(COLOR_TEXT_ACTIVE);
+	BSP_LCD_DisplayStringAt(5 * (ITEM_WIDTH/2) - BSP_LCD_GetXSize()/2, 20, (uint8_t *)"LFO", CENTER_MODE);
+	BSP_LCD_DisplayStringAt(7 * (ITEM_WIDTH/2) - BSP_LCD_GetXSize()/2, 20, (uint8_t *)"Delay", CENTER_MODE);
+	BSP_LCD_DisplayStringAt(9 * (ITEM_WIDTH/2) - BSP_LCD_GetXSize()/2, 20, (uint8_t *)"Reverb", CENTER_MODE);
 
 
 	// Display touchscreen area for note triggering
@@ -90,10 +90,7 @@ void Display_Init(void)
 	Display_partials(&spectrum);
 
 	// Display morphing bar
-	BSP_LCD_SetTextColor(ORANGE_UI);
-	BSP_LCD_FillRect(PARTIALSAREA_Left + 20, PARTIALSAREA_Y, 16, 7);
-	BSP_LCD_FillCircle(PARTIALSAREA_Left + 20, PARTIALSAREA_Y + 3, 3);
-	BSP_LCD_FillCircle(PARTIALSAREA_Left + 20 + 16, PARTIALSAREA_Y + 3, 3);
+	Display_morphBar(PARTIALSAREA_Left + 20);
 }
 
 
@@ -104,6 +101,8 @@ void Display_Init(void)
  */
 void Display_partials(spectrum_t *s)
 {
+	clearPartialsArea();
+
 	// BSP_LCD_SelectLayer(1);
 	const float hLength = PARTIALSAREAWIDTH - PADDING;
 
@@ -125,6 +124,13 @@ void Display_partials(spectrum_t *s)
 
 }
 
+void Display_morphBar(uint16_t x)
+{
+	BSP_LCD_SetTextColor(ORANGE_UI);
+	BSP_LCD_FillRect(x, PARTIALSAREA_Y, 16, 7);
+	BSP_LCD_FillCircle(x, PARTIALSAREA_Y + 3, 3);
+	BSP_LCD_FillCircle(x + 16, PARTIALSAREA_Y + 3, 3);
+}
 
 void clearTriggerArea(void)
 {

@@ -37,6 +37,7 @@ extern float delay_wet;
 float reverb_amount;
 float reverbsend;
 extern float reverb_feedback;
+extern uint8_t LFO_btn, delay_btn, reverb_btn;
 
 float delayLOut = 0 ;		// left output of ping pong delay
 float delayROut = 0;		// right output of ping pong delay
@@ -56,7 +57,7 @@ void AUDIO_Init()
 
     // initialize audio objects
     noise.amp = 0.5f;
-    spectrum_init(&spectrum, SquarePartials, Bell2Partials, SquareAmp, ExpAmp);
+    spectrum_init(&spectrum, Bell1Partials, SawPartials, ExpAmp, SawAmp);
     spectrum_xfade(&spectrum, 0.0f);
 
     filterbank_init(&filterbank, &spectrum);
@@ -70,9 +71,9 @@ void AUDIO_Init()
     freq.inc = (freq.dst - freq.val) * (float)samples * TS;
     float samp, sampleL, sampleR;
 
-    delay_wet = 0.5f;
+    delay_wet = delay_btn * 0.5f;
     delay_feedback = 0.6f;
-    reverb_amount = 0.7f;
+    reverb_amount = reverb_btn * 0.7f;
     reverb_feedback = 0.9f;
 
     for (int i = 0; i < samples; i++)
