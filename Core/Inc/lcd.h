@@ -52,7 +52,7 @@
 #define TRIGGERAREA_Left            (TRIGGERAREA_X + 2 * PADDING)
 #define TRIGGERAREA_Right           (TRIGGERAREAWIDTH - PADDING)
 #define TRIGGERAREA_Top             (TRIGGERAREA_Y + 2 * PADDING)
-#define TRIGGERAREA_Bottom          (TRIGGERAREA_Y + TRIGGERAREAHEIGHT - 2 * PADDING)
+#define TRIGGERAREA_Bottom          (TRIGGERAREA_Y + TRIGGERAREAHEIGHT - PADDING)
 
 #define MENUBARHEIGHT               48
 #define MENUBAR_ITEMS               5
