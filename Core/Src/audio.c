@@ -69,7 +69,6 @@ void AUDIO_Init()
  void audioBlock(int16_t *output, const int32_t samples)
 {
     freq.inc = (freq.dst - freq.val) * (float)samples * TS;
-    float samp, sampleL, sampleR;
 
     delay_wet = delay_btn * 0.5f;
     delay_feedback = 0.6f;
@@ -79,7 +78,7 @@ void AUDIO_Init()
     for (int i = 0; i < samples; i++)
     {
         // Exciter
-        samp = whiteNoise(&noise);
+        float samp = whiteNoise(&noise);
         exciterAmp.val += exciterAmp.inc;
         if(exciterAmp.inc < 0.0f && exciterAmp.val < exciterAmp.dst)
             exciterAmp.val = exciterAmp.dst;
@@ -101,8 +100,8 @@ void AUDIO_Init()
         reverb_process(reverbsend, &reverbLout, &reverbRout);
 
         // Soft Clip the outputs
-        sampleL = SoftClip(delayLOut + reverbLout);
-        sampleR = SoftClip(delayROut + reverbRout);
+        float sampleL = SoftClip(delayLOut + reverbLout);
+        float sampleR = SoftClip(delayROut + reverbRout);
 
         // float to int16 conversion
         const int16_t sampleLOut = (int16_t)(32767.0f * sampleL);
