@@ -38,51 +38,60 @@ void Display_Init(void)
 	BSP_LCD_Clear(COLOR_BACKGROUND);
 
 	/* Set the LCD Text Color */
-	BSP_LCD_SetTextColor(COLOR_TEXT);
+	// BSP_LCD_SetTextColor(COLOR_TEXT);
 
 	// char str[32];
 	// sprintf(str, "partials");
-
 	// BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)str, RIGHT_MODE);
 
 	// Display partials area
-	BSP_LCD_SetTextColor(COLOR_PAD);
+	//BSP_LCD_SetTextColor(COLOR_PAD);
 	// BSP_LCD_FillRect(PARTIALAREA_X, PARTIALAREA_Y, PARTIALSAREAWIDTH, PARTIALSAREAHEIGHT);
-	BSP_LCD_SetTextColor(COLOR_BACKGROUND);
-	BSP_LCD_FillRect(PARTIALAREA_X + PADDING, PARTIALAREA_Y + PADDING, PARTIALSAREAWIDTH - 2 * PADDING, PARTIALSAREAHEIGHT - 2 * PADDING);
+	// BSP_LCD_SetTextColor(COLOR_BACKGROUND);
+	// BSP_LCD_FillRect(PARTIALSAREA_X + PADDING, PARTIALSAREA_Y + PADDING, PARTIALSAREAWIDTH - 2 * PADDING, PARTIALSAREAHEIGHT - 2 * PADDING);
 
-
-	/* Set the LCD Text Color */
-	BSP_LCD_SetTextColor(COLOR_TEXT);
 
 	/* Display LCD messages */
 	// BSP_LCD_SetFont(&FontInconsolataNerdFont32);
 	// BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * PADDING, (uint8_t *)"Bell", RIGHT_MODE);
 
-	// Display freq and magnitude axes
-	// BSP_LCD_SetTextColor(GREY_UI);
-	//BSP_LCD_DrawHLine(2 * PADDING, PARTIALSAREAHEIGHT, PARTIALSAREAWIDTH - 2 * PADDING);
-	//BSP_LCD_DrawVLine(2 * PADDING, 2 * PADDING, PARTIALSAREAHEIGHT - 2 * PADDING);
 
-	// Display morphing area
-	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP);
-	BSP_LCD_SetBackColor(COLOR_PAD_TRANSP);
-	BSP_LCD_FillRect(MORPHAREA_X, MORPHAREA_Y, MORPHAREAWIDTH, MORPHAREAHEIGHT);
+	// Display menu bar
+	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP1);
+	BSP_LCD_FillRect(0, 0, TRIGGERAREAWIDTH, 48);
+	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP2);
+	BSP_LCD_FillRect(0, 48, TRIGGERAREAWIDTH, 5);
+
+	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP3);
+	BSP_LCD_DrawVLine(160, 0, 48);
+	BSP_LCD_DrawVLine(320, 0, 48);
+	BSP_LCD_DrawVLine(480, 0, 48);
+	BSP_LCD_DrawVLine(640, 0, 48);
+
 	BSP_LCD_SetTextColor(COLOR_TEXT);
-	BSP_LCD_DisplayStringAt(2* PADDING, MORPHAREA_Y + MORPHAREAHEIGHT - 24, (uint8_t *)"morph pad", RIGHT_MODE);
+	BSP_LCD_SetBackColor(0x00000000);
+	BSP_LCD_SetFont(&FontChicagoFLF16);
+	BSP_LCD_DisplayStringAt(40, 20, (uint8_t *)"Bell 2", LEFT_MODE);
+	BSP_LCD_DisplayStringAt(196, 20, (uint8_t *)"Square", LEFT_MODE);
+	BSP_LCD_DisplayStringAt(376, 20, (uint8_t *)"LFO", LEFT_MODE);
+	BSP_LCD_DisplayStringAt(518, 20, (uint8_t *)"Delay", LEFT_MODE);
+	BSP_LCD_DisplayStringAt(678, 20, (uint8_t *)"Reverb", LEFT_MODE);
 
 
 	// Display touchscreen area for note triggering
-	BSP_LCD_SetBackColor(COLOR_PAD);
-	BSP_LCD_SetTextColor(GREY_UI);
-	// BSP_LCD_DrawRect(TRIGGERAREA_X, TRIGGERAREA_Y, TRIGGERAREAWIDTH, TRIGGERAREAHEIGHT);
-	BSP_LCD_SetTextColor(COLOR_PAD);
+	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP1);
 	BSP_LCD_FillRect(TRIGGERAREA_X, TRIGGERAREA_Y, TRIGGERAREAWIDTH, TRIGGERAREAHEIGHT);
-	BSP_LCD_SetTextColor(COLOR_TEXT);
-	BSP_LCD_DisplayStringAt(2 * PADDING, TRIGGERAREA_Y + TRIGGERAREAHEIGHT - 24, (uint8_t *)"trigger pad", RIGHT_MODE);
+	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP2);
+	BSP_LCD_FillRect(TRIGGERAREA_X, TRIGGERAREA_Y-5, TRIGGERAREAWIDTH, 5);
 
 	// Display partials
 	Display_partials(&spectrum);
+
+	// Display morphing bar
+	BSP_LCD_SetTextColor(ORANGE_UI);
+	BSP_LCD_FillRect(PARTIALSAREA_Left + 20, PARTIALSAREA_Y, 16, 7);
+	BSP_LCD_FillCircle(PARTIALSAREA_Left + 20, PARTIALSAREA_Y + 3, 3);
+	BSP_LCD_FillCircle(PARTIALSAREA_Left + 20 + 16, PARTIALSAREA_Y + 3, 3);
 }
 
 
@@ -98,17 +107,17 @@ void Display_partials(spectrum_t *s)
 
 	for (int i = 0; i < BANDS; i++)
 	{
-		const uint16_t partialXpos = (uint16_t)(s->freqRatios[i] * (hLength / BANDS) + PARTIALAREA_X);
+		const uint16_t partialXpos = (uint16_t)(s->freqRatios[i] * (hLength / BANDS) + PARTIALSAREA_X - 2 * PADDING);
 		const uint16_t partialHeight = (uint16_t)(MAXPARTIALHEIGHT * s->amps[i]);
 
 		// Color transparency as function of the partial amplitude
 		uint32_t partialColor = (uint32_t)(scale(0.f, 1.f, 0.5f, 1.f, s->amps[i]) * 0xFF) * 0x1000000 + BLUE_PARTIALS;
 
 		// display only if partial fits within the partials area
-		if (partialXpos < PARTIALAREA_X + PARTIALSAREAWIDTH - PADDING)
+		if (partialXpos < PARTIALSAREA_X + PARTIALSAREAWIDTH - PADDING)
 		{
 			BSP_LCD_SetTextColor(partialColor);
-			BSP_LCD_FillRect(partialXpos, 3 * PADDING+ (MAXPARTIALHEIGHT - partialHeight), 6, partialHeight);
+			BSP_LCD_FillRect(partialXpos, PARTIALSAREA_Y + 2 * PADDING + (MAXPARTIALHEIGHT - partialHeight), 6, partialHeight);
 		}
 	}
 
@@ -117,26 +126,22 @@ void Display_partials(spectrum_t *s)
 
 void clearTriggerArea(void)
 {
-	BSP_LCD_SetTextColor(COLOR_PAD);
-	BSP_LCD_SetBackColor(COLOR_PAD);
+	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP1);
 	BSP_LCD_FillRect(TRIGGERAREA_X, TRIGGERAREA_Y, TRIGGERAREAWIDTH, TRIGGERAREAHEIGHT);
-
-	BSP_LCD_SetTextColor(COLOR_TEXT);
-	BSP_LCD_DisplayStringAt(2 * PADDING, TRIGGERAREA_Y + TRIGGERAREAHEIGHT - 24, (uint8_t *)"trigger pad", RIGHT_MODE);
 }
 
 
 void clearPartialsArea(void)
 {
 	BSP_LCD_SetTextColor(COLOR_BACKGROUND);
-	BSP_LCD_FillRect(PARTIALAREA_X, PARTIALAREA_Y, PARTIALSAREAWIDTH, PARTIALSAREAHEIGHT );
+	BSP_LCD_FillRect(PARTIALSAREA_X, PARTIALSAREA_Y, PARTIALSAREAWIDTH, PARTIALSAREAHEIGHT );
 }
 
-void clearMorphArea(void)
-{
-	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP);
-	BSP_LCD_SetBackColor(COLOR_PAD_TRANSP);
-	BSP_LCD_FillRect(MORPHAREA_X, MORPHAREA_Y, MORPHAREAWIDTH, MORPHAREAHEIGHT);
-	BSP_LCD_SetTextColor(COLOR_TEXT);
-	BSP_LCD_DisplayStringAt(2* PADDING, MORPHAREA_Y + MORPHAREAHEIGHT - 24, (uint8_t *)"morph pad", RIGHT_MODE);
-}
+// void clearMorphArea(void)
+// {
+// 	// BSP_LCD_SetTextColor(COLOR_PAD_TRANSP);
+// 	BSP_LCD_SetBackColor(COLOR_BACKGROUND);
+// 	BSP_LCD_FillRect(PARTIALSAREA_X, TRIGGERAREAHEIGHT - 8, PARTIALSAREAWIDTH, MORPHAREAHEIGHT);
+// 	BSP_LCD_SetTextColor(COLOR_TEXT);
+// 	// BSP_LCD_DisplayStringAt(MORPHAREA_X+ PADDING, MORPHAREA_Y + MORPHAREAHEIGHT - 24, (uint8_t *)"morph pad", RIGHT_MODE);
+// }

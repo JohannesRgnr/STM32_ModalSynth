@@ -75,7 +75,8 @@ void Touchscreen(void){
     {
         ts_triggerArea(x, y, wasTouched);
     }
-    else if (x > MORPHAREA_Left && x < MORPHAREA_Right && y > MORPHAREA_Top && y < MORPHAREA_Bottom)
+    // if inside partials area
+    else if (x > PARTIALSAREA_Left && x < PARTIALSAREA_Right && y > PARTIALSAREA_Top && y < PARTIALSAREA_Bottom)
     {
        ts_MorphArea(x, y, wasTouched);
     }
@@ -142,20 +143,22 @@ static void ts_MorphArea(uint16_t x, uint16_t y, uint8_t state)
 {
     if (TS_State.touchDetected == 1) // new touch
     {
-        float xfade = scale(MORPHAREA_Left + 20, MORPHAREA_Right - 20, 0.0f, 1.0f, x);
+        float xfade = scale(PARTIALSAREA_Left + 20, PARTIALSAREA_Right - 20, 0.0f, 1.0f, x);
         xfade = clip(xfade, 0.f, 1.f);
         spectrum_xfade(&spectrum, xfade);
         filterbank_spectrum(&filterbank, &spectrum);
         filterbank_update(&filterbank);
 
 
-        if ( x > MORPHAREA_Left + 20 && x < MORPHAREA_Right - 20 )
+        if ( x > PARTIALSAREA_Left + 20 && x < PARTIALSAREA_Right - 20 )
         {
             clearPartialsArea();
-            clearMorphArea();
             Display_partials(&spectrum);
             BSP_LCD_SetTextColor(ORANGE_UI);
-            BSP_LCD_FillRect(x, MORPHAREA_Y, 6, MORPHAREAHEIGHT);
+            // BSP_LCD_FillCircle(x, MORPHAREA_Y, 8);
+            BSP_LCD_FillRect(x, PARTIALSAREA_Y, 16, 7);
+            BSP_LCD_FillCircle(x, PARTIALSAREA_Y + 3, 3);
+            BSP_LCD_FillCircle(x + 16, PARTIALSAREA_Y + 3, 3);
         }
         HAL_Delay(20);
     }
