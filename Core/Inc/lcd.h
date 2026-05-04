@@ -27,6 +27,7 @@
 #define COLOR_PAD_TRANSP2           0x66707070
 #define COLOR_PAD_TRANSP3           0xAA707070
 #define ORANGE_UI                   0xCCEF8354
+#define ORANGE_TEXT                 0xFFEF8354
 
 
 #define PADDING                     8

@@ -68,14 +68,16 @@ void Display_Init(void)
 	BSP_LCD_DrawVLine(480, 0, 48);
 	BSP_LCD_DrawVLine(640, 0, 48);
 
-	BSP_LCD_SetTextColor(COLOR_TEXT);
+
 	BSP_LCD_SetBackColor(0x00000000);
 	BSP_LCD_SetFont(&FontChicagoFLF16);
-	BSP_LCD_DisplayStringAt(40, 20, (uint8_t *)"Bell 2", LEFT_MODE);
-	BSP_LCD_DisplayStringAt(196, 20, (uint8_t *)"Square", LEFT_MODE);
-	BSP_LCD_DisplayStringAt(376, 20, (uint8_t *)"LFO", LEFT_MODE);
-	BSP_LCD_DisplayStringAt(518, 20, (uint8_t *)"Delay", LEFT_MODE);
-	BSP_LCD_DisplayStringAt(678, 20, (uint8_t *)"Reverb", LEFT_MODE);
+	BSP_LCD_SetTextColor(ORANGE_TEXT);
+	BSP_LCD_DisplayStringAt(80 - BSP_LCD_GetXSize()/2, 20, (uint8_t *)"Bell 2", CENTER_MODE);
+	BSP_LCD_DisplayStringAt(240 - BSP_LCD_GetXSize()/2 , 20, (uint8_t *)"Square", CENTER_MODE);
+	BSP_LCD_SetTextColor(COLOR_TEXT);
+	BSP_LCD_DisplayStringAt(400 - BSP_LCD_GetXSize()/2, 20, (uint8_t *)"LFO", CENTER_MODE);
+	BSP_LCD_DisplayStringAt(560 - BSP_LCD_GetXSize()/2, 20, (uint8_t *)"Delay", CENTER_MODE);
+	BSP_LCD_DisplayStringAt(720 - BSP_LCD_GetXSize()/2, 20, (uint8_t *)"Reverb", CENTER_MODE);
 
 
 	// Display touchscreen area for note triggering

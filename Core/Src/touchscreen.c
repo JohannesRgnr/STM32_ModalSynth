@@ -20,6 +20,9 @@
 uint16_t audioLevel = 60;
 
 uint8_t wasTouched = 0;
+uint8_t delay_btn = 0;
+uint8_t reverb_btn = 0;
+
 extern line_t exciterAmp, freq;
 extern filterbank_t filterbank;
 extern spectrum_t spectrum;
