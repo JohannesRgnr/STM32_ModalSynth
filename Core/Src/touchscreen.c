@@ -96,8 +96,9 @@ void Touchscreen(void){
         ts_MenuArea(x, wasTouched);
     }
 
+    // Display_partials(&spectrum);
     wasTouched = TS_State.touchDetected;
-
+    // HAL_Delay(12);
 
 }
 
@@ -168,14 +169,14 @@ static void ts_MorphArea(uint16_t x, uint16_t y, uint8_t state)
         if ( x > PARTIALSAREA_Left + 20 && x < PARTIALSAREA_Right - 20 )
         {
             // clearPartialsArea();
-            Display_partials(&spectrum);
+           // Display_partials(&spectrum);
 
             BSP_LCD_SetTextColor(ORANGE_UI);
             BSP_LCD_FillRect(x, PARTIALSAREA_Y, 16, 7);
             BSP_LCD_FillCircle(x, PARTIALSAREA_Y + 3, 3);
             BSP_LCD_FillCircle(x + 16, PARTIALSAREA_Y + 3, 3);
         }
-        HAL_Delay(12);
+
     }
 }
 

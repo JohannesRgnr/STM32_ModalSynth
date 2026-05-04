@@ -14,7 +14,9 @@
 #include "consts.h"
 #include "filters.h"
 #include "help_func.h"
+#include "multiLFO.h"
 
+extern lfo_t lfo;
 
 reson_t reson[BANDS];
 
@@ -182,7 +184,7 @@ float filterbank_process(const filterbank_t *f, const float sample)
     // sum outputs of resonating filters
     for(int i = 0; i < BANDS; i++)
     {
-        sumOuts = sumOuts + f->band_gains[i] * SVF_BP_compute(&reson[i], sample);
+        sumOuts = sumOuts + lfo.output[i] * f->band_gains[i] * SVF_BP_compute(&reson[i], sample);
     }
 
     return sumOuts * ONEOVERBANDS;

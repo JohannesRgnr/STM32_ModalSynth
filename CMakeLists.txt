@@ -38,7 +38,7 @@ add_executable(${CMAKE_PROJECT_NAME}
 #        Core/Src/consoleCommands.c
 #        Core/Src/consoleIo.c
 #        Core/Src/usart.c
-        Core/Src/oscillators.c
+#        Core/Src/oscillators.c
         Core/Src/help_func.c
         Core/Src/lcd.c
         Core/Src/usart.c
@@ -51,8 +51,11 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Src/usr_btn.c
         Core/Src/stereo_delay.c
         Core/Src/reverb.c
+        Core/Src/multiLFO.c
         Utilities/Fonts/FontChicagoFLF16.c
         Utilities/Fonts/FontChicagoFLF20.c
+
+
 
 
         #        Utilities/Fonts/font8.c

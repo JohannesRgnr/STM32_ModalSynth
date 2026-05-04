@@ -11,8 +11,10 @@
 
 #include "filterbank.h"
 #include "help_func.h"
+#include "multiLFO.h"
 
 extern spectrum_t spectrum;
+extern lfo_t lfo;
 
 void Display_Default(void)
 {
@@ -87,7 +89,7 @@ void Display_Init(void)
 	BSP_LCD_FillRect(TRIGGERAREA_X, TRIGGERAREA_Y-5, TRIGGERAREAWIDTH, 5);
 
 	// Display partials
-	Display_partials(&spectrum);
+	// Display_partials(&spectrum);
 
 	// Display morphing bar
 	Display_morphBar(PARTIALSAREA_Left + 20);
@@ -109,7 +111,7 @@ void Display_partials(spectrum_t *s)
 	for (int i = 0; i < BANDS; i++)
 	{
 		const uint16_t partialXpos = (uint16_t)(s->freqRatios[i] * (hLength / BANDS) + PARTIALSAREA_X - 2 * PADDING);
-		const uint16_t partialHeight = (uint16_t)(MAXPARTIALHEIGHT * s->amps[i]);
+		const uint16_t partialHeight = (uint16_t)(MAXPARTIALHEIGHT * s->amps[i] * lfo.output[i]);
 
 		// Color transparency as function of the partial amplitude
 		uint32_t partialColor = (uint32_t)(scale(0.f, 1.f, 0.5f, 1.f, s->amps[i]) * 0xFF) * 0x1000000 + BLUE_PARTIALS;

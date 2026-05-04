@@ -74,7 +74,7 @@ void SystemClock_Config(void);
 void PeriphCommonClock_Config(void);
 static void CPU_CACHE_Enable(void);
 /* USER CODE BEGIN PFP */
-
+extern spectrum_t spectrum;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -176,9 +176,9 @@ int main(void)
   {
     /* USER CODE END WHILE */
     Touchscreen();
-    UserButton();
-
-
+    // UserButton();
+    Display_partials(&spectrum);
+    HAL_Delay(5);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

@@ -16,6 +16,7 @@
 #include "consts.h"
 #include "filterbank.h"
 #include "help_func.h"
+#include "multiLFO.h"
 #include "noise.h"
 #include "reverb.h"
 #include "spectra.h"
@@ -31,6 +32,7 @@ noise_t noise;
 line_t exciterAmp, freq;
 spectrum_t spectrum;
 filterbank_t filterbank;
+lfo_t lfo;
 
 extern float delay_feedback;
 extern float delay_wet;
@@ -61,6 +63,7 @@ void AUDIO_Init()
     spectrum_xfade(&spectrum, 0.0f);
 
     filterbank_init(&filterbank, &spectrum);
+    multiLFO_init(&lfo, 0.5, 3.0f );
     freq.val = freq.dst = 0.f;
     Delay_init();
     reverb_Init();
@@ -85,6 +88,9 @@ void AUDIO_Init()
         if(exciterAmp.inc > 0.0f && exciterAmp.val > exciterAmp.dst)
             exciterAmp.val = exciterAmp.dst;
 
+        // Process one sample of the multi LFO
+        multiLFO_process(&lfo);
+
         // generate noise burst
         samp = samp * exciterAmp.val * exciterAmp.val;
 
@@ -96,7 +102,7 @@ void AUDIO_Init()
         pingpongDelay_process(samp, &delayLOut, &delayROut);
 
         // Send to Reverb
-        reverbsend = reverb_amount * (delayLOut*0.707f + delayROut*0.707f); // send to reverb
+        reverbsend = reverb_amount * (delayLOut*0.707f + delayROut*0.707f);
         reverb_process(reverbsend, &reverbLout, &reverbRout);
 
         // Soft Clip the outputs
