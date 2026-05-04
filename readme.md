@@ -11,6 +11,10 @@ Physical Modeling Modal synthesizer on STM32F769i-Disco board, with touchscreen 
 ![GUI](IMG_0742.jpg "GUI")
 
 
+### TODO:
+- [ ] Load new spectra definitions via SD Card
+- [ ] USB device mode for MIDI control
+
 _____________________________________________________
 
 Except as otherwise noted, all files are
