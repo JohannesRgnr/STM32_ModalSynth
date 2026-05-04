@@ -3,6 +3,7 @@ Physical Modeling Modal synthesizer on STM32F769i-Disco board, with touchscreen 
 
 - 16-band resonator filterbank
 - Spectrum interpolation/morphing
+- 16-phase LFO for individual amplitude modulation of each partial
 - Stereo delay effect
 - Stereo reverberation effect
 - Touchscreen support
