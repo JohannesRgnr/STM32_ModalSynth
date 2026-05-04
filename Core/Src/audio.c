@@ -63,7 +63,7 @@ void AUDIO_Init()
     spectrum_xfade(&spectrum, 0.0f);
 
     filterbank_init(&filterbank, &spectrum);
-    multiLFO_init(&lfo, 0.5, 3.0f );
+    multiLFO_init(&lfo, 0.7, 3.0f );
     freq.val = freq.dst = 0.f;
     Delay_init();
     reverb_Init();
