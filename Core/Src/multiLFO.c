@@ -1,7 +1,7 @@
 /**
  * @file multiLFO.c
  * @author Johannes R.
- * @brief 
+ * @brief A multi-phase sinusoidal oscillator
  * @version 
  * @date 04.05.26
  * @note
@@ -25,7 +25,10 @@ void multiLFO_init(lfo_t *lfo, float amp, float freq)
     }
 }
 
-
+/**
+ * Generate n=BANDS sine waves, driven by the same phasor
+ * @param lfo
+ */
 void multiLFO_process(lfo_t *lfo)
 {
     lfo->phase = wrap(lfo->phase, 1.0f);
