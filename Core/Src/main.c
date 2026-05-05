@@ -50,6 +50,9 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 extern UART_HandleTypeDef huart1;
+extern spectrum_t spectrum;
+
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -72,9 +75,11 @@ extern UART_HandleTypeDef huart1;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void PeriphCommonClock_Config(void);
-static void CPU_CACHE_Enable(void);
+
 /* USER CODE BEGIN PFP */
-extern spectrum_t spectrum;
+static void CPU_CACHE_Enable(void);
+
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -108,6 +113,7 @@ char *intro_string = "Entering main application... \r\n";
   */
 int main(void)
 {
+
 
   CPU_CACHE_Enable();
 
@@ -156,33 +162,38 @@ int main(void)
   BSP_LCD_DisplayOn();
 
 
-
   /* Initialize the touchscreen */
   BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
-
- // HAL_Delay(1000);
 
   /* Initialize the audio */
   AUDIO_Init();
 
+  /* Initialize the display */
   Display_Init();
+
+
   // ConsoleInit();
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
+
     Touchscreen();
     // UserButton();
+
     Display_partials(&spectrum);
     HAL_Delay(5);
-    /* USER CODE BEGIN 3 */
+
   }
-  /* USER CODE END 3 */
+
 }
+
+
+
+
+
 
 /**
   * @brief System Clock Configuration
