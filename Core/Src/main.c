@@ -63,7 +63,7 @@ extern spectrum_t spectrum;
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define FOO FOOBAR
+#define FOO FOO
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
