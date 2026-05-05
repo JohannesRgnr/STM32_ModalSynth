@@ -60,7 +60,7 @@ extern UART_HandleTypeDef huart1;
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define FOO BAR
+#define FOO FOOBAR
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
