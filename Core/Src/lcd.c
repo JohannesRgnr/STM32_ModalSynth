@@ -110,7 +110,7 @@ void Display_partials(spectrum_t *s)
 
 	for (int i = 0; i < BANDS; i++)
 	{
-		const uint16_t partialXpos = (uint16_t)(s->freqRatios[i] * (hLength / BANDS) + PARTIALSAREA_X - 2 * PADDING);
+		const uint16_t partialXpos = (uint16_t)(s->freqRatios[i] * (hLength / (BANDS - 4)) + PARTIALSAREA_X - 2 * PADDING);
 		const uint16_t partialHeight = (uint16_t)(MAXPARTIALHEIGHT * s->amps[i] * lfo.output[i]);
 
 		// Color transparency as function of the partial amplitude
