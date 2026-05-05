@@ -9,7 +9,7 @@ Physical Modeling Modal synthesizer on STM32F769i-Disco board, with touchscreen 
 - Touchscreen support
 
 
-![GUI](IMG_0742.jpg "GUI")
+![GUI](IMG_0745.jpg "GUI")
 
 
 ### TODO:
