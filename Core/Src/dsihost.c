@@ -39,6 +39,7 @@ void MX_DSIHOST_DSI_Init(void)
   DSI_HOST_TimeoutTypeDef HostTimeouts = {0};
   DSI_PHY_TimerTypeDef PhyTimings = {0};
   DSI_LPCmdTypeDef LPCmd = {0};
+  DSI_CmdCfgTypeDef CmdCfg = {0};
 
   /* USER CODE BEGIN DSIHOST_Init 1 */
 
@@ -108,7 +109,25 @@ void MX_DSIHOST_DSI_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN DSIHOST_Init 2 */
-
+  CmdCfg.VirtualChannelID = 0;
+  CmdCfg.ColorCoding = DSI_RGB888;
+  CmdCfg.CommandSize = 400;
+  CmdCfg.TearingEffectSource = DSI_TE_EXTERNAL;
+  CmdCfg.TearingEffectPolarity = DSI_TE_RISING_EDGE;
+  CmdCfg.HSPolarity = DSI_HSYNC_ACTIVE_LOW;
+  CmdCfg.VSPolarity = DSI_VSYNC_ACTIVE_LOW;
+  CmdCfg.DEPolarity = DSI_DATA_ENABLE_ACTIVE_HIGH;
+  CmdCfg.VSyncPol = DSI_VSYNC_FALLING;
+  CmdCfg.AutomaticRefresh = DSI_AR_ENABLE;
+  CmdCfg.TEAcknowledgeRequest = DSI_TE_ACKNOWLEDGE_DISABLE;
+  if (HAL_DSI_ConfigAdaptedCommandMode(&hdsi, &CmdCfg) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_DSI_SetGenericVCID(&hdsi, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE END DSIHOST_Init 2 */
 
 }

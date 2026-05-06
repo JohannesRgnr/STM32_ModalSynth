@@ -105,7 +105,6 @@ void Display_partials(spectrum_t *s)
 {
 	clearPartialsArea();
 
-	// BSP_LCD_SelectLayer(1);
 	const float hLength = PARTIALSAREAWIDTH - PADDING;
 
 	for (int i = 0; i < BANDS; i++)
