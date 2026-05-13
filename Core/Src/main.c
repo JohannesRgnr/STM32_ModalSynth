@@ -51,7 +51,7 @@
 /* USER CODE BEGIN PTD */
 extern UART_HandleTypeDef huart1;
 extern spectrum_t spectrum;
-
+extern Screen *screen;
 
 /* USER CODE END PTD */
 
@@ -119,6 +119,7 @@ int main(void)
 
   /* MCU Configuration--------------------------------------------------------*/
 
+
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
@@ -142,8 +143,12 @@ int main(void)
   MX_SAI1_Init();
   MX_DMA2D_Init();
   MX_DSIHOST_DSI_Init();
+
   MX_FMC_Init();
-  MX_HDMI_CEC_Init();
+
+  // MX_HDMI_CEC_Init();
+  HAL_LTDC_MspInit(&hltdc);
+
   MX_LTDC_Init();
   MX_DFSDM1_Init();
   MX_USART1_UART_Init();
@@ -153,7 +158,7 @@ int main(void)
   /* Configure the Tamper push-button in GPIO Mode */
   BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
 
-
+  BSP_SDRAM_Init();
 
   /* Initialize the LCD */
   BSP_LCD_Init();
@@ -170,7 +175,7 @@ int main(void)
 
   /* Initialize the display */
   Display_Init();
-
+  // screen = ct_screen_init();
 
   // ConsoleInit();
 
@@ -180,11 +185,24 @@ int main(void)
   while (1)
   {
 
-    Touchscreen();
-    // UserButton();
 
-    Display_partials(&spectrum);
-    HAL_Delay(5);
+    // UserButton();
+    // ct_screen_flip_buffers(screen);
+    // 'LTDC->SRCR = LTDC_SRCR_VBR;
+    //    // wait for next frame
+    while ((LTDC->CDSR & LTDC_CDSR_VSYNCS) == 0)   ;
+
+
+
+      Display_partials(&spectrum);
+      //Touchscreen();
+
+
+
+
+     // ;
+    // HAL_Delay(5);
+    while ((LTDC->CDSR & LTDC_CDSR_VSYNCS) == 1);
 
   }
 
@@ -216,9 +234,9 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  // RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
@@ -252,6 +270,8 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+
+
 }
 
 /**
@@ -267,9 +287,9 @@ void PeriphCommonClock_Config(void)
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC|RCC_PERIPHCLK_SAI1;
   PeriphClkInitStruct.PLLSAI.PLLSAIN = 192;
   PeriphClkInitStruct.PLLSAI.PLLSAIR = 2;
-  PeriphClkInitStruct.PLLSAI.PLLSAIQ = 6;
+  PeriphClkInitStruct.PLLSAI.PLLSAIQ = 3;
   PeriphClkInitStruct.PLLSAI.PLLSAIP = RCC_PLLSAIP_DIV2;
-  PeriphClkInitStruct.PLLSAIDivQ = 3;
+  PeriphClkInitStruct.PLLSAIDivQ = 1;
   PeriphClkInitStruct.PLLSAIDivR = RCC_PLLSAIDIVR_2;
   PeriphClkInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLSAI;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
@@ -277,6 +297,8 @@ void PeriphCommonClock_Config(void)
     Error_Handler();
   }
 }
+
+
 
 /* USER CODE BEGIN 4 */
 

@@ -49,9 +49,9 @@ void MX_LTDC_Init(void)
   hltdc.Init.VerticalSync = 3;
   hltdc.Init.AccumulatedHBP = 14;
   hltdc.Init.AccumulatedVBP = 5;
-  hltdc.Init.AccumulatedActiveW = 654;
+  hltdc.Init.AccumulatedActiveW = 814;
   hltdc.Init.AccumulatedActiveH = 485;
-  hltdc.Init.TotalWidth = 660;
+  hltdc.Init.TotalWidth = 820;
   hltdc.Init.TotalHeigh = 487;
   hltdc.Init.Backcolor.Blue = 0;
   hltdc.Init.Backcolor.Green = 0;

@@ -9,12 +9,50 @@
 
 #include "../Inc/lcd.h"
 
+#include <stdlib.h>
+
 #include "filterbank.h"
 #include "help_func.h"
 #include "multiLFO.h"
 
 extern spectrum_t spectrum;
 extern lfo_t lfo;
+Screen *screen;
+
+
+Screen* ct_screen_init() {
+	BSP_LCD_Init();
+	Screen *screen = (Screen*) malloc(sizeof(Screen));
+	screen->width = BSP_LCD_GetXSize();
+	screen->height = BSP_LCD_GetYSize();
+	screen->addr[0] = LCD_FB_START_ADDRESS;
+	screen->addr[1] = LCD_FB_START_ADDRESS + screen->width * screen->height * 4;
+	screen->front = 1;
+	BSP_LCD_LayerDefaultInit(0, screen->addr[0]);
+	BSP_LCD_LayerDefaultInit(1, screen->addr[1]);
+	BSP_LCD_SetLayerVisible(0, DISABLE);
+	BSP_LCD_SetLayerVisible(1, ENABLE);
+	BSP_LCD_SelectLayer(0);
+	return screen;
+}
+
+void ct_screen_flip_buffers(Screen *screen) {
+	// wait for VSYNC
+	while (!(LTDC->CDSR & LTDC_CDSR_VSYNCS));
+	BSP_LCD_SetLayerVisible(screen->front, DISABLE);
+	screen->front ^= 1;
+	BSP_LCD_SetLayerVisible(screen->front, ENABLE);
+	BSP_LCD_SelectLayer(ct_screen_backbuffer_id(screen));
+}
+
+uint32_t* ct_screen_backbuffer_ptr(Screen *screen) {
+	return (uint32_t*)(screen->addr[ct_screen_backbuffer_id(screen)]);
+}
+
+
+uint32_t ct_screen_backbuffer_id(Screen *screen) {
+	return 1 - screen->front;
+}
 
 void Display_Default(void)
 {
@@ -28,6 +66,7 @@ void Display_Default(void)
 void Display_Init(void)
 {
 	BSP_LCD_SetBrightness(100);
+	// ct_screen_flip_buffers(screen);
 
 	/* Set LCD Foreground Layer  */
 	BSP_LCD_SelectLayer(LTDC_DEFAULT_ACTIVE_LAYER);
@@ -103,6 +142,7 @@ void Display_Init(void)
  */
 void Display_partials(spectrum_t *s)
 {
+
 	clearPartialsArea();
 
 	// BSP_LCD_SelectLayer(1);
@@ -146,6 +186,11 @@ void clearPartialsArea(void)
 	BSP_LCD_SetTextColor(COLOR_BACKGROUND);
 	BSP_LCD_FillRect(PARTIALSAREA_X, PARTIALSAREA_Y, PARTIALSAREAWIDTH, PARTIALSAREAHEIGHT );
 }
+
+
+
+
+
 
 // void clearMorphArea(void)
 // {

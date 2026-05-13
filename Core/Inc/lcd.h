@@ -13,7 +13,21 @@
 #include "filterbank.h"
 #include "stm32f769i_discovery_lcd.h"
 
+typedef struct {
+    uint32_t addr[2];
+    uint32_t width;
+    uint32_t height;
+    uint32_t front;
+} Screen;
+
+Screen* ct_screen_init();
+void ct_screen_flip_buffers(Screen *screen);
+uint32_t* ct_screen_backbuffer_ptr(Screen *screen);
+
+uint32_t ct_screen_backbuffer_id(Screen *screen);
+
 #define LCD_FRAME_BUFFER          SDRAM_DEVICE_ADDR
+
 
 #define COLOR_BACKGROUND            0xFF000000
 #define GREY_UI                     0xFFC0C0C0
@@ -35,8 +49,8 @@
 
 #define PARTIALSAREA_X              32
 #define PARTIALSAREA_Y              72
-#define PARTIALSAREAWIDTH           BSP_LCD_GetXSize() - 2 * PARTIALSAREA_X
-#define PARTIALSAREAHEIGHT          (BSP_LCD_GetYSize() / 2.5)
+#define PARTIALSAREAWIDTH           (800 - 2 * PARTIALSAREA_X)
+#define PARTIALSAREAHEIGHT          192
 #define MAXPARTIALHEIGHT            (PARTIALSAREAHEIGHT - 3 * PADDING)
 
 #define PARTIALSAREA_Left           PARTIALSAREA_X
@@ -60,12 +74,22 @@
 
 
 
+
+
 void Display_Default(void);
 void Display_Init(void);
 void Display_partials(spectrum_t *s);
 void Display_morphBar(uint16_t x);
 void clearTriggerArea(void);
 void clearPartialsArea(void);
+
+void drawPixel(uint16_t x, uint16_t y, uint16_t color);
+void fillRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
+void drawMenu(void);
+
+void swapBuffers(void);
+static void LL_FillBuffer(uint32_t LayerIndex, void *pDst, uint32_t xSize, uint32_t ySize, uint32_t OffLine, uint32_t ColorIndex);
+
 // void clearMorphArea(void);
 
 
