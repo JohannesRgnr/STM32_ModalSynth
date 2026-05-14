@@ -10,7 +10,7 @@
  *      INCLUDES
  *********************/
 #include <stdint.h>
-#include "../lvgl/lvgl.h"
+#include "../../lvgl/lvgl.h"
 
 /*********************
  *      DEFINES

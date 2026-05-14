@@ -77,6 +77,10 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined library search paths
 )
 
+
+add_subdirectory(lvgl)
+
+
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
@@ -90,6 +94,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Drivers/BSP/Components/adv7533/adv7533.c
     Drivers/BSP/Components/nt35510/nt35510.c
     Drivers/BSP/Components/ft6x06/ft6x06.c
+    Core/Src/touchpad.c
+    Core/Src/tft.c
     # Utilities/Fonts
     #Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dfsdm.c
 )
@@ -119,6 +125,8 @@ list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME}
     stm32cubemx
-
+    m
+    lvgl
+    lvgl_demos
     # Add user defined libraries
 )

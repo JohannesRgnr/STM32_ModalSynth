@@ -16,9 +16,9 @@
 
 
 
-#define DELAY_BUFF_SIZE         22050
-#define INIT_DELAY_L            15000
-#define INIT_DELAY_R            15000
+#define DELAY_BUFF_SIZE         15000
+#define INIT_DELAY_L            12000
+#define INIT_DELAY_R            12000
 #define INIT_FEEDB              0.8f
 #define INIT_DELAY_WET			0.4f
 

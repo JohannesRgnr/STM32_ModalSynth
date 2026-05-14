@@ -45,6 +45,14 @@
 #include "touchscreen.h"
 #include "usart.h"
 #include "usr_btn.h"
+
+#include "stm32f7xx.h"
+#include "stm32f769i_discovery.h"
+#include "tft.h"
+#include "touchpad.h"
+#include "../../lvgl/lvgl.h"
+#include "../../lvgl/examples/lv_examples.h"
+#include "../../lvgl/demos/lv_demos.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -120,21 +128,25 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_SAI1_Init();
-  MX_DMA2D_Init();
+  // MX_DMA2D_Init();
   MX_DSIHOST_DSI_Init();
-  MX_FMC_Init();
+ //  MX_FMC_Init();
   // MX_HDMI_CEC_Init();
-  MX_LTDC_Init();
-  MX_DFSDM1_Init();
-  MX_USART1_UART_Init();
+  // MX_LTDC_Init();
+   MX_DFSDM1_Init();
+ //  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Transmit(&huart1, (uint8_t*)intro_string, strlen(intro_string), HAL_MAX_DELAY);
+ //  HAL_UART_Transmit(&huart1, (uint8_t*)intro_string, strlen(intro_string), HAL_MAX_DELAY);
 
   /* Configure the Tamper push-button in GPIO Mode */
   BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
 
+ lv_init();
 
-
+  tft_init();
+  touchpad_init();
+ // lv_demo_benchmark();
+  lv_example_get_started_4();
   /* Initialize the LCD */
  // BSP_LCD_Init();
   /* Initialize the LCD Layers */
@@ -164,6 +176,8 @@ int main(void)
     // Touchscreen();
     // UserButton();
     UserButton();
+    lv_task_handler();
+   HAL_Delay(1);
     // Display_partials(&spectrum);
     // HAL_Delay(5);
 

@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2025 STMicroelectronics.
+  * Copyright (c) 2026 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -22,6 +22,15 @@
 #include "stm32f7xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stm32f7xx_hal.h"
+#include "stm32f7xx.h"
+#ifdef USE_RTOS_SYSTICK
+#include <cmsis_os.h>
+#endif
+
+#include "stm32f769i_discovery.h"
+#include "stm32f769i_discovery_lcd.h"
+#include "../../lvgl/lvgl.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,7 +64,9 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern CEC_HandleTypeDef hcec;
+extern DMA2D_HandleTypeDef hdma2d;
+extern DSI_HandleTypeDef hdsi;
+extern LTDC_HandleTypeDef hltdc;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -183,9 +194,14 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-
-  /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
+  HAL_SYSTICK_IRQHandler();
+  lv_tick_inc(1);
+#ifdef USE_RTOS_SYSTICK
+  osSystickHandler();
+#endif
+  /* USER CODE END SysTick_IRQn 0 */
+ // HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
   /* USER CODE END SysTick_IRQn 1 */
@@ -199,17 +215,45 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief This function handles HDMI-CEC global interrupt.
+  * @brief This function handles LTDC global interrupt.
   */
-void CEC_IRQHandler(void)
+void LTDC_IRQHandler(void)
 {
-  /* USER CODE BEGIN CEC_IRQn 0 */
+  /* USER CODE BEGIN LTDC_IRQn 0 */
 
-  /* USER CODE END CEC_IRQn 0 */
-  HAL_CEC_IRQHandler(&hcec);
-  /* USER CODE BEGIN CEC_IRQn 1 */
+  /* USER CODE END LTDC_IRQn 0 */
+  HAL_LTDC_IRQHandler(&hltdc);
+  /* USER CODE BEGIN LTDC_IRQn 1 */
 
-  /* USER CODE END CEC_IRQn 1 */
+  /* USER CODE END LTDC_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DMA2D global interrupt.
+  */
+void DMA2D_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA2D_IRQn 0 */
+
+  /* USER CODE END DMA2D_IRQn 0 */
+  HAL_DMA2D_IRQHandler(&hdma2d);
+  /* USER CODE BEGIN DMA2D_IRQn 1 */
+
+  /* USER CODE END DMA2D_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DSI global interrupt.
+  */
+void DSI_IRQHandler(void)
+{
+  /* USER CODE BEGIN DSI_IRQn 0 */
+
+  /* USER CODE END DSI_IRQn 0 */
+  HAL_DSI_IRQHandler(&hdsi);
+  /* USER CODE BEGIN DSI_IRQn 1 */
+
+  /* USER CODE END DSI_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
