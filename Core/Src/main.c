@@ -84,25 +84,6 @@ static void CPU_CACHE_Enable(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-// Define serial input and output functions using UART
-// int __io_putchar(int ch)
-// {
-//   HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 100); // infinite delay value
-//   return 1;
-// }
-//
-// // Read a character from the UART with small timeout
-// // If HAL_UART_Receive() returns error, return EOF (-1), else return the character read
-// int __io_getchar(void)
-// {
-//   uint8_t ch = 0;
-//
-//   //__HAL_UART_CLEAR_OREFLAG(&huart5);
-//
-//   HAL_UART_Receive(&huart1, &ch, 1, HAL_MAX_DELAY);
-//
-//   return ch;
-// }
 
 char *intro_string = "Entering main application... \r\n";
 /* USER CODE END 0 */
