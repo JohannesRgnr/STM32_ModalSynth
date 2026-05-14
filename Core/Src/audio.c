@@ -63,7 +63,7 @@ void AUDIO_Init()
     spectrum_xfade(&spectrum, 0.0f);
 
     filterbank_init(&filterbank, &spectrum);
-    multiLFO_init(&lfo, 0.7, 3.0f );
+    multiLFO_init(&lfo, 0.0f, 3.0f );
     freq.val = freq.dst = 0.f;
     Delay_init();
     reverb_Init();
@@ -72,11 +72,14 @@ void AUDIO_Init()
  void audioBlock(int16_t *output, const int32_t samples)
 {
     freq.inc = (freq.dst - freq.val) * (float)samples * TS;
-
-    delay_wet = delay_btn * 0.5f;
-    delay_feedback = 0.6f;
-    reverb_amount = reverb_btn * 0.7f;
+    // freq.inc = 0.f;
+    // delay_wet = delay_btn * 0.5f;
+    // delay_feedback = 0.6f;
+    // reverb_amount = reverb_btn * 0.7f;
     reverb_feedback = 0.9f;
+
+    delay_wet = 0.45f;
+    reverb_amount = 0.5f;
 
     for (int i = 0; i < samples; i++)
     {
@@ -92,10 +95,11 @@ void AUDIO_Init()
         multiLFO_process(&lfo);
 
         // generate noise burst
-        samp = samp * exciterAmp.val * exciterAmp.val;
+       samp = samp * exciterAmp.val * exciterAmp.val;
 
         // going through filterbank
-        filterbank.freq = freq.val;
+        // filterbank.freq = freq.val;
+        filterbank.freq = 1000;
         samp = filterbank_process(&filterbank, samp);
 
         // Apply delay effect

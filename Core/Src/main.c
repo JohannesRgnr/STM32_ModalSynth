@@ -29,7 +29,7 @@
 #include "dfsdm.h"
 #include "dma2d.h"
 #include "dsihost.h"
-#include "hdmi_cec.h"
+// #include "hdmi_cec.h"
 #include "i2c.h"
 #include "ltdc.h"
 #include "sai.h"
@@ -84,7 +84,6 @@ static void CPU_CACHE_Enable(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
 char *intro_string = "Entering main application... \r\n";
 /* USER CODE END 0 */
 
@@ -124,7 +123,7 @@ int main(void)
   MX_DMA2D_Init();
   MX_DSIHOST_DSI_Init();
   MX_FMC_Init();
-  MX_HDMI_CEC_Init();
+  // MX_HDMI_CEC_Init();
   MX_LTDC_Init();
   MX_DFSDM1_Init();
   MX_USART1_UART_Init();
@@ -137,20 +136,21 @@ int main(void)
 
 
   /* Initialize the LCD */
-  BSP_LCD_Init();
+ // BSP_LCD_Init();
   /* Initialize the LCD Layers */
-  BSP_LCD_LayerDefaultInit(LTDC_DEFAULT_ACTIVE_LAYER, LCD_FRAME_BUFFER);
-  BSP_LCD_DisplayOn();
+ // BSP_LCD_LayerDefaultInit(LTDC_DEFAULT_ACTIVE_LAYER, LCD_FRAME_BUFFER);
+//  BSP_LCD_DisplayOn();
 
 
   /* Initialize the touchscreen */
-  BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
+ // BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
 
   /* Initialize the audio */
   AUDIO_Init();
 
   /* Initialize the display */
-  Display_Init();
+  // Display_Init();
+ // BSP_LCD_SelectLayer(LTDC_DEFAULT_ACTIVE_LAYER);
 
 
   // ConsoleInit();
@@ -161,11 +161,11 @@ int main(void)
   while (1)
   {
 
-    Touchscreen();
+    // Touchscreen();
     // UserButton();
-
-    Display_partials(&spectrum);
-    HAL_Delay(5);
+    UserButton();
+    // Display_partials(&spectrum);
+    // HAL_Delay(5);
 
   }
 
