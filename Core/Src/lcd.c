@@ -16,6 +16,112 @@
 extern spectrum_t spectrum;
 extern lfo_t lfo;
 
+
+static lv_obj_t * label;
+lv_obj_t * obj;
+
+static void slider_event_cb(lv_event_t * e)
+{
+	lv_obj_t * slider = lv_event_get_target_obj(e);
+
+	/*Refresh the text*/
+	lv_label_set_text_fmt(label, "%" LV_PRId32, lv_slider_get_value(slider));
+	lv_obj_align_to(label, slider, LV_ALIGN_OUT_TOP_MID, 0, -15);    /*Align top of the slider*/
+}
+
+/**
+ * @title Slider with live value label
+ * @brief Mirror a slider's value into a label anchored above it.
+ *
+ * A 200 px wide slider is centered on the active screen with a label placed
+ * 15 px above it via `lv_obj_align_to` and `LV_ALIGN_OUT_TOP_MID`. An
+ * `LV_EVENT_VALUE_CHANGED` callback reads `lv_slider_get_value` and rewrites
+ * the label text, re-aligning it after each update.
+ */
+void lv_oneSlider(void)
+{
+	/*Create a slider in the center of the display*/
+	lv_obj_t * slider = lv_slider_create(lv_screen_active());
+	lv_obj_set_width(slider, 200);                          /*Set the width*/
+	lv_obj_center(slider);                                  /*Align to the center of the parent (screen)*/
+	lv_obj_add_event_cb(slider, slider_event_cb, LV_EVENT_VALUE_CHANGED, NULL);     /*Assign an event function*/
+
+
+	/*Create a label above the slider*/
+	label = lv_label_create(lv_screen_active());
+	lv_label_set_text(label, "0");
+	lv_obj_align_to(label, slider, LV_ALIGN_OUT_TOP_MID, 0, -15);    /*Align top of the slider*/
+}
+
+
+static void anim_x_cb(void * var, int32_t v)
+{
+	lv_obj_set_x((lv_obj_t *) var, v);
+}
+
+static void anim_size_cb(void * var, int32_t v)
+{
+	lv_obj_set_size((lv_obj_t *) var, v, v);
+}
+
+/**
+ * @title Infinite playback animation
+ * @brief Grow a red circle while sliding it right, then reverse and repeat.
+ *
+ * A red circular object sits on the left edge of the active screen. One
+ * `lv_anim_t` drives `lv_obj_set_size` from 10 to 50 over 1000 ms; the same
+ * configured animation is then reused with `lv_obj_set_x` running from 10
+ * to 240. Both run with `lv_anim_path_ease_in_out`, a 300 ms reverse stage
+ * after a 100 ms reverse delay, a 500 ms gap between cycles, and
+ * `LV_ANIM_REPEAT_INFINITE`.
+ */
+void lv_circle_anim()
+{
+	static uint32_t oldRadius;
+	obj = lv_obj_create(lv_screen_active());
+	lv_obj_remove_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
+	lv_obj_set_style_bg_color(obj, lv_palette_main(LV_PALETTE_LIGHT_BLUE), 0);
+	lv_obj_set_style_radius(obj, LV_RADIUS_CIRCLE, 0);
+
+	lv_obj_align(obj, LV_ALIGN_LEFT_MID, 10, 0);
+	uint32_t radius = (uint32_t)(spectrum.amps[0] * 500.0f);
+	// lv_obj_set_size(obj, radius, radius);
+	lv_anim_t a;
+	lv_anim_init(&a);
+	lv_anim_set_var(&a, obj);
+	lv_anim_set_values(&a, oldRadius, radius);
+	lv_anim_set_duration(&a, 10);
+	lv_anim_set_reverse_delay(&a, 1);
+	lv_anim_set_reverse_duration(&a, 10);
+	//lv_anim_set_repeat_delay(&a, 500);
+	//lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
+	//lv_anim_set_path_cb(&a, lv_anim_path_ease_in_out);
+
+	lv_anim_set_exec_cb(&a, anim_size_cb);
+	// lv_anim_start(&a);
+	//lv_anim_set_exec_cb(&a, anim_x_cb);
+	//lv_anim_set_values(&a, 10, 240);
+	//lv_anim_start(&a);
+	oldRadius = radius;
+}
+
+void GUI_LCDProcess(spectrum_t *s)
+{
+	static float oldRadius;
+	float x = (lfo.output[0] * 240.0f);
+	lv_obj_set_x(obj, x);
+	lv_obj_set_size(obj, 64, 64);
+	// lv_anim_t a;
+	// lv_anim_init(&a);
+	// lv_anim_set_var(&a, obj);
+	// lv_anim_set_exec_cb(&a, anim_x_cb);
+	// lv_anim_set_values(&a, 10, x);
+	//
+	//
+	// lv_anim_start(&a);
+
+}
+
 void Display_Default(void)
 {
 	/* Default LCD settings */

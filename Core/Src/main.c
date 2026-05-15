@@ -26,16 +26,16 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "dfsdm.h"
-#include "dma2d.h"
+// #include "dfsdm.h"
+// #include "dma2d.h"
 #include "dsihost.h"
 // #include "hdmi_cec.h"
 #include "i2c.h"
-#include "ltdc.h"
+// #include "ltdc.h"
 #include "sai.h"
 #include "usart.h"
 #include "gpio.h"
-#include "fmc.h"
+// #include "fmc.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -47,7 +47,7 @@
 #include "usr_btn.h"
 
 #include "stm32f7xx.h"
-#include "stm32f769i_discovery.h"
+// #include "stm32f769i_discovery.h"
 #include "tft.h"
 #include "touchpad.h"
 #include "../../lvgl/lvgl.h"
@@ -126,12 +126,7 @@ int main(void)
     MX_GPIO_Init();
     MX_I2C1_Init();
     MX_SAI1_Init();
-    // MX_DMA2D_Init();
     MX_DSIHOST_DSI_Init();
-    //  MX_FMC_Init();
-    // MX_HDMI_CEC_Init();
-    // MX_LTDC_Init();
-    MX_DFSDM1_Init();
     MX_USART1_UART_Init();
     /* USER CODE BEGIN 2 */
     HAL_UART_Transmit(&huart1, (uint8_t*)intro_string, strlen(intro_string), HAL_MAX_DELAY);
@@ -144,13 +139,7 @@ int main(void)
     tft_init();
     touchpad_init();
     // lv_demo_benchmark();
-    lv_example_get_started_4();
-    /* Initialize the LCD */
-    // BSP_LCD_Init();
-    /* Initialize the LCD Layers */
-    // BSP_LCD_LayerDefaultInit(LTDC_DEFAULT_ACTIVE_LAYER, LCD_FRAME_BUFFER);
-    //  BSP_LCD_DisplayOn();
-
+   lv_circle_anim();
 
     /* Initialize the touchscreen */
     // BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
@@ -158,25 +147,18 @@ int main(void)
     /* Initialize the audio */
     AUDIO_Init();
 
-    /* Initialize the display */
-    // Display_Init();
-    // BSP_LCD_SelectLayer(LTDC_DEFAULT_ACTIVE_LAYER);
-
-
-    // ConsoleInit();
-
     /* USER CODE END 2 */
 
     /* Infinite loop */
     while (1)
     {
         // Touchscreen();
-        // UserButton();
+
         UserButton();
         lv_task_handler();
+        GUI_LCDProcess(&spectrum);
         HAL_Delay(1);
-        // Display_partials(&spectrum);
-        // HAL_Delay(5);
+
     }
 }
 

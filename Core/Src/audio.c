@@ -63,7 +63,7 @@ void AUDIO_Init()
     spectrum_xfade(&spectrum, 0.0f);
 
     filterbank_init(&filterbank, &spectrum);
-    multiLFO_init(&lfo, 0.0f, 3.0f );
+    multiLFO_init(&lfo, 1.0f, 2.0f );
     freq.val = freq.dst = 0.f;
     Delay_init();
     reverb_Init();
@@ -78,7 +78,7 @@ void AUDIO_Init()
     // reverb_amount = reverb_btn * 0.7f;
     reverb_feedback = 0.9f;
 
-    delay_wet = 0.45f;
+
     reverb_amount = 0.5f;
 
     for (int i = 0; i < samples; i++)
