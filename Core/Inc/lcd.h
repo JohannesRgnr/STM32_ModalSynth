@@ -49,11 +49,12 @@
 
 #define PADDING                     8
 
-#define PARTIALSAREA_X              32
+#define PARTIALSAREA_X              40
 #define PARTIALSAREA_Y              72
-#define PARTIALSAREAWIDTH           BSP_LCD_GetXSize() - 2 * PARTIALSAREA_X
-#define PARTIALSAREAHEIGHT          (BSP_LCD_GetYSize() / 2.5)
-#define MAXPARTIALHEIGHT            (PARTIALSAREAHEIGHT - 3 * PADDING)
+#define PARTIALSAREAWIDTH           720.0f
+#define PARTIALSPACING              60.0f
+#define PARTIALSAREAHEIGHT          160.0f
+#define MAXPARTIALHEIGHT            128.0f
 
 #define PARTIALSAREA_Left           PARTIALSAREA_X
 #define PARTIALSAREA_Right          (PARTIALSAREA_X + PARTIALSAREAWIDTH)
@@ -78,9 +79,7 @@
 
 void lv_oneSlider(void);
 
-void lv_circle_anim();
-void lv_partials_anim();
-void GUI_displayPartials(spectrum_t *s);
+void GUI_Init();
 void GUI_LCDProcess();
 
 void Display_Default(void);

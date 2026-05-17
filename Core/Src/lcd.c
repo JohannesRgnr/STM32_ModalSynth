@@ -20,7 +20,9 @@ static lv_point_precise_t partial_points[BANDS];
 
 static lv_obj_t * label;
 lv_obj_t * obj;
-lv_obj_t * partial[BANDS];
+static lv_obj_t * partial[BANDS];
+
+
 
 static void slider_event_cb(lv_event_t * e)
 {
@@ -56,98 +58,50 @@ void lv_oneSlider(void)
 }
 
 
-static void anim_x_cb(void * var, int32_t v)
-{
-	lv_obj_set_x((lv_obj_t *) var, v);
-}
 
-static void anim_size_cb(void * var, int32_t v)
+void GUI_Init()
 {
-	lv_obj_set_size((lv_obj_t *) var, v, v);
-}
+	// change background color
+	lv_obj_set_style_bg_color(lv_screen_active(),lv_palette_main(LV_PALETTE_NONE),LV_PART_MAIN);
 
-/**
- * @title Infinite playback animation
- * @brief Grow a red circle while sliding it right, then reverse and repeat.
- *
- * A red circular object sits on the left edge of the active screen. One
- * `lv_anim_t` drives `lv_obj_set_size` from 10 to 50 over 1000 ms; the same
- * configured animation is then reused with `lv_obj_set_x` running from 10
- * to 240. Both run with `lv_anim_path_ease_in_out`, a 300 ms reverse stage
- * after a 100 ms reverse delay, a 500 ms gap between cycles, and
- * `LV_ANIM_REPEAT_INFINITE`.
- */
-void lv_circle_anim()
-{
-	// static uint32_t oldRadius;
-	obj = lv_obj_create(lv_screen_active());
-	lv_obj_remove_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
-	lv_obj_set_style_bg_color(obj, lv_palette_main(LV_PALETTE_LIGHT_BLUE), 0);
-	lv_obj_set_style_radius(obj, 5, 0);
-	lv_obj_set_x(obj, 25);
-	lv_obj_set_y(obj, 25);
-	// lv_obj_align(obj, LV_ALIGN_LEFT_MID, 10, 0);
-	// uint32_t radius = (uint32_t)(spectrum.amps[0] * 500.0f);
-	// lv_obj_set_size(obj, radius, radius);
-	// lv_anim_t a;
-	// lv_anim_init(&a);
-	// lv_anim_set_var(&a, obj);
-	// lv_anim_set_values(&a, oldRadius, radius);
-	// lv_anim_set_duration(&a, 10);
-	// lv_anim_set_reverse_delay(&a, 1);
-	// lv_anim_set_reverse_duration(&a, 10);
-	//lv_anim_set_repeat_delay(&a, 500);
-	//lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
-	//lv_anim_set_path_cb(&a, lv_anim_path_ease_in_out);
+	// create style for all the partials
+	static lv_style_t style;
+	lv_style_init(&style);
+	lv_style_set_bg_color(&style, lv_palette_main(LV_PALETTE_LIGHT_BLUE));
+	lv_style_set_radius(&style, 4);
 
-	// lv_anim_set_exec_cb(&a, anim_size_cb);
-	// lv_anim_start(&a);
-	//lv_anim_set_exec_cb(&a, anim_x_cb);
-	//lv_anim_set_values(&a, 10, 240);
-	//lv_anim_start(&a);
-	// oldRadius = radius;
-}
 
-void lv_partials_anim()
-{
 	for (int i = 0; i < BANDS; i++)
 	{
 		partial[i] = lv_obj_create(lv_screen_active());
-		lv_obj_remove_flag(partial[i], LV_OBJ_FLAG_SCROLLABLE);
-		lv_obj_set_style_bg_color(partial[i], lv_palette_main(LV_PALETTE_LIGHT_BLUE), 0);
+		lv_obj_remove_flag(partial[i], LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CHECKABLE | LV_OBJ_FLAG_CLICKABLE);
+		lv_obj_add_style(partial[i], &style, 0);
 
-		lv_obj_set_style_radius(partial[i], 4, 0);
 		lv_obj_set_x(partial[i], 64 + i * 32);
 		lv_obj_set_y(partial[i], 25);
+		lv_obj_set_size(partial[i], 8, 0);
 	}
-}
-
-void GUI_displayPartials(spectrum_t *s)
-{
-
-	lv_obj_t * bar1 = lv_bar_create(lv_screen_active());
-	lv_obj_set_size(bar1, 200, 20);
-	lv_obj_center(bar1);
-	uint32_t value = 70.0f * lfo.output[0];
-	lv_bar_set_value(bar1, value, LV_ANIM_OFF);
 
 }
+
 
 void GUI_LCDProcess()
 {
-	const float hLength = PARTIALSAREAWIDTH - PADDING;
+	const float hLength = PARTIALSAREAWIDTH;
 
 	for (int i = 0; i < BANDS; i++)
 	{
+		float amplitude = spectrum.amps[i] * lfo.output[i];
 
-		int32_t height = (int32_t)(MAXPARTIALHEIGHT * spectrum.amps[i] * lfo.output[i]);
-		const int32_t xPos = (uint16_t)(spectrum.freqRatios[i] * (hLength / (BANDS - 4)) + PARTIALSAREA_X - 2 * PADDING);
+		int32_t height = (int32_t)(MAXPARTIALHEIGHT * amplitude);
+		const int32_t xPos = (uint16_t)(spectrum.freqRatios[i] * (PARTIALSAREAWIDTH / (BANDS - 4)) + PARTIALSAREA_X);
 		const int32_t yPos = PARTIALSAREA_Y + (MAXPARTIALHEIGHT - height);
 		// display only if partial fits within the partials area
 		if (xPos < PARTIALSAREA_X + PARTIALSAREAWIDTH - PADDING)
 		{
 			lv_obj_set_pos(partial[i], xPos, yPos);
-			lv_obj_set_size(partial[i], 10, height);
+			lv_obj_set_height(partial[i], height);
+			lv_obj_set_style_opa(partial[i], 55 + 200 * amplitude, 0);
 		}
 	}
 }

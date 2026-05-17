@@ -136,13 +136,13 @@ int main(void)
     BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
 
     lv_init();
-
     tft_init();
     touchpad_init();
     // lv_demo_benchmark();
-    lv_partials_anim();
-   // GUI_displayPartials(&spectrum);
 
+    GUI_Init();
+   // GUI_displayPartials(&spectrum);
+    BSP_LCD_SetBrightness(100);
     /* Initialize the touchscreen */
     // BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
 
