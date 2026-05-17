@@ -18,7 +18,7 @@
  * @brief A simple lowpass filter, useful to smooth data. Specified via coefficient alpha.
  * @param f
  * @param sample input sample
- * @param alpha alpha = 0: no filtering. alpha close to 1: strong smoothing/filtering
+ * @param alpha Filter coeff. alpha = 0: no filtering. alpha close to 1: strong smoothing/filtering
  * @return filtered sample
  */
 float smoothingLP(smoothingLP_t *f, const float sample, const float alpha){
@@ -49,11 +49,10 @@ float onepoleLP(onepoleLP_t *f, const float sample, const float cutoff){
  */
 float SVF_BP_compute(reson_t *f, const float sample)
 {
-    float hp = (sample - 2.0f * f->r * f->s1 - f->g * f->s1 - f->s2) / (1.0f + 2.0f * f->r * f->g + f->g * f->g);
-    float bp = f->g * hp + f->s1;
+    const float hp = (sample - 2.0f * f->r * f->s1 - f->g * f->s1 - f->s2) / (1.0f + 2.0f * f->r * f->g + f->g * f->g);
+    const float bp = f->g * hp + f->s1;
     f->s1 = f->g * hp + bp; // state update in 1st integrator
-    float lp = f->g * bp + f->s2;
-    f->s2 = f->g * bp + lp; // state update in 2nd integrator
+    f->s2 += 2 * f->g * bp; // state update in 2nd integrator
     return bp;
 }
 
@@ -75,10 +74,7 @@ void SVF_LP_init(ZDFLP_t * filter){
  */
 float freq_to_g(float freq_hz)
 {
-    float wd = TWOPI * freq_hz;
-    float wa = 2 * FS * tanf(wd * TS * 0.5f);
-    float g = wa * TS * 0.5f;
-    return g;
+    return tanf(PI * freq_hz * TS);
 }
 
 
