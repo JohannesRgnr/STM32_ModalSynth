@@ -63,7 +63,7 @@ void AUDIO_Init()
     spectrum_xfade(&spectrum, 0.0f);
 
     filterbank_init(&filterbank, &spectrum);
-    multiLFO_init(&lfo, 1.0f, 2.0f );
+    multiLFO_init(&lfo, 0.6f, 1.0f );
     freq.val = freq.dst = 0.f;
     Delay_init();
     reverb_Init();
@@ -74,7 +74,7 @@ void AUDIO_Init()
     freq.inc = (freq.dst - freq.val) * (float)samples * TS;
     // freq.inc = 0.f;
     // delay_wet = delay_btn * 0.5f;
-    // delay_feedback = 0.6f;
+    delay_feedback = 0.6f;
     // reverb_amount = reverb_btn * 0.7f;
     reverb_feedback = 0.9f;
 
@@ -103,15 +103,17 @@ void AUDIO_Init()
         samp = filterbank_process(&filterbank, samp);
 
         // Apply delay effect
-        pingpongDelay_process(samp, &delayLOut, &delayROut);
+       pingpongDelay_process(samp, &delayLOut, &delayROut);
 
         // Send to Reverb
         reverbsend = reverb_amount * (delayLOut*0.707f + delayROut*0.707f);
         reverb_process(reverbsend, &reverbLout, &reverbRout);
 
         // Soft Clip the outputs
-        float sampleL = SoftClip(delayLOut + reverbLout);
-        float sampleR = SoftClip(delayROut + reverbRout);
+        // float sampleL = SoftClip(delayLOut + reverbLout);
+        // float sampleR = SoftClip(delayROut + reverbRout);
+        float sampleL = delayLOut + reverbLout;
+        float sampleR = delayROut + reverbRout;
 
         // float to int16 conversion
         const int16_t sampleLOut = (int16_t)(32767.0f * sampleL);
