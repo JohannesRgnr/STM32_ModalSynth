@@ -19,7 +19,7 @@ static uint16_t		delay_time_L , delay_time_R;
 
 
 float delay_feedback	= INIT_FEEDB;
-float delay_wet	= INIT_DELAY_WET;
+float delay_wet			= INIT_DELAY_WET;
 
 ZDFLP_t lp_L;
 ZDFLP_t lp_R;
