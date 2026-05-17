@@ -22,6 +22,9 @@
 #include "spectra.h"
 #include "stereo_delay.h"
 
+
+#define FX 1
+
 /**
  * @brief Audio Buffer - x samples X 2 channels = 2 * x samples
  * @note Channels are interleaved - LRLRLRLRLRLRLRLRLRLRLR - audioBuffer[frame << 1] audioBuffer[(frame << 1) + 1]
@@ -79,7 +82,7 @@ void AUDIO_Init()
     reverb_feedback = 0.9f;
 
 
-    reverb_amount = 0.5f;
+    reverb_amount = 0.4f;
 
     for (int i = 0; i < samples; i++)
     {
@@ -102,6 +105,8 @@ void AUDIO_Init()
         filterbank.freq = 1000;
         samp = filterbank_process(&filterbank, samp);
 
+
+#if FX == 1
         // Apply delay effect
        pingpongDelay_process(samp, &delayLOut, &delayROut);
 
@@ -109,11 +114,15 @@ void AUDIO_Init()
         reverbsend = reverb_amount * (delayLOut*0.707f + delayROut*0.707f);
         reverb_process(reverbsend, &reverbLout, &reverbRout);
 
-        // Soft Clip the outputs
-        // float sampleL = SoftClip(delayLOut + reverbLout);
-        // float sampleR = SoftClip(delayROut + reverbRout);
         float sampleL = delayLOut + reverbLout;
         float sampleR = delayROut + reverbRout;
+
+#else
+
+        float sampleL = samp;
+        float sampleR = samp;
+
+#endif
 
         // float to int16 conversion
         const int16_t sampleLOut = (int16_t)(32767.0f * sampleL);
