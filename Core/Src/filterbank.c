@@ -151,7 +151,7 @@ void filterbank_update(filterbank_t *f)
 
         }
     }
-    //if (f->freq != f->previousFreq)
+    if (f->freq != f->previousFreq)
     {
         for (int i = 0; i < BANDS; i++)
         {
