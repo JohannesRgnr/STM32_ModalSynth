@@ -16,9 +16,11 @@
 extern spectrum_t spectrum;
 extern lfo_t lfo;
 
+static lv_point_precise_t partial_points[BANDS];
 
 static lv_obj_t * label;
 lv_obj_t * obj;
+lv_obj_t * partial[BANDS];
 
 static void slider_event_cb(lv_event_t * e)
 {
@@ -77,49 +79,77 @@ static void anim_size_cb(void * var, int32_t v)
  */
 void lv_circle_anim()
 {
-	static uint32_t oldRadius;
+	// static uint32_t oldRadius;
 	obj = lv_obj_create(lv_screen_active());
 	lv_obj_remove_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
 	lv_obj_set_style_bg_color(obj, lv_palette_main(LV_PALETTE_LIGHT_BLUE), 0);
-	lv_obj_set_style_radius(obj, LV_RADIUS_CIRCLE, 0);
-
-	lv_obj_align(obj, LV_ALIGN_LEFT_MID, 10, 0);
-	uint32_t radius = (uint32_t)(spectrum.amps[0] * 500.0f);
+	lv_obj_set_style_radius(obj, 5, 0);
+	lv_obj_set_x(obj, 25);
+	lv_obj_set_y(obj, 25);
+	// lv_obj_align(obj, LV_ALIGN_LEFT_MID, 10, 0);
+	// uint32_t radius = (uint32_t)(spectrum.amps[0] * 500.0f);
 	// lv_obj_set_size(obj, radius, radius);
-	lv_anim_t a;
-	lv_anim_init(&a);
-	lv_anim_set_var(&a, obj);
-	lv_anim_set_values(&a, oldRadius, radius);
-	lv_anim_set_duration(&a, 10);
-	lv_anim_set_reverse_delay(&a, 1);
-	lv_anim_set_reverse_duration(&a, 10);
+	// lv_anim_t a;
+	// lv_anim_init(&a);
+	// lv_anim_set_var(&a, obj);
+	// lv_anim_set_values(&a, oldRadius, radius);
+	// lv_anim_set_duration(&a, 10);
+	// lv_anim_set_reverse_delay(&a, 1);
+	// lv_anim_set_reverse_duration(&a, 10);
 	//lv_anim_set_repeat_delay(&a, 500);
 	//lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
 	//lv_anim_set_path_cb(&a, lv_anim_path_ease_in_out);
 
-	lv_anim_set_exec_cb(&a, anim_size_cb);
+	// lv_anim_set_exec_cb(&a, anim_size_cb);
 	// lv_anim_start(&a);
 	//lv_anim_set_exec_cb(&a, anim_x_cb);
 	//lv_anim_set_values(&a, 10, 240);
 	//lv_anim_start(&a);
-	oldRadius = radius;
+	// oldRadius = radius;
 }
 
-void GUI_LCDProcess(spectrum_t *s)
+void lv_partials_anim()
 {
-	static float oldRadius;
-	float x = (lfo.output[0] * 240.0f);
-	lv_obj_set_x(obj, x);
-	lv_obj_set_size(obj, 64, 64);
-	// lv_anim_t a;
-	// lv_anim_init(&a);
-	// lv_anim_set_var(&a, obj);
-	// lv_anim_set_exec_cb(&a, anim_x_cb);
-	// lv_anim_set_values(&a, 10, x);
-	//
-	//
-	// lv_anim_start(&a);
+	for (int i = 0; i < BANDS; i++)
+	{
+		partial[i] = lv_obj_create(lv_screen_active());
+		lv_obj_remove_flag(partial[i], LV_OBJ_FLAG_SCROLLABLE);
+		lv_obj_set_style_bg_color(partial[i], lv_palette_main(LV_PALETTE_LIGHT_BLUE), 0);
 
+		lv_obj_set_style_radius(partial[i], 4, 0);
+		lv_obj_set_x(partial[i], 64 + i * 32);
+		lv_obj_set_y(partial[i], 25);
+	}
+}
+
+void GUI_displayPartials(spectrum_t *s)
+{
+
+	lv_obj_t * bar1 = lv_bar_create(lv_screen_active());
+	lv_obj_set_size(bar1, 200, 20);
+	lv_obj_center(bar1);
+	uint32_t value = 70.0f * lfo.output[0];
+	lv_bar_set_value(bar1, value, LV_ANIM_OFF);
+
+}
+
+void GUI_LCDProcess()
+{
+	const float hLength = PARTIALSAREAWIDTH - PADDING;
+
+	for (int i = 0; i < BANDS; i++)
+	{
+
+		int32_t height = (int32_t)(MAXPARTIALHEIGHT * spectrum.amps[i] * lfo.output[i]);
+		const int32_t xPos = (uint16_t)(spectrum.freqRatios[i] * (hLength / (BANDS - 4)) + PARTIALSAREA_X - 2 * PADDING);
+		const int32_t yPos = PARTIALSAREA_Y + (MAXPARTIALHEIGHT - height);
+		// display only if partial fits within the partials area
+		if (xPos < PARTIALSAREA_X + PARTIALSAREAWIDTH - PADDING)
+		{
+			lv_obj_set_pos(partial[i], xPos, yPos);
+			lv_obj_set_size(partial[i], 10, height);
+		}
+	}
 }
 
 void Display_Default(void)

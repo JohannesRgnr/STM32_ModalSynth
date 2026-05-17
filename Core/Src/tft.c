@@ -204,11 +204,12 @@ static void LCD_Config(void)
 	/* PLLSAI_VCO Output = PLLSAI_VCO Input * PLLSAIN = 417 Mhz */
 	/* PLLLCDCLK = PLLSAI_VCO Output/PLLSAIR = 417 MHz / 5 = 83.4 MHz */
 	/* LTDC clock frequency = PLLLCDCLK / LTDC_PLLSAI_DIVR_2 = 83.4 / 2 = 41.7 MHz */
-	PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC;
-	PeriphClkInitStruct.PLLSAI.PLLSAIN = 417;
-	PeriphClkInitStruct.PLLSAI.PLLSAIR = 5;
-	PeriphClkInitStruct.PLLSAIDivR = RCC_PLLSAIDIVR_2;
-	HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
+	// PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC;
+	// PeriphClkInitStruct.PLLSAI.PLLSAIN = 417;
+	// PeriphClkInitStruct.PLLSAI.PLLSAIR = 5;
+	// PeriphClkInitStruct.PLLSAIDivR = RCC_PLLSAIDIVR_2;
+	//
+	// HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
 
 	/* Base address of DSI Host/Wrapper registers to be set before calling De-Init */
 	hdsi_discovery.Instance = DSI;

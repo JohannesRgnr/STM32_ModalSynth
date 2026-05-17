@@ -79,7 +79,9 @@
 void lv_oneSlider(void);
 
 void lv_circle_anim();
-void GUI_LCDProcess(spectrum_t *s);
+void lv_partials_anim();
+void GUI_displayPartials(spectrum_t *s);
+void GUI_LCDProcess();
 
 void Display_Default(void);
 void Display_Init(void);

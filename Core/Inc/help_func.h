@@ -26,6 +26,16 @@
 
 #endif  /* NOMINMAX */
 
+
+typedef struct
+{
+    float val;		// current value
+    float dst;		// value to move to
+    float inc;		// increment per sample to get from val to dst
+} line_t;
+
+
+
 /**
  * @brief Keep value between 0 and max
  *
@@ -61,14 +71,13 @@ static float SoftClip(float x)
     {
         return -1.0f;
     }
-    else if (x > 3.0f)
+    if (x > 3.0f)
     {
         return 1.0f;
     }
-    else
-    {
-        return x * (27.0f + x * x) / (27.0f + 9.0f * x * x);
-    }
+
+    return x * (27.0f + x * x) / (27.0f + 9.0f * x * x);
+
 }
 
 
@@ -81,18 +90,13 @@ float lutLerp(const float *table, uint16_t table_size, float index); // linear i
 static float mtof(float note) // midi note to frequency (Hz)
 {
     const float frequency = 440.0f * expf(0.057762265f * (note - 69.0f));
-    return(frequency);
+    return frequency;
 }
 
 
 float scale(float lower_input, float upper_input, float lower_output, float upper_output, float value);
 
-typedef struct
-{
-    float val;		// current value
-    float dst;		// value to move to
-    float inc;		// increment per sample to get from val to dst
-} line_t;
+
 
 
 #endif //MODAL_SYNTH_HELP_FUNC_H

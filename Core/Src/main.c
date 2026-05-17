@@ -126,6 +126,7 @@ int main(void)
     MX_GPIO_Init();
     MX_I2C1_Init();
     MX_SAI1_Init();
+
     MX_DSIHOST_DSI_Init();
     MX_USART1_UART_Init();
     /* USER CODE BEGIN 2 */
@@ -139,7 +140,8 @@ int main(void)
     tft_init();
     touchpad_init();
     // lv_demo_benchmark();
-   lv_circle_anim();
+    lv_partials_anim();
+   // GUI_displayPartials(&spectrum);
 
     /* Initialize the touchscreen */
     // BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
@@ -156,7 +158,7 @@ int main(void)
 
         UserButton();
         lv_task_handler();
-        GUI_LCDProcess(&spectrum);
+        GUI_LCDProcess();
         HAL_Delay(1);
 
     }
