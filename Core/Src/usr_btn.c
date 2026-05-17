@@ -98,14 +98,14 @@ void UserButton(void)
     if (CheckForUserButton())
     {
         // evaluate fundamental frequency
-        float midiNote = 40;
+        float midiNote = 48;
         float frequency = mtof(midiNote);
 
         // immediately jump to frequency
         freq.val = frequency;
         freq.dst = frequency;
         filterbank.freq = frequency;
-        const float duration = 7;
+        const float duration = 7.5f;
 
 
         filterbank.decay = duration;
