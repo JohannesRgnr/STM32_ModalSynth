@@ -15,14 +15,28 @@
 
 
 /**
- * @brief A simple lowpass filter, useful to smooth data.
+ * @brief A simple lowpass filter, useful to smooth data. Specified via coefficient alpha.
  * @param f
  * @param sample input sample
  * @param alpha alpha = 0: no filtering. alpha close to 1: strong smoothing/filtering
  * @return filtered sample
  */
-float smoothingLP(onepoleLP_t *f, const float sample, const float alpha){
+float smoothingLP(smoothingLP_t *f, const float sample, const float alpha){
     const float output = alpha * f->old_value + (1 - alpha) * sample;
+    f->old_value = output;
+    return output;
+}
+
+/**
+ * @brief A simple lowpass filter. Specified via cutoff frequency in Hz.
+ * @param f
+ * @param sample input sample
+ * @param alpha alpha = 0: no filtering. alpha close to 1: strong smoothing/filtering
+ * @return filtered sample
+ */
+float onepoleLP(onepoleLP_t *f, const float sample, const float cutoff){
+    float c = exp(-TWOPI * cutoff * TS);
+    const float output = c * f->old_value + (1 - c) * sample;
     f->old_value = output;
     return output;
 }
