@@ -74,8 +74,9 @@ void Delay_process(float inputSample, uint32_t delay, float *delayLOut, float *d
 	float delayedSampleR = SoftClip(Delay_readBufferR(delay));
 
 	/***************************** dry/wet mix and output *****************************/
-	float outputSampleL = delayedSampleL * delay_wet + inputSample * (1 - delay_wet);
-	float outputSampleR = delayedSampleR * delay_wet + inputSample * (1 - delay_wet);
+	float outputSampleL = Crossfade(inputSample, delayedSampleL, delay_wet);
+	float outputSampleR = Crossfade(inputSample, delayedSampleR, delay_wet);
+
 	*delayLOut = outputSampleL;
 	*delayROut = outputSampleR;
 
