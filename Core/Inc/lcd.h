@@ -49,17 +49,21 @@
 
 #define PADDING                     8
 
+#define TABRHEIGHT                  48
+
 #define PARTIALSAREA_X              40
-#define PARTIALSAREA_Y              72
+#define PARTIALSAREA_Y              80
 #define PARTIALSAREAWIDTH           720.0f
 #define PARTIALSPACING              60.0f
 #define PARTIALSAREAHEIGHT          160.0f
-#define MAXPARTIALHEIGHT            128.0f
+#define MAXPARTIALHEIGHT            120.0f
 
 #define PARTIALSAREA_Left           PARTIALSAREA_X
 #define PARTIALSAREA_Right          (PARTIALSAREA_X + PARTIALSAREAWIDTH)
 #define PARTIALSAREA_Top            PARTIALSAREA_Y
-#define PARTIALSAREA_Bottom         (PARTIALSAREA_Y + PARTIALSAREAHEIGHT + 64)
+#define PARTIALSAREA_Bottom         (PARTIALSAREA_Y + PARTIALSAREAHEIGHT)
+
+
 
 #define TRIGGERAREA_X               8
 #define TRIGGERAREA_Y               280
@@ -76,7 +80,6 @@
 #define ITEM_WIDTH                  (BSP_LCD_GetXSize() / MENUBAR_ITEMS)
 
 
-
 void lv_oneSlider(void);
 
 void GUI_Init();
@@ -84,7 +87,7 @@ void GUI_LCDProcess();
 
 void Display_Default(void);
 void Display_Init(void);
-void Display_partials(spectrum_t *s);
+void Display_partials(spectrum_t* s);
 void Display_morphBar(uint16_t x);
 void clearTriggerArea(void);
 void clearPartialsArea(void);

@@ -16,8 +16,6 @@
 extern spectrum_t spectrum;
 extern lfo_t lfo;
 
-static lv_point_precise_t partial_points[BANDS];
-
 static lv_obj_t * label;
 lv_obj_t * obj;
 static lv_obj_t * partial[BANDS];
@@ -65,7 +63,7 @@ void GUI_Init()
 	// lv_obj_set_style_bg_color(lv_screen_active(),lv_palette_main(LV_PALETTE_NONE),LV_PART_MAIN);
 
 
-	// Draw tabs
+	/**************************** Draw tabs  ****************************/
 	/*Create a Tab view object*/
 	lv_obj_t * tabview;
 	uint32_t tab_count = 0;
@@ -73,19 +71,15 @@ void GUI_Init()
 
 	tabview = lv_tabview_create(lv_screen_active());
 	lv_tabview_set_tab_bar_position(tabview, LV_DIR_TOP);
-	lv_tabview_set_tab_bar_size(tabview, 48);
+	lv_tabview_set_tab_bar_size(tabview, TABRHEIGHT);
 
-
-
-	// lv_obj_set_style_bg_color(tabview, lv_palette_lighten(LV_PALETTE_NONE, 0), 0);
 
 	lv_obj_t * tab_buttons = lv_tabview_get_tab_bar(tabview);
 	// lv_obj_set_style_bg_color(tab_buttons, lv_palette_main(LV_PALETTE_NONE), 0);
 	lv_obj_set_style_text_color(tab_buttons, lv_palette_lighten(LV_PALETTE_GREY, 1), 0);
 
 
-
-	/*Add 5 tabs (the tabs are page (lv_page) and can be scrolled*/
+	// Add 4 tabs
 	lv_obj_t * tab1 = lv_tabview_add_tab(tabview, "main");
 	lv_obj_t * tab2 = lv_tabview_add_tab(tabview, "spectrum");
 	lv_obj_t * tab3 = lv_tabview_add_tab(tabview, "lfo");
@@ -124,9 +118,9 @@ void GUI_Init()
 
 
 
-	// Draw line separating partials from trigger area
+	/*************** Draw line separating partials from trigger area   *******************/
 	lv_obj_t * middleLine = lv_line_create(lv_screen_active());
-	static lv_point_precise_t line_points[] = { {5, 0}, {795, 0} };
+	static lv_point_precise_t line_points[] = { {0, 0}, {780, 0} };
 	static lv_style_t style_line;
 
 	lv_style_init(&style_line);
@@ -139,33 +133,29 @@ void GUI_Init()
 	lv_obj_center(middleLine);
 
 
-
+	/**************************** Draw partials  ****************************/
 
 	// create style for all the partials
-	static lv_style_t style;
-	lv_style_init(&style);
-	lv_style_set_bg_color(&style, lv_palette_main(LV_PALETTE_LIGHT_BLUE));
-	lv_style_set_radius(&style, 4);
-
+	static lv_style_t style_partials;
+	lv_style_init(&style_partials);
+	lv_style_set_bg_color(&style_partials, lv_palette_main(LV_PALETTE_LIGHT_BLUE));
+	lv_style_set_radius(&style_partials, 0);
 
 	for (int i = 0; i < BANDS; i++)
 	{
 		partial[i] = lv_obj_create(lv_screen_active());
 		lv_obj_remove_flag(partial[i], LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CHECKABLE | LV_OBJ_FLAG_CLICKABLE);
-		lv_obj_add_style(partial[i], &style, 0);
+		lv_obj_add_style(partial[i], &style_partials, 0);
 
 		lv_obj_set_x(partial[i], 64 + i * 32);
 		lv_obj_set_y(partial[i], 25);
 		lv_obj_set_size(partial[i], 8, 0);
 	}
-
 }
 
 
 void GUI_LCDProcess()
 {
-	const float hLength = PARTIALSAREAWIDTH;
-
 	for (int i = 0; i < BANDS; i++)
 	{
 		float amplitude = spectrum.amps[i] * lfo.output[i];
