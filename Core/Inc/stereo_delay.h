@@ -16,22 +16,27 @@
 
 
 
-#define DELAY_BUFF_SIZE         22050
+#define DELAY_BUFF_SIZE         16384
 #define INIT_DELAY_L            15000
 #define INIT_DELAY_R            15000
-#define INIT_FEEDB              0.8f
+#define INIT_FEEDB              0.6f
 #define INIT_DELAY_WET			0.4f
 
 
 
 
 
-void 	Delay_init(void);
+
 void 	DelayFeedback_set(uint8_t val);
 void 	DelayWet_set(uint8_t val);
-void    Delay_time_set(uint32_t time_L, uint32_t time_R);
-void    pingpongDelay_process(float x, float *delayLOut, float *delayROut);
 
 
+
+void Delay_init(void);
+static void Delay_writeBufferL(float value);
+static float Delay_readBufferL(uint32_t delay);
+static void Delay_writeBufferR(float value);
+static float Delay_readBufferR(uint32_t delay);
+void Delay_process(float x, uint32_t delay, float *delayLOut, float *delayROut);
 
 #endif //MODAL_SYNTH_STEREO_DELAY_H

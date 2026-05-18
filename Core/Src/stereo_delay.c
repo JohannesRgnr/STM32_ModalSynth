@@ -11,52 +11,79 @@
 #include "filters.h"
 #include "help_func.h"
 
-static float		delaylineL[DELAY_BUFF_SIZE + 2];
-static float		delaylineR[DELAY_BUFF_SIZE + 2];
-static float		*readptrL , *readptrR ;
-static float 		*writeptrL , *writeptrR ;
-static uint16_t		delay_time_L , delay_time_R;
+static float		delaylineL[DELAY_BUFF_SIZE];
+static float		delaylineR[DELAY_BUFF_SIZE];
 
 
 float delay_feedback	= INIT_FEEDB;
 float delay_wet			= INIT_DELAY_WET;
 
 ZDFLP_t lp_L;
-ZDFLP_t lp_R;
 
-
-
+uint32_t mask;
+uint32_t writePointerL = 0;
+uint32_t writePointerR = 0;
 
 
 void Delay_init(void)
 {
-	readptrL = delaylineL;
-	readptrR = delaylineR ;
-	writeptrL = delaylineL + INIT_DELAY_L;
-	writeptrR = delaylineR + INIT_DELAY_R;
+	mask = DELAY_BUFF_SIZE - 1;
+	writePointerL = 0;
+	writePointerR = 0;
 
 	SVF_LP_init(&lp_L);
-	SVF_LP_init(&lp_R);
 }
 
-
-void Delay_time_set(uint32_t time_L, uint32_t time_R)
+static void Delay_writeBufferL(float value)
 {
-	float 	*posL, *posR;
-	delay_time_L = time_L;
-	delay_time_R = time_R;
-	posL = writeptrL - delay_time_L;
-	if (posL >= delaylineL)
-		readptrL = posL;
-	else
-		readptrL = posL + DELAY_BUFF_SIZE - 1;
-	posR = writeptrR - delay_time_R;
-	if (posR >= delaylineR)
-		readptrR = posR;
-	else
-		readptrR = posR + DELAY_BUFF_SIZE - 1;
-
+	*(delaylineL + (++writePointerL & mask)) = value;
 }
+
+static void Delay_writeBufferR(float value)
+{
+	*(delaylineR + (++writePointerR & mask)) = value;
+}
+
+
+static float Delay_readBufferL(uint32_t delay)
+{
+	uint32_t readPointer = (writePointerL - delay);
+	return delaylineL[readPointer & mask];
+}
+
+static float Delay_readBufferR(uint32_t delay)
+{
+	uint32_t readPointer = (writePointerR - delay);
+	return delaylineR[readPointer & mask];
+}
+
+
+/** @brief Ping pong delay effect, with crossfeedback, softclip and lowpass filtering
+ * @note requires 2 delay lines (L and R)
+ *
+ * @param inputSample
+ * @param delay
+ * @param delayLOut
+ * @param delayROut
+ */
+void Delay_process(float inputSample, uint32_t delay, float *delayLOut, float *delayROut)
+{
+	/***************************** read from delay line *******************************/
+	// Without interpolation.. delay time truncated to integer samples
+	float delayedSampleL = SoftClip(SVF_LP_compute(&lp_L,Delay_readBufferL(delay)));
+	float delayedSampleR = SoftClip(Delay_readBufferR(delay));
+
+	/***************************** dry/wet mix and output *****************************/
+	float outputSampleL = delayedSampleL * delay_wet + inputSample * (1 - delay_wet);
+	float outputSampleR = delayedSampleR * delay_wet + inputSample * (1 - delay_wet);
+	*delayLOut = outputSampleL;
+	*delayROut = outputSampleR;
+
+	/**************************** write into delay line *******************************/
+	Delay_writeBufferL(inputSample + delay_feedback * delayedSampleR);
+	Delay_writeBufferR(delay_feedback * delayedSampleL);
+}
+
 
 
 void DelayFeedback_set(uint8_t val)
@@ -70,48 +97,3 @@ void DelayWet_set(uint8_t val)
 	delay_wet = val;
 }
 
-
-/**
- * @brief Ping pong delay effect, with crossfeedback, softclip and lowpass filtering
- * @note requires 2 delay lines (L and R)
- *
- * @param x
- * @param delayLOut
- * @param delayROut
- */
-void pingpongDelay_process (float input_sample, float * delayLOut, float * delayROut)
-{
-	float delayed_sampleL, delayed_sampleR, sampleL, sampleR;
-
-	// read first so that we can have feedback, apply lowpass filtering
-	delayed_sampleL = SVF_LP_compute(&lp_L, *readptrL);
-	delayed_sampleR = SVF_LP_compute(&lp_R, *readptrR);
-
-	// apply soft clipping
-	sampleL = SoftClip(delay_feedback * delayed_sampleL);
-	sampleR = SoftClip(input_sample + delay_feedback * delayed_sampleR);
-
-	// write then update pointers
-	*writeptrL = sampleR;
-	*writeptrR = sampleL;
-	writeptrL++;
-	readptrL++;
-	writeptrR++;
-	readptrR++;
-
-	if ((writeptrL - delaylineL) >= DELAY_BUFF_SIZE)
-		writeptrL = delaylineL;
-
-	if ((readptrL - delaylineL) >= DELAY_BUFF_SIZE)
-		readptrL = delaylineL;
-
-	if ((writeptrR - delaylineR) >= DELAY_BUFF_SIZE)
-		writeptrR = delaylineR;
-
-	if ((readptrR - delaylineR) >= DELAY_BUFF_SIZE)
-		readptrR = delaylineR;
-
-	// linear crossfade
-	*delayLOut = delay_wet * sampleL + (1 - delay_wet) * input_sample;
-	*delayROut = delay_wet * sampleR + (1 - delay_wet) * input_sample;
-}

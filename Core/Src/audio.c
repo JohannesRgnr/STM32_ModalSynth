@@ -68,6 +68,7 @@ void AUDIO_Init()
     filterbank_init(&filterbank, &spectrum);
     multiLFO_init(&lfo, 0.6f, 1.0f );
     freq.val = freq.dst = 0.f;
+
     Delay_init();
     reverb_Init();
 }
@@ -79,7 +80,7 @@ void AUDIO_Init()
     // delay_wet = delay_btn * 0.5f;
     delay_feedback = 0.6f;
     // reverb_amount = reverb_btn * 0.7f;
-    reverb_feedback = 0.9f;
+    reverb_feedback = 0.6f;
 
 
     reverb_amount = 0.4f;
@@ -108,7 +109,7 @@ void AUDIO_Init()
 
 #if FX == 1
         // Apply delay effect
-        pingpongDelay_process(samp, &delayLOut, &delayROut);
+        Delay_process(samp, 15000, &delayLOut, &delayROut);
 
         // Send to Reverb
         reverbsend = reverb_amount * (delayLOut*0.707f + delayROut*0.707f);
