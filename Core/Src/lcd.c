@@ -62,7 +62,84 @@ void lv_oneSlider(void)
 void GUI_Init()
 {
 	// change background color
-	lv_obj_set_style_bg_color(lv_screen_active(),lv_palette_main(LV_PALETTE_NONE),LV_PART_MAIN);
+	// lv_obj_set_style_bg_color(lv_screen_active(),lv_palette_main(LV_PALETTE_NONE),LV_PART_MAIN);
+
+
+	// Draw tabs
+	/*Create a Tab view object*/
+	lv_obj_t * tabview;
+	uint32_t tab_count = 0;
+	uint32_t i = 0;
+
+	tabview = lv_tabview_create(lv_screen_active());
+	lv_tabview_set_tab_bar_position(tabview, LV_DIR_TOP);
+	lv_tabview_set_tab_bar_size(tabview, 48);
+
+
+
+	// lv_obj_set_style_bg_color(tabview, lv_palette_lighten(LV_PALETTE_NONE, 0), 0);
+
+	lv_obj_t * tab_buttons = lv_tabview_get_tab_bar(tabview);
+	// lv_obj_set_style_bg_color(tab_buttons, lv_palette_main(LV_PALETTE_NONE), 0);
+	lv_obj_set_style_text_color(tab_buttons, lv_palette_lighten(LV_PALETTE_GREY, 1), 0);
+
+
+
+	/*Add 5 tabs (the tabs are page (lv_page) and can be scrolled*/
+	lv_obj_t * tab1 = lv_tabview_add_tab(tabview, "main");
+	lv_obj_t * tab2 = lv_tabview_add_tab(tabview, "spectrum");
+	lv_obj_t * tab3 = lv_tabview_add_tab(tabview, "lfo");
+	lv_obj_t * tab4 = lv_tabview_add_tab(tabview, "effects");
+
+	tab_count = lv_tabview_get_tab_count(tabview);
+
+	for(i = 0; i < tab_count; i++) {
+		lv_obj_t * button = lv_obj_get_child(tab_buttons, i);
+
+		lv_obj_set_style_bg_color(button, lv_palette_main(LV_PALETTE_NONE), 0);
+		lv_obj_set_style_bg_color(button, lv_palette_darken(LV_PALETTE_GREY, 4), LV_PART_MAIN | LV_STATE_CHECKED);
+		lv_obj_set_style_text_color(button, lv_palette_lighten(LV_PALETTE_GREY, 5), LV_PART_MAIN | LV_STATE_CHECKED);
+		lv_obj_set_style_border_side(button, LV_BORDER_SIDE_BOTTOM, LV_PART_MAIN | LV_STATE_CHECKED);
+		lv_obj_set_style_border_color(button, lv_palette_main(LV_PALETTE_ORANGE), LV_PART_MAIN | LV_STATE_CHECKED);
+		lv_obj_set_style_border_width(button, 4, LV_PART_MAIN | LV_STATE_CHECKED);
+	}
+
+	lv_obj_set_style_bg_color(tab1, lv_palette_main(LV_PALETTE_NONE), 0);
+	lv_obj_set_style_bg_color(tab2, lv_palette_main(LV_PALETTE_NONE), 0);
+	lv_obj_set_style_bg_color(tab3, lv_palette_main(LV_PALETTE_NONE), 0);
+	lv_obj_set_style_bg_color(tab4, lv_palette_main(LV_PALETTE_NONE), 0);
+
+
+	/*Add content to the tabs*/
+	lv_obj_t * label = lv_label_create(tab1);
+	lv_label_set_text(label, "First tab");
+
+	label = lv_label_create(tab2);
+	lv_label_set_text(label, "Second tab");
+
+	label = lv_label_create(tab3);
+	lv_label_set_text(label, "Third tab");
+
+	lv_obj_remove_flag(lv_tabview_get_content(tabview), LV_OBJ_FLAG_SCROLLABLE);
+
+
+
+	// Draw line separating partials from trigger area
+	lv_obj_t * middleLine = lv_line_create(lv_screen_active());
+	static lv_point_precise_t line_points[] = { {5, 0}, {795, 0} };
+	static lv_style_t style_line;
+
+	lv_style_init(&style_line);
+	lv_style_set_line_width(&style_line, 4);
+	lv_style_set_line_color(&style_line, lv_palette_main(LV_PALETTE_GREY));
+	lv_style_set_line_rounded(&style_line, true);
+
+	lv_line_set_points(middleLine, line_points, 2);     /*Set the points*/
+	lv_obj_add_style(middleLine, &style_line, 0);
+	lv_obj_center(middleLine);
+
+
+
 
 	// create style for all the partials
 	static lv_style_t style;

@@ -108,7 +108,7 @@ void AUDIO_Init()
 
 #if FX == 1
         // Apply delay effect
-       pingpongDelay_process(samp, &delayLOut, &delayROut);
+        pingpongDelay_process(samp, &delayLOut, &delayROut);
 
         // Send to Reverb
         reverbsend = reverb_amount * (delayLOut*0.707f + delayROut*0.707f);
