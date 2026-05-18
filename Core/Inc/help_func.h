@@ -67,17 +67,16 @@ static float Crossfade(const float a, const float b, const float fade)
  */
 static float SoftClip(float x)
 {
-    if (x < -3.0f)
-    {
-        return -1.0f;
-    }
-    if (x > 3.0f)
-    {
-        return 1.0f;
-    }
+    // if (x < -3.0f)
+    // {
+    //     return -1.0f;
+    // }
+    // if (x > 3.0f)
+    // {
+    //     return 1.0f;
+    // }
 
     return x * (27.0f + x * x) / (27.0f + 9.0f * x * x);
-
 }
 
 
