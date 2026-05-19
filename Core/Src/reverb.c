@@ -1,6 +1,6 @@
 /**
  * @file reverb.c
- * @author Johannes R, originally from Tom Erbe
+ * @author Johannes R, code originally from Tom Erbe
  * @brief 
  * @version 
  * @date 01.05.26
