@@ -24,12 +24,13 @@
 /* USER CODE BEGIN Includes */
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx.h"
+#include "touchscreen.h"
 #ifdef USE_RTOS_SYSTICK
 #include <cmsis_os.h>
 #endif
 
-#include "stm32f769i_discovery.h"
-#include "stm32f769i_discovery_lcd.h"
+// #include "stm32f769i_discovery.h"
+// #include "stm32f769i_discovery_lcd.h"
 #include "../../lvgl/lvgl.h"
 /* USER CODE END Includes */
 
