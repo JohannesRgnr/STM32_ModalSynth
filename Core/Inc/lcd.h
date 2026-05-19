@@ -54,7 +54,7 @@
 #define PARTIALSAREA_X              40
 #define PARTIALSAREA_Y              80
 #define PARTIALSAREAWIDTH           720.0f
-#define PARTIALSPACING              60.0f
+#define PARTIALSPACING              (PARTIALSAREAWIDTH / 12.0f)
 #define PARTIALSAREAHEIGHT          160.0f
 #define MAXPARTIALHEIGHT            120.0f
 
@@ -65,15 +65,15 @@
 
 
 
-#define TRIGGERAREA_X               8
-#define TRIGGERAREA_Y               280
-#define TRIGGERAREAWIDTH            (BSP_LCD_GetXSize() - TRIGGERAREA_X - PADDING)
-#define TRIGGERAREAHEIGHT           (BSP_LCD_GetYSize() - TRIGGERAREA_Y - PADDING)
+#define TRIGGERAREA_X               0
+#define TRIGGERAREA_Y               240
+#define TRIGGERAREAWIDTH            800
+#define TRIGGERAREAHEIGHT           240
 
-#define TRIGGERAREA_Left            (TRIGGERAREA_X + 2 * PADDING)
-#define TRIGGERAREA_Right           (TRIGGERAREAWIDTH - PADDING)
-#define TRIGGERAREA_Top             (TRIGGERAREA_Y + 2 * PADDING)
-#define TRIGGERAREA_Bottom          (TRIGGERAREA_Y + TRIGGERAREAHEIGHT - PADDING)
+#define TRIGGERAREA_Left            TRIGGERAREA_X
+#define TRIGGERAREA_Right           TRIGGERAREAWIDTH
+#define TRIGGERAREA_Top             TRIGGERAREA_Y
+#define TRIGGERAREA_Bottom          (TRIGGERAREA_Y + TRIGGERAREAHEIGHT)
 
 #define MENUBARHEIGHT               48
 #define MENUBAR_ITEMS               5
@@ -83,7 +83,8 @@
 void lv_oneSlider(void);
 
 void GUI_Init();
-void GUI_LCDProcess();
+void GUI_LCDProcess(lv_timer_t * timer);
+void GUI_TSProcess(lv_timer_t * timer);
 
 void Display_Default(void);
 void Display_Init(void);
