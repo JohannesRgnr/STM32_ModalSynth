@@ -15,9 +15,11 @@
 
 
 
-
+void poll_ts(void);
+void do_ts();
 void Touchscreen(void);
-static void ts_triggerArea(uint16_t x, uint16_t y, uint8_t state);
+
+void ts_triggerArea(uint16_t x, uint16_t y, uint8_t state);
 static void ts_MorphArea(uint16_t x, uint16_t y, uint8_t state);
 static void ts_MenuArea(uint16_t x, uint8_t state);
 

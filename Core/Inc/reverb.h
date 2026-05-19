@@ -1,6 +1,6 @@
 /**
  * @file reverb.h
- * @author Johannes R.
+ * @author Johannes R., code originally from Tom Erbe
  * @brief 
  * @version 
  * @date 01.05.26
@@ -10,9 +10,11 @@
 #ifndef MODAL_SYNTH_REVERB_H
 #define MODAL_SYNTH_REVERB_H
 
+#include <stdint.h>
+
 #define AUDIO_BUF 16384
 #define DELAY_BUF 25090
-#include <stdint.h>
+
 
 void reverb_Init(void);
 void reverb_process(float in,float *reverbLout,float *reverbRout); // Tom's code

@@ -154,13 +154,12 @@ int main(void)
     /* Infinite loop */
     while (1)
     {
-        // Touchscreen();
-
-        UserButton();
+      //  UserButton();
+       // Touchscreen();
+       // do_ts();
         lv_task_handler();
-        GUI_LCDProcess();
+        // GUI_LCDProcess();
         HAL_Delay(1);
-
     }
 }
 

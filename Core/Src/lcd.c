@@ -12,6 +12,7 @@
 #include "filterbank.h"
 #include "help_func.h"
 #include "multiLFO.h"
+#include "touchscreen.h"
 
 extern spectrum_t spectrum;
 extern lfo_t lfo;
@@ -20,6 +21,9 @@ static lv_obj_t * label;
 lv_obj_t * obj;
 static lv_obj_t * partial[BANDS];
 
+TS_StateTypeDef  TS_State;
+uint8_t wasTouched = 0;
+static uint32_t user_data = 10;
 
 
 static void slider_event_cb(lv_event_t * e)
@@ -61,7 +65,8 @@ void GUI_Init()
 {
 	// change background color
 	// lv_obj_set_style_bg_color(lv_screen_active(),lv_palette_main(LV_PALETTE_NONE),LV_PART_MAIN);
-
+	lv_timer_t * timer1 = lv_timer_create(GUI_LCDProcess, 50,  &user_data);
+	lv_timer_t * timer2 = lv_timer_create(GUI_TSProcess, 10,  &user_data);
 
 	/**************************** Draw tabs  ****************************/
 	/*Create a Tab view object*/
@@ -154,8 +159,9 @@ void GUI_Init()
 }
 
 
-void GUI_LCDProcess()
+void GUI_LCDProcess(lv_timer_t * timer)
 {
+
 	for (int i = 0; i < BANDS; i++)
 	{
 		float amplitude = spectrum.amps[i] * lfo.output[i];
@@ -168,10 +174,30 @@ void GUI_LCDProcess()
 		{
 			lv_obj_set_pos(partial[i], xPos, yPos);
 			lv_obj_set_height(partial[i], height);
-			lv_obj_set_style_opa(partial[i], 55 + 200 * amplitude, 0);
+			lv_obj_set_style_opa(partial[i], 75 + 180 * amplitude, 0);
 		}
 	}
 }
+
+
+void GUI_TSProcess(lv_timer_t * timer)
+{
+
+    BSP_TS_GetState(&TS_State);
+
+    uint16_t x = TS_State.touchX[0];
+    uint16_t y = TS_State.touchY[0];
+
+
+    // if inside trigger area
+    if (x > TRIGGERAREA_Left  && x < TRIGGERAREA_Right && y > TRIGGERAREA_Top  && y < TRIGGERAREA_Bottom)
+    {
+        ts_triggerArea(x, y, wasTouched);
+    }
+
+    wasTouched = TS_State.touchDetected;
+}
+
 
 void Display_Default(void)
 {

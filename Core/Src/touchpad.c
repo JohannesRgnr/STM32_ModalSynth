@@ -6,12 +6,16 @@
 /*********************
  *      INCLUDES
  *********************/
+#include "exciter.h"
+#include "help_func.h"
+#include "lcd.h"
 #include "tft.h"
 #include "../lvgl/lvgl.h"
 
 #include "stm32f7xx.h"
 #include "stm32f769i_discovery.h"
 #include "stm32f769i_discovery_ts.h"
+#include "touchscreen.h"
 
 /*********************
  *      DEFINES
@@ -72,3 +76,5 @@ static void touchpad_read_cb(lv_indev_t * indev, lv_indev_data_t *data)
 		data->state = LV_INDEV_STATE_REL;
 	}
 }
+
+

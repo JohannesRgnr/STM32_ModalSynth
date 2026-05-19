@@ -19,7 +19,7 @@
 
 uint16_t audioLevel = 60;
 
-uint8_t wasTouched = 0;
+// uint8_t wasTouched = 0;
 uint8_t LFO_btn = 1;
 
 uint8_t delay_btn = 1;
@@ -31,7 +31,9 @@ uint8_t presetRight = 5;
 extern line_t exciterAmp, freq;
 extern filterbank_t filterbank;
 extern spectrum_t spectrum;
-TS_StateTypeDef  TS_State;
+extern TS_StateTypeDef  TS_State;
+
+uint16_t x, y;
 
 
 
@@ -83,21 +85,21 @@ void Touchscreen(void){
     // if inside trigger area
     if (x > TRIGGERAREA_Left  && x < TRIGGERAREA_Right && y > TRIGGERAREA_Top  && y < TRIGGERAREA_Bottom)
     {
-        ts_triggerArea(x, y, wasTouched);
+      //  ts_triggerArea(x, y, wasTouched);
     }
-    // if inside partials area
-    else if (x > PARTIALSAREA_Left && x < PARTIALSAREA_Right && y > PARTIALSAREA_Top && y < PARTIALSAREA_Bottom)
-    {
-       ts_MorphArea(x, y, wasTouched);
-    }
-    // if inside menu bar area
-    else if (y < MENUBARHEIGHT + 8)
-    {
-        ts_MenuArea(x, wasTouched);
-    }
+    // // if inside partials area
+    // else if (x > PARTIALSAREA_Left && x < PARTIALSAREA_Right && y > PARTIALSAREA_Top && y < PARTIALSAREA_Bottom)
+    // {
+    //    ts_MorphArea(x, y, wasTouched);
+    // }
+    // // if inside menu bar area
+    // else if (y < MENUBARHEIGHT + 8)
+    // {
+    //     ts_MenuArea(x, wasTouched);
+    // }
 
     // Display_partials(&spectrum);
-    wasTouched = TS_State.touchDetected;
+  //  wasTouched = TS_State.touchDetected;
     // HAL_Delay(12);
 
 }
@@ -108,7 +110,7 @@ void Touchscreen(void){
  * @param y y touch coordinate
  * @param state currently touched or not
  */
-static void ts_triggerArea(uint16_t x, uint16_t y, uint8_t state)
+void ts_triggerArea(uint16_t x, uint16_t y, uint8_t state)
 {
     if (state == 0)
     {
@@ -118,20 +120,20 @@ static void ts_triggerArea(uint16_t x, uint16_t y, uint8_t state)
             float midiNote = scale(TRIGGERAREA_Left, TRIGGERAREA_Right, 24, 90, x);
             midiNote = clip(midiNote, 24, 90);
             float frequency = mtof(midiNote);
-
+            const float duration = scale(TRIGGERAREA_Top,TRIGGERAREA_Bottom, 6, 10, y);
             // immediately jump to frequency
             freq.val = frequency;
             freq.dst = frequency;
             filterbank.freq = frequency;
-
+            filterbank.decay = duration;
             filterbank_update(&filterbank);
             Trigger_Note(&exciterAmp);
 
             // redraw trigger area
-            clearTriggerArea();
-            // draw trajectory
-            BSP_LCD_SetTextColor(BLUE_UI_MAT);
-            BSP_LCD_FillCircle(x, y, 8);
+            // clearTriggerArea();
+            // // draw trajectory
+            // BSP_LCD_SetTextColor(BLUE_UI_MAT);
+            // BSP_LCD_FillCircle(x, y, 8);
         }
 
     }
@@ -141,15 +143,15 @@ static void ts_triggerArea(uint16_t x, uint16_t y, uint8_t state)
         {
             float midiNote = scale(TRIGGERAREA_Left, TRIGGERAREA_Right, 24, 90, x);
             midiNote = clip(midiNote, 24, 90);
-            const float duration = scale(TRIGGERAREA_Top,TRIGGERAREA_Bottom, 4, 10, y);
+            const float duration = scale(TRIGGERAREA_Top,TRIGGERAREA_Bottom, 6, 10, y);
 
             freq.dst = mtof(midiNote);
             filterbank.decay = duration;
             filterbank_update(&filterbank);
 
             // draw trajectory
-            BSP_LCD_SetTextColor(BLUE_UI_MAT);
-            BSP_LCD_FillCircle(x, y, 8);
+            // BSP_LCD_SetTextColor(BLUE_UI_MAT);
+            // BSP_LCD_FillCircle(x, y, 8);
         }
     }
 }
