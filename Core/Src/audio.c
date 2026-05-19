@@ -102,14 +102,14 @@ void AUDIO_Init()
        samp = samp * exciterAmp.val * exciterAmp.val;
 
         // going through filterbank
-        // filterbank.freq = freq.val;
-        filterbank.freq = 1000;
+         filterbank.freq = freq.val;
+        // filterbank.freq = 1000;
         samp = filterbank_process(&filterbank, samp);
 
 
 #if FX == 1
         // Apply delay effect
-        Delay_process(samp, 15000, &delayLOut, &delayROut);
+        Delay_process(samp, 22050, &delayLOut, &delayROut);
 
         // Send to Reverb
         reverbsend = reverb_amount * (delayLOut*0.707f + delayROut*0.707f);
