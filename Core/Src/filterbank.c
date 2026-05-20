@@ -146,7 +146,7 @@ void filterbank_update(filterbank_t *f)
             }
             else
             {
-                reson[i].r = 0.0f;
+                reson[i].r = 1.0f;
             }
 
         }
