@@ -40,8 +40,6 @@ void multiLFO_process(lfo_t *lfo)
         float sine = lutLerp(lut_sine, LUT_SINE_SIZE,LUT_SINE_SIZE * phase); // linear-interpolated sinewave
 
         lfo->output[i] = 1.0f - lfo->amp * (sine * 0.5f + 0.5f);
-
     }
     lfo->phase += TS * lfo->freq; // increment phase (phase normalized from 0 to 1)
-
 }
