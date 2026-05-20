@@ -83,8 +83,8 @@
 void lv_oneSlider(void);
 
 void GUI_Init();
-void GUI_LCDProcess(lv_timer_t * timer);
-void GUI_TSProcess(lv_timer_t * timer);
+void GUI_refreshPartials(lv_timer_t * timer);
+void GUI_trajectory(float x, float y);
 
 void Display_Default(void);
 void Display_Init(void);

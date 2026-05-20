@@ -13,6 +13,7 @@
 
 #include "exciter.h"
 #include "filterbank.h"
+#include "filters.h"
 #include "help_func.h"
 #include "lcd.h"
 #include "spectra.h"
@@ -35,6 +36,7 @@ extern TS_StateTypeDef  TS_State;
 
 uint16_t x, y;
 
+smoothingLP_t smoothFreq;
 
 
 void Touchscreen(void){
@@ -110,51 +112,52 @@ void Touchscreen(void){
  * @param y y touch coordinate
  * @param state currently touched or not
  */
-void ts_triggerArea(uint16_t x, uint16_t y, uint8_t state)
-{
-    if (state == 0)
-    {
-        if (TS_State.touchDetected == 1) // new single finger touch
-        {
-            // evaluate fundamental frequency
-            float midiNote = scale(TRIGGERAREA_Left, TRIGGERAREA_Right, 24, 90, x);
-            midiNote = clip(midiNote, 24, 90);
-            float frequency = mtof(midiNote);
-            const float duration = scale(TRIGGERAREA_Top,TRIGGERAREA_Bottom, 6, 10, y);
-            // immediately jump to frequency
-            freq.val = frequency;
-            freq.dst = frequency;
-            filterbank.freq = frequency;
-            filterbank.decay = duration;
-            filterbank_update(&filterbank);
-            Trigger_Note(&exciterAmp);
-
-            // redraw trigger area
-            // clearTriggerArea();
-            // // draw trajectory
-            // BSP_LCD_SetTextColor(BLUE_UI_MAT);
-            // BSP_LCD_FillCircle(x, y, 8);
-        }
-
-    }
-    else  // was already touched
-    {
-        if (TS_State.touchDetected == 1)
-        {
-            float midiNote = scale(TRIGGERAREA_Left, TRIGGERAREA_Right, 24, 90, x);
-            midiNote = clip(midiNote, 24, 90);
-            const float duration = scale(TRIGGERAREA_Top,TRIGGERAREA_Bottom, 6, 10, y);
-
-            freq.dst = mtof(midiNote);
-            filterbank.decay = duration;
-            filterbank_update(&filterbank);
-
-            // draw trajectory
-            // BSP_LCD_SetTextColor(BLUE_UI_MAT);
-            // BSP_LCD_FillCircle(x, y, 8);
-        }
-    }
-}
+// void ts_triggerArea(uint16_t x, uint16_t y, uint8_t state)
+// {
+//     if (state == 0)
+//     {
+//         if (TS_State.touchDetected == 1) // new single finger touch
+//         {
+//             // evaluate fundamental frequency
+//             float midiNote = scale(TRIGGERAREA_Left, TRIGGERAREA_Right, 24, 90, x);
+//             // midiNote = clip(midiNote, 24, 90);
+//             float frequency = mtof(midiNote);
+//             const float duration = scale(TRIGGERAREA_Bottom,TRIGGERAREA_Top, 5, 10, y);
+//             // immediately jump to frequency
+//             freq.val = frequency;
+//             freq.dst = frequency;
+//             filterbank.freq = frequency;
+//             filterbank.decay = duration;
+//             filterbank_update(&filterbank);
+//             Trigger_Note(&exciterAmp);
+//
+//             // redraw trigger area
+//             // clearTriggerArea();
+//             // // draw trajectory
+//             // BSP_LCD_SetTextColor(BLUE_UI_MAT);
+//             // BSP_LCD_FillCircle(x, y, 8);
+//         }
+//
+//     }
+//     else  // was already touched
+//     {
+//         if (TS_State.touchDetected == 1)
+//         {
+//             float midiNote = scale(TRIGGERAREA_Left, TRIGGERAREA_Right, 24, 90, x);
+//            // midiNote = clip(midiNote, 24, 90);
+//             const float duration = scale(TRIGGERAREA_Bottom,TRIGGERAREA_Top, 5, 10, y);
+//
+//             freq.dst = mtof(midiNote);
+//
+//             filterbank.decay = duration;
+//             filterbank_update(&filterbank);
+//
+//             // draw trajectory
+//             // BSP_LCD_SetTextColor(BLUE_UI_MAT);
+//             // BSP_LCD_FillCircle(x, y, 8);
+//         }
+//     }
+// }
 
 
 static void ts_MorphArea(uint16_t x, uint16_t y, uint8_t state)

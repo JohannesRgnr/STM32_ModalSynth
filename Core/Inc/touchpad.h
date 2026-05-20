@@ -11,6 +11,7 @@
  *********************/
 #include <stdbool.h>
 #include <stdint.h>
+#include "../lvgl.h"
 
 /*********************
  *      DEFINES
@@ -24,7 +25,6 @@
  * GLOBAL PROTOTYPES
  **********************/
 void touchpad_init(void);
-
 
 
 

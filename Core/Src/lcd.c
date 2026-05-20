@@ -10,8 +10,10 @@
 #include "../Inc/lcd.h"
 
 #include "filterbank.h"
+#include "filters.h"
 #include "help_func.h"
 #include "multiLFO.h"
+#include "touchpad.h"
 #include "touchscreen.h"
 
 extern spectrum_t spectrum;
@@ -22,8 +24,10 @@ lv_obj_t * obj;
 static lv_obj_t * partial[BANDS];
 
 TS_StateTypeDef  TS_State;
-uint8_t wasTouched = 0;
+// uint8_t wasTouched = 0;
 static uint32_t user_data = 10;
+
+
 
 
 static void slider_event_cb(lv_event_t * e)
@@ -63,10 +67,8 @@ void lv_oneSlider(void)
 
 void GUI_Init()
 {
-	// change background color
-	// lv_obj_set_style_bg_color(lv_screen_active(),lv_palette_main(LV_PALETTE_NONE),LV_PART_MAIN);
-	lv_timer_t * timer1 = lv_timer_create(GUI_LCDProcess, 50,  &user_data);
-	lv_timer_t * timer2 = lv_timer_create(GUI_TSProcess, 10,  &user_data);
+	/************* Create timer for partials display refresh ************/
+	lv_timer_t * timer_partialDisplay = lv_timer_create(GUI_refreshPartials, 50,  &user_data);
 
 	/**************************** Draw tabs  ****************************/
 	/*Create a Tab view object*/
@@ -122,7 +124,6 @@ void GUI_Init()
 	lv_obj_remove_flag(lv_tabview_get_content(tabview), LV_OBJ_FLAG_SCROLLABLE);
 
 
-
 	/*************** Draw line separating partials from trigger area   *******************/
 	lv_obj_t * middleLine = lv_line_create(lv_screen_active());
 	static lv_point_precise_t line_points[] = { {0, 0}, {780, 0} };
@@ -138,8 +139,7 @@ void GUI_Init()
 	lv_obj_center(middleLine);
 
 
-	/**************************** Draw partials  ****************************/
-
+	/**************************** Init partials  ****************************/
 	// create style for all the partials
 	static lv_style_t style_partials;
 	lv_style_init(&style_partials);
@@ -159,18 +159,18 @@ void GUI_Init()
 }
 
 
-void GUI_LCDProcess(lv_timer_t * timer)
-{
 
+void GUI_refreshPartials(lv_timer_t * timer)
+{
 	for (int i = 0; i < BANDS; i++)
 	{
 		float amplitude = spectrum.amps[i] * lfo.output[i];
 
 		int32_t height = (int32_t)(MAXPARTIALHEIGHT * amplitude);
-		const int32_t xPos = (uint16_t)(spectrum.freqRatios[i] * (PARTIALSAREAWIDTH / (BANDS - 4)) + PARTIALSAREA_X);
+		const int32_t xPos = (uint16_t)(spectrum.freqRatios[i] * PARTIALSPACING + PARTIALSAREA_X);
 		const int32_t yPos = PARTIALSAREA_Y + (MAXPARTIALHEIGHT - height);
 		// display only if partial fits within the partials area
-		if (xPos < PARTIALSAREA_X + PARTIALSAREAWIDTH - PADDING)
+		if (xPos < PARTIALSAREA_X + PARTIALSAREAWIDTH)
 		{
 			lv_obj_set_pos(partial[i], xPos, yPos);
 			lv_obj_set_height(partial[i], height);
@@ -180,23 +180,19 @@ void GUI_LCDProcess(lv_timer_t * timer)
 }
 
 
-void GUI_TSProcess(lv_timer_t * timer)
+
+
+void GUI_trajectory(float x, float y)
 {
-
-    BSP_TS_GetState(&TS_State);
-
-    uint16_t x = TS_State.touchX[0];
-    uint16_t y = TS_State.touchY[0];
-
-
-    // if inside trigger area
-    if (x > TRIGGERAREA_Left  && x < TRIGGERAREA_Right && y > TRIGGERAREA_Top  && y < TRIGGERAREA_Bottom)
-    {
-        ts_triggerArea(x, y, wasTouched);
-    }
-
-    wasTouched = TS_State.touchDetected;
+	lv_obj_remove_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
+	lv_obj_set_style_bg_color(obj, lv_palette_main(LV_PALETTE_RED), 0);
+	lv_obj_set_style_radius(obj, LV_RADIUS_CIRCLE, 0);
+	lv_obj_set_size(obj, 12, 12);
+	lv_obj_set_pos(obj, 50, 50);
 }
+
+
+
 
 
 void Display_Default(void)
@@ -279,35 +275,35 @@ void Display_Init(void)
 }
 
 
-/**
- * Display spectrum components as vertical lines within the partials area
- * @param freqRatios partials frequency ratios
- * @param amps partials amplitudes
- */
-void Display_partials(spectrum_t *s)
-{
-	clearPartialsArea();
-
-	// BSP_LCD_SelectLayer(1);
-	const float hLength = PARTIALSAREAWIDTH - PADDING;
-
-	for (int i = 0; i < BANDS; i++)
-	{
-		const uint16_t partialXpos = (uint16_t)(s->freqRatios[i] * (hLength / (BANDS - 4)) + PARTIALSAREA_X - 2 * PADDING);
-		const uint16_t partialHeight = (uint16_t)(MAXPARTIALHEIGHT * s->amps[i] * lfo.output[i]);
-
-		// Color transparency as function of the partial amplitude
-		uint32_t partialColor = (uint32_t)(scale(0.f, 1.f, 0.5f, 1.f, s->amps[i]) * 0xFF) * 0x1000000 + BLUE_PARTIALS;
-
-		// display only if partial fits within the partials area
-		if (partialXpos < PARTIALSAREA_X + PARTIALSAREAWIDTH - PADDING)
-		{
-			BSP_LCD_SetTextColor(partialColor);
-			BSP_LCD_FillRect(partialXpos, PARTIALSAREA_Y + 2 * PADDING + (MAXPARTIALHEIGHT - partialHeight), 6, partialHeight);
-		}
-	}
-
-}
+// /**
+//  * Display spectrum components as vertical lines within the partials area
+//  * @param freqRatios partials frequency ratios
+//  * @param amps partials amplitudes
+//  */
+// void Display_partials(spectrum_t *s)
+// {
+// 	clearPartialsArea();
+//
+// 	// BSP_LCD_SelectLayer(1);
+// 	const float hLength = PARTIALSAREAWIDTH - PADDING;
+//
+// 	for (int i = 0; i < BANDS; i++)
+// 	{
+// 		const uint16_t partialXpos = (uint16_t)(s->freqRatios[i] * (hLength / (BANDS - 4)) + PARTIALSAREA_X - 2 * PADDING);
+// 		const uint16_t partialHeight = (uint16_t)(MAXPARTIALHEIGHT * s->amps[i] * lfo.output[i]);
+//
+// 		// Color transparency as function of the partial amplitude
+// 		uint32_t partialColor = (uint32_t)(scale(0.f, 1.f, 0.5f, 1.f, s->amps[i]) * 0xFF) * 0x1000000 + BLUE_PARTIALS;
+//
+// 		// display only if partial fits within the partials area
+// 		if (partialXpos < PARTIALSAREA_X + PARTIALSAREAWIDTH - PADDING)
+// 		{
+// 			BSP_LCD_SetTextColor(partialColor);
+// 			BSP_LCD_FillRect(partialXpos, PARTIALSAREA_Y + 2 * PADDING + (MAXPARTIALHEIGHT - partialHeight), 6, partialHeight);
+// 		}
+// 	}
+//
+// }
 
 void Display_morphBar(uint16_t x)
 {
