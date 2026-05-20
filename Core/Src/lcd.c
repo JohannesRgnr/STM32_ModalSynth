@@ -19,64 +19,224 @@
 extern spectrum_t spectrum;
 extern lfo_t lfo;
 
-static lv_obj_t * label;
-lv_obj_t * obj;
+// static lv_obj_t * label;
 static lv_obj_t * partial[BANDS];
+static lv_obj_t * morphCursor;
+
+lv_obj_t * scr_main;
+lv_obj_t * scr_spectrum;
+lv_obj_t * scr_lfo;
+lv_obj_t * scr_effects;
+
+lv_obj_t * tabview_main;
+lv_obj_t * tabview_spectrum;
+lv_obj_t * tabview_lfo;
+lv_obj_t * tabview_effects;
+uint8_t active_tab;
+
+static lv_style_t style_partials;
 
 TS_StateTypeDef  TS_State;
-// uint8_t wasTouched = 0;
-static uint32_t user_data = 10;
 
-
-
-
-static void slider_event_cb(lv_event_t * e)
-{
-	lv_obj_t * slider = lv_event_get_target_obj(e);
-
-	/*Refresh the text*/
-	lv_label_set_text_fmt(label, "%" LV_PRId32, lv_slider_get_value(slider));
-	lv_obj_align_to(label, slider, LV_ALIGN_OUT_TOP_MID, 0, -15);    /*Align top of the slider*/
-}
-
-/**
- * @title Slider with live value label
- * @brief Mirror a slider's value into a label anchored above it.
- *
- * A 200 px wide slider is centered on the active screen with a label placed
- * 15 px above it via `lv_obj_align_to` and `LV_ALIGN_OUT_TOP_MID`. An
- * `LV_EVENT_VALUE_CHANGED` callback reads `lv_slider_get_value` and rewrites
- * the label text, re-aligning it after each update.
- */
-void lv_oneSlider(void)
-{
-	/*Create a slider in the center of the display*/
-	lv_obj_t * slider = lv_slider_create(lv_screen_active());
-	lv_obj_set_width(slider, 200);                          /*Set the width*/
-	lv_obj_center(slider);                                  /*Align to the center of the parent (screen)*/
-	lv_obj_add_event_cb(slider, slider_event_cb, LV_EVENT_VALUE_CHANGED, NULL);     /*Assign an event function*/
-
-
-	/*Create a label above the slider*/
-	label = lv_label_create(lv_screen_active());
-	lv_label_set_text(label, "0");
-	lv_obj_align_to(label, slider, LV_ALIGN_OUT_TOP_MID, 0, -15);    /*Align top of the slider*/
-}
 
 
 
 void GUI_Init()
 {
-	/************* Create timer for partials display refresh ************/
-	lv_timer_t * timer_partialDisplay = lv_timer_create(GUI_refreshPartials, 50,  &user_data);
+	GUI_mainScreen();
+	GUI_spectrumScreen();
+	GUI_lfoScreen();
+	GUI_effectsScreen();
+	lv_screen_load(scr_main);
+}
 
-	/**************************** Draw tabs  ****************************/
+
+static void GUI_mainScreen()
+{
+	scr_main = lv_obj_create(NULL);
+	/************* Create timer for partials display refresh ************/
+	lv_timer_t * timer_partialDisplay = lv_timer_create(GUI_refreshPartials, 60, NULL);
+
+
+	tabview_main = lv_tabview_create(scr_main);
+
+	create_tabview(tabview_main);
+
+
+	/*************** Draw line separating partials from trigger area   *******************/
+	// lv_obj_t * middleLine = lv_line_create(scr_main);
+	// static lv_point_precise_t line_points[] = { {0, 0}, {780, 0} };
+	// static lv_style_t style_line;
+	//
+	// lv_style_init(&style_line);
+	// lv_style_set_line_width(&style_line, 4);
+	// lv_style_set_line_color(&style_line, lv_palette_main(LV_PALETTE_GREY));
+	// lv_style_set_line_rounded(&style_line, true);
+	//
+	// lv_line_set_points(middleLine, line_points, 2);     /*Set the points*/
+	// lv_obj_add_style(middleLine, &style_line, 0);
+	// lv_obj_center(middleLine);
+
+
+	/************************ Draw trigger area   ***************************/
+	static lv_style_t trigArea_style;
+	lv_style_init(&trigArea_style);
+	lv_style_set_radius(&trigArea_style, 5);
+
+	/*Create an object with the new style*/
+	lv_obj_t * trigArea = lv_obj_create(scr_main);
+	lv_obj_add_style(trigArea, &trigArea_style, 0);
+	lv_obj_remove_flag(trigArea, LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CHECKABLE | LV_OBJ_FLAG_CLICKABLE);
+	lv_obj_set_style_bg_color(trigArea, lv_palette_darken(LV_PALETTE_GREY, 4), 0);
+	// lv_obj_set_style_radius(trigArea, 4, 0);
+	lv_obj_set_pos(trigArea, 20, TRIGGERAREAHEIGHT);
+	lv_obj_set_size(trigArea, 760, 230);
+
+
+	/*************** Draw cursor indicating morph position   *******************/
+	morphCursor = lv_obj_create(scr_main);
+	lv_obj_set_size(morphCursor, 20,1);
+	lv_obj_set_pos(morphCursor, 0, TABRHEIGHT + 32);
+	lv_obj_set_style_bg_color(morphCursor, lv_palette_main(LV_PALETTE_ORANGE), 0);
+	lv_obj_set_style_radius(morphCursor, 0, 0);
+
+
+	/**************************** Init partials  ****************************/
+	// create style for all the partials
+
+	lv_style_init(&style_partials);
+	lv_style_set_bg_color(&style_partials, lv_palette_main(LV_PALETTE_LIGHT_BLUE));
+	lv_style_set_radius(&style_partials, 0);
+
+	for (int i = 0; i < BANDS; i++)
+	{
+		partial[i] = lv_obj_create(scr_main);
+		lv_obj_remove_flag(partial[i], LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CHECKABLE | LV_OBJ_FLAG_CLICKABLE);
+		lv_obj_add_style(partial[i], &style_partials, 0);
+		lv_obj_set_size(partial[i], 8, 0);
+	}
+}
+
+
+static void GUI_spectrumScreen()
+{
+	scr_spectrum = lv_obj_create(NULL);
+
+	tabview_spectrum = lv_tabview_create(scr_spectrum);
+
+	create_tabview(tabview_spectrum);
+}
+
+
+static void GUI_lfoScreen()
+{
+	scr_lfo = lv_obj_create(NULL);
+
+	tabview_lfo = lv_tabview_create(scr_lfo);
+
+	create_tabview(tabview_lfo);
+}
+
+
+static void GUI_effectsScreen()
+{
+	scr_effects = lv_obj_create(NULL);
+
+	tabview_effects = lv_tabview_create(scr_effects);
+
+	create_tabview(tabview_effects);
+}
+
+
+static void tabview_event_cb(lv_event_t * event)
+{
+	//lv_obj_t * label = lv_label_create(lv_screen_active());
+	lv_obj_t * tabview = lv_event_get_target_obj(event);
+
+	active_tab = lv_tabview_get_tab_active(tabview);
+
+	switch ( active_tab )
+	{
+	default:
+	case 0:
+		lv_screen_load(scr_main);
+		lv_tabview_set_active(tabview_main, 0, LV_ANIM_OFF);
+		lv_tabview_set_active(tabview_spectrum, 0, LV_ANIM_OFF);
+		lv_tabview_set_active(tabview_lfo, 0, LV_ANIM_OFF);
+		lv_tabview_set_active(tabview_effects, 0, LV_ANIM_OFF);
+		break;
+	case 1:
+		lv_screen_load(scr_spectrum);
+		lv_tabview_set_active(tabview_main, 1, LV_ANIM_OFF);
+		lv_tabview_set_active(tabview_spectrum, 1, LV_ANIM_OFF);
+		lv_tabview_set_active(tabview_lfo, 1, LV_ANIM_OFF);
+		lv_tabview_set_active(tabview_effects, 1, LV_ANIM_OFF);
+		break;
+	case 2:
+		lv_screen_load(scr_lfo);
+		lv_tabview_set_active(tabview_main, 2, LV_ANIM_OFF);
+		lv_tabview_set_active(tabview_spectrum, 2, LV_ANIM_OFF);
+		lv_tabview_set_active(tabview_lfo, 2, LV_ANIM_OFF);
+		lv_tabview_set_active(tabview_effects, 2, LV_ANIM_OFF);
+		break;
+	case 3:
+		lv_screen_load(scr_effects);
+		lv_tabview_set_active(tabview_main, 3, LV_ANIM_OFF);
+		lv_tabview_set_active(tabview_spectrum, 3, LV_ANIM_OFF);
+		lv_tabview_set_active(tabview_lfo, 3, LV_ANIM_OFF);
+		lv_tabview_set_active(tabview_effects, 3, LV_ANIM_OFF);
+		break;
+	}
+
+	/*Refresh the text*/
+	//lv_label_set_text_fmt(label, "%" LV_PRId32, active_tab);
+	//lv_obj_align_to(label, tabview, LV_ALIGN_OUT_TOP_MID, 0, 32);    /*Align top of the slider*/
+
+}
+
+void GUI_refreshMorphCursor(float x)
+{
+	float width = x;
+	width = clip(width, 20, 780);
+	lv_obj_set_width(morphCursor, width);
+}
+
+
+
+void GUI_refreshPartials(lv_timer_t * timer)
+{
+	for (int i = 0; i < BANDS; i++)
+	{
+		float amplitude = spectrum.amps[i] * lfo.output[i];
+
+		int32_t height = (int32_t)(MAXPARTIALHEIGHT * amplitude);
+		const int32_t xPos = (uint16_t)((spectrum.freqRatios[i] -1) * PARTIALSPACING + PARTIALSAREA_X);
+		const int32_t yPos = PARTIALSAREA_Y + (MAXPARTIALHEIGHT - height);
+		// display only if partial fits within the partials area
+		if (xPos < PARTIALSAREA_X + PARTIALSAREAWIDTH)
+		{
+			lv_obj_set_pos(partial[i], xPos, yPos);
+			lv_obj_set_height(partial[i], height);
+			lv_obj_set_style_opa(partial[i], 75 + 180 * amplitude, 0);
+		} else
+		{
+			lv_obj_set_style_opa(partial[i], 0, 0);
+		}
+	}
+}
+
+
+
+static void create_tabview(lv_obj_t * tv)
+{
+/**************************** Draw tabs  ****************************/
 	/*Create a Tab view object*/
-	lv_obj_t * tabview;
+	// lv_obj_t * tabview;
 	uint32_t tab_count = 0;
 	uint32_t i = 0;
 
-	tabview = lv_tabview_create(lv_screen_active());
+	lv_obj_t * tabview = tv;
+
 	lv_tabview_set_tab_bar_position(tabview, LV_DIR_TOP);
 	lv_tabview_set_tab_bar_size(tabview, TABRHEIGHT);
 
@@ -123,214 +283,5 @@ void GUI_Init()
 
 	lv_obj_remove_flag(lv_tabview_get_content(tabview), LV_OBJ_FLAG_SCROLLABLE);
 
-
-	/*************** Draw line separating partials from trigger area   *******************/
-	lv_obj_t * middleLine = lv_line_create(lv_screen_active());
-	static lv_point_precise_t line_points[] = { {0, 0}, {780, 0} };
-	static lv_style_t style_line;
-
-	lv_style_init(&style_line);
-	lv_style_set_line_width(&style_line, 4);
-	lv_style_set_line_color(&style_line, lv_palette_main(LV_PALETTE_GREY));
-	lv_style_set_line_rounded(&style_line, true);
-
-	lv_line_set_points(middleLine, line_points, 2);     /*Set the points*/
-	lv_obj_add_style(middleLine, &style_line, 0);
-	lv_obj_center(middleLine);
-
-
-	/**************************** Init partials  ****************************/
-	// create style for all the partials
-	static lv_style_t style_partials;
-	lv_style_init(&style_partials);
-	lv_style_set_bg_color(&style_partials, lv_palette_main(LV_PALETTE_LIGHT_BLUE));
-	lv_style_set_radius(&style_partials, 0);
-
-	for (int i = 0; i < BANDS; i++)
-	{
-		partial[i] = lv_obj_create(lv_screen_active());
-		lv_obj_remove_flag(partial[i], LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CHECKABLE | LV_OBJ_FLAG_CLICKABLE);
-		lv_obj_add_style(partial[i], &style_partials, 0);
-
-		lv_obj_set_x(partial[i], 64 + i * 32);
-		lv_obj_set_y(partial[i], 25);
-		lv_obj_set_size(partial[i], 8, 0);
-	}
+	lv_obj_add_event_cb(tabview, tabview_event_cb, LV_EVENT_VALUE_CHANGED, lv_tabview_get_tab_active);
 }
-
-
-
-void GUI_refreshPartials(lv_timer_t * timer)
-{
-	for (int i = 0; i < BANDS; i++)
-	{
-		float amplitude = spectrum.amps[i] * lfo.output[i];
-
-		int32_t height = (int32_t)(MAXPARTIALHEIGHT * amplitude);
-		const int32_t xPos = (uint16_t)(spectrum.freqRatios[i] * PARTIALSPACING + PARTIALSAREA_X);
-		const int32_t yPos = PARTIALSAREA_Y + (MAXPARTIALHEIGHT - height);
-		// display only if partial fits within the partials area
-		if (xPos < PARTIALSAREA_X + PARTIALSAREAWIDTH)
-		{
-			lv_obj_set_pos(partial[i], xPos, yPos);
-			lv_obj_set_height(partial[i], height);
-			lv_obj_set_style_opa(partial[i], 75 + 180 * amplitude, 0);
-		}
-	}
-}
-
-
-
-
-void GUI_trajectory(float x, float y)
-{
-	lv_obj_remove_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
-	lv_obj_set_style_bg_color(obj, lv_palette_main(LV_PALETTE_RED), 0);
-	lv_obj_set_style_radius(obj, LV_RADIUS_CIRCLE, 0);
-	lv_obj_set_size(obj, 12, 12);
-	lv_obj_set_pos(obj, 50, 50);
-}
-
-
-
-
-
-void Display_Default(void)
-{
-	/* Default LCD settings */
-	// BSP_LCD_SetFont(&Font16);
-	BSP_LCD_SetTextColor(COLOR_TEXT_ACTIVE);
-	BSP_LCD_SetBackColor(COLOR_BACKGROUND);
-}
-
-
-void Display_Init(void)
-{
-	BSP_LCD_SetBrightness(100);
-
-	/* Set LCD Foreground Layer  */
-	BSP_LCD_SelectLayer(LTDC_DEFAULT_ACTIVE_LAYER);
-
-	// BSP_LCD_SetFont(&LCD_DEFAULT_FONT);
-	BSP_LCD_SetFont(&FontChicagoFLF16);
-
-	/* Clear the LCD */
-	BSP_LCD_SetBackColor(COLOR_BACKGROUND);
-	BSP_LCD_Clear(COLOR_BACKGROUND);
-
-	/* Set the LCD Text Color */
-	// BSP_LCD_SetTextColor(COLOR_TEXT);
-
-	// char str[32];
-	// sprintf(str, "partials");
-	// BSP_LCD_DisplayStringAt(32, 32, (uint8_t *)str, RIGHT_MODE);
-
-	// Display partials area
-	//BSP_LCD_SetTextColor(COLOR_PAD);
-	// BSP_LCD_FillRect(PARTIALAREA_X, PARTIALAREA_Y, PARTIALSAREAWIDTH, PARTIALSAREAHEIGHT);
-	// BSP_LCD_SetTextColor(COLOR_BACKGROUND);
-	// BSP_LCD_FillRect(PARTIALSAREA_X + PADDING, PARTIALSAREA_Y + PADDING, PARTIALSAREAWIDTH - 2 * PADDING, PARTIALSAREAHEIGHT - 2 * PADDING);
-
-
-	/* Display LCD messages */
-	// BSP_LCD_SetFont(&FontInconsolataNerdFont32);
-	// BSP_LCD_DisplayStringAt(PARTIALSAREAWIDTH, 3 * PADDING, (uint8_t *)"Bell", RIGHT_MODE);
-
-
-	// Display menu bar
-	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP1);
-	BSP_LCD_FillRect(0, 0, BSP_LCD_GetXSize(), MENUBARHEIGHT);
-	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP2);
-	BSP_LCD_FillRect(0, MENUBARHEIGHT, BSP_LCD_GetXSize(), 5);
-
-	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP3);
-	BSP_LCD_DrawVLine(ITEM_WIDTH, 0, 48);
-	BSP_LCD_DrawVLine(ITEM_WIDTH * 2, 0, 48);
-	BSP_LCD_DrawVLine(ITEM_WIDTH * 3, 0, 48);
-	BSP_LCD_DrawVLine(ITEM_WIDTH * 4, 0, 48);
-
-	// fill menu items
-	BSP_LCD_SetBackColor(COLOR_PAD_TRANSP1);
-	BSP_LCD_SetFont(&FontChicagoFLF16);
-	BSP_LCD_SetTextColor(ORANGE_TEXT);
-	BSP_LCD_DisplayStringAt((ITEM_WIDTH/2) - BSP_LCD_GetXSize()/2, 20, (uint8_t *)"Bell 1", CENTER_MODE);
-	BSP_LCD_DisplayStringAt(3 * (ITEM_WIDTH/2) - BSP_LCD_GetXSize()/2 , 20, (uint8_t *)"Saw", CENTER_MODE);
-	BSP_LCD_SetTextColor(COLOR_TEXT_ACTIVE);
-	BSP_LCD_DisplayStringAt(5 * (ITEM_WIDTH/2) - BSP_LCD_GetXSize()/2, 20, (uint8_t *)"LFO", CENTER_MODE);
-	BSP_LCD_DisplayStringAt(7 * (ITEM_WIDTH/2) - BSP_LCD_GetXSize()/2, 20, (uint8_t *)"Delay", CENTER_MODE);
-	BSP_LCD_DisplayStringAt(9 * (ITEM_WIDTH/2) - BSP_LCD_GetXSize()/2, 20, (uint8_t *)"Reverb", CENTER_MODE);
-
-
-	// Display touchscreen area for note triggering
-	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP1);
-	BSP_LCD_FillRect(TRIGGERAREA_X, TRIGGERAREA_Y, TRIGGERAREAWIDTH, TRIGGERAREAHEIGHT);
-	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP2);
-	BSP_LCD_FillRect(TRIGGERAREA_X, TRIGGERAREA_Y-5, TRIGGERAREAWIDTH, 5);
-
-	// Display partials
-	// Display_partials(&spectrum);
-
-	// Display morphing bar
-	Display_morphBar(PARTIALSAREA_Left + 20);
-}
-
-
-// /**
-//  * Display spectrum components as vertical lines within the partials area
-//  * @param freqRatios partials frequency ratios
-//  * @param amps partials amplitudes
-//  */
-// void Display_partials(spectrum_t *s)
-// {
-// 	clearPartialsArea();
-//
-// 	// BSP_LCD_SelectLayer(1);
-// 	const float hLength = PARTIALSAREAWIDTH - PADDING;
-//
-// 	for (int i = 0; i < BANDS; i++)
-// 	{
-// 		const uint16_t partialXpos = (uint16_t)(s->freqRatios[i] * (hLength / (BANDS - 4)) + PARTIALSAREA_X - 2 * PADDING);
-// 		const uint16_t partialHeight = (uint16_t)(MAXPARTIALHEIGHT * s->amps[i] * lfo.output[i]);
-//
-// 		// Color transparency as function of the partial amplitude
-// 		uint32_t partialColor = (uint32_t)(scale(0.f, 1.f, 0.5f, 1.f, s->amps[i]) * 0xFF) * 0x1000000 + BLUE_PARTIALS;
-//
-// 		// display only if partial fits within the partials area
-// 		if (partialXpos < PARTIALSAREA_X + PARTIALSAREAWIDTH - PADDING)
-// 		{
-// 			BSP_LCD_SetTextColor(partialColor);
-// 			BSP_LCD_FillRect(partialXpos, PARTIALSAREA_Y + 2 * PADDING + (MAXPARTIALHEIGHT - partialHeight), 6, partialHeight);
-// 		}
-// 	}
-//
-// }
-
-void Display_morphBar(uint16_t x)
-{
-	BSP_LCD_SetTextColor(ORANGE_UI);
-	BSP_LCD_FillRect(x, PARTIALSAREA_Y, 16, 7);
-	BSP_LCD_FillCircle(x, PARTIALSAREA_Y + 3, 3);
-	BSP_LCD_FillCircle(x + 16, PARTIALSAREA_Y + 3, 3);
-}
-
-void clearTriggerArea(void)
-{
-	BSP_LCD_SetTextColor(COLOR_PAD_TRANSP1);
-	BSP_LCD_FillRect(TRIGGERAREA_X, TRIGGERAREA_Y, TRIGGERAREAWIDTH, TRIGGERAREAHEIGHT);
-}
-
-
-void clearPartialsArea(void)
-{
-	BSP_LCD_SetTextColor(COLOR_BACKGROUND);
-	BSP_LCD_FillRect(PARTIALSAREA_X, PARTIALSAREA_Y, PARTIALSAREAWIDTH, PARTIALSAREAHEIGHT );
-}
-
-// void clearMorphArea(void)
-// {
-// 	// BSP_LCD_SetTextColor(COLOR_PAD_TRANSP);
-// 	BSP_LCD_SetBackColor(COLOR_BACKGROUND);
-// 	BSP_LCD_FillRect(PARTIALSAREA_X, TRIGGERAREAHEIGHT - 8, PARTIALSAREAWIDTH, MORPHAREAHEIGHT);
-// 	BSP_LCD_SetTextColor(COLOR_TEXT);
-// 	// BSP_LCD_DisplayStringAt(MORPHAREA_X+ PADDING, MORPHAREA_Y + MORPHAREAHEIGHT - 24, (uint8_t *)"morph pad", RIGHT_MODE);
-// }

@@ -27,9 +27,9 @@
 /**********************
  *  STATIC PROTOTYPES
  **********************/
-static void touchpad_read_cb(lv_indev_t * indev, lv_indev_data_t *data);
 static void GUI_TSProcess(lv_indev_t * indev, lv_indev_data_t *data);
 static void GUI_triggerArea(uint16_t x, uint16_t y, uint8_t state, lv_indev_data_t *data);
+static void GUI_MorphArea(uint16_t x);
 /**********************
  *  VARIABLES
  **********************/
@@ -39,7 +39,9 @@ extern line_t exciterAmp, freq;
 extern filterbank_t filterbank;
 extern spectrum_t spectrum;
 
-extern lv_timer_t * timer_partialDisplay;
+// extern lv_timer_t * timer_partialDisplay;
+
+extern uint8_t active_tab;
 
 /**********************
  *      MACROS
@@ -77,50 +79,54 @@ static void GUI_TSProcess(lv_indev_t * indev, lv_indev_data_t *data)
 	static int16_t last_y = 0;
 	BSP_TS_GetState(&TS_State);
 
-	if(TS_State.touchDetected != 0) {
-		data->point.x = TS_State.touchX[0];
-		data->point.y = TS_State.touchY[0];
-		last_x = data->point.x;
-		last_y = data->point.y;
-		data->state = LV_INDEV_STATE_PR;
-
-		if (data->point.x > TRIGGERAREA_Left  && data->point.x < TRIGGERAREA_Right && data->point.y > TRIGGERAREA_Top  && data->point.y < TRIGGERAREA_Bottom)
+	if(TS_State.touchDetected != 0)
 		{
-			GUI_triggerArea(data->point.x, data->point.y, wasTouched, data);
+			data->point.x = TS_State.touchX[0];
+			data->point.y = TS_State.touchY[0];
+			last_x = data->point.x;
+			last_y = data->point.y;
+			data->state = LV_INDEV_STATE_PR;
+
+			// if inside trigger area
+			if (active_tab == 0 && data->point.x < 790 && data->point.y > 245  && data->point.y < 480)
+			{
+				GUI_triggerArea(data->point.x, data->point.y, wasTouched, data);
+			}
+			// if inside partials area
+			else if (active_tab == 0 && data->point.y > 80 && data->point.y < 235)
+			{
+				GUI_MorphArea(data->point.x);
+			}
 		}
-		// data->continue_reading = false;
-	} else {
-		data->point.x = last_x;
-		data->point.y = last_y;
-		data->state = LV_INDEV_STATE_REL;
-	}
+	else
+		{
+			data->point.x = last_x;
+			data->point.y = last_y;
+			data->state = LV_INDEV_STATE_REL;
+		}
 
 	wasTouched = TS_State.touchDetected;
-
-
 }
 
 
 
 /**
- * Trigger new note when touched, or glide frequency and decay if already touched
+ * Trigger new note when touched, or glide frequency if already touched
  * @param x x touch coordinate
  * @param y y touch coordinate
  * @param state currently touched or not
  */
 static void GUI_triggerArea(uint16_t x, uint16_t y, uint8_t state, lv_indev_data_t *data)
 {
-
-
 	if (state == 0)
 	{
 		if (LV_INDEV_STATE_PR == 1) // new single finger touch
 		{
-
 			// evaluate fundamental frequency
 			float midiNote = scale(TRIGGERAREA_Left, TRIGGERAREA_Right, 24, 90, x);
 			midiNote = clip(midiNote, 24, 90);
 			float frequency = mtof(midiNote);
+
 			const float duration = scale(TRIGGERAREA_Bottom,TRIGGERAREA_Top, 5, 10, y);
 
 			// immediately jump to frequency
@@ -130,20 +136,13 @@ static void GUI_triggerArea(uint16_t x, uint16_t y, uint8_t state, lv_indev_data
 			filterbank.decay = duration;
 			filterbank_update(&filterbank);
 			Trigger_Note(&exciterAmp);
-
-
-			// draw trajectory
-			// GUI_trajectory(x, y);
-			// BSP_LCD_SetTextColor(BLUE_UI_MAT);
-			// BSP_LCD_FillCircle(x, y, 8);
 		}
-
 	}
 	else  // was already touched
 	{
 		if (LV_INDEV_STATE_PR == 1)
 		{
-			data->continue_reading = true;
+			// data->continue_reading = true;
 
 			float midiNote = scale(TRIGGERAREA_Left, TRIGGERAREA_Right, 24, 90, x);
 			midiNote = clip(midiNote, 24, 90);
@@ -152,11 +151,22 @@ static void GUI_triggerArea(uint16_t x, uint16_t y, uint8_t state, lv_indev_data
 
 			filterbank.decay = duration;
 			filterbank_update(&filterbank);
-			// GUI_trajectory(x, y);
-
-			// draw trajectory
-			// BSP_LCD_SetTextColor(BLUE_UI_MAT);
-			// BSP_LCD_FillCircle(x, y, 8);
 		}
 	}
+}
+
+/**
+ * Do linear crossfade between 2 spectra, and display x position with cursor
+ * @param x x coordinate of finger touch
+ */
+static void GUI_MorphArea(uint16_t x)
+{
+	GUI_refreshMorphCursor(x);
+	x = clip(x, PARTIALSAREA_Left, PARTIALSAREA_Right);
+	float xfade = scale( PARTIALSAREA_Left, PARTIALSAREA_Right, 0.0f, 1.0f, x);
+	xfade = clip(xfade, 0.f, 1.f);
+
+	spectrum_xfade(&spectrum, xfade);
+	filterbank_spectrum(&filterbank, &spectrum);
+	filterbank_update(&filterbank);
 }
