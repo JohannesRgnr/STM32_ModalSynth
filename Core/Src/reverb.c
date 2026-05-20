@@ -22,9 +22,8 @@ int16_t* short_ptr;
 int32_t allPassWP0, allPassWP1, allPassWP2, allPassWP3;
 int32_t delWP0, delWP1, delWP2, delWP3;
 
-// knobs
+
 float reverb_time;
-// float lowPass0, lowPass1;
 float del2Out, del4Out;
 float reverb_feedback = 0.8;
 float sixteenbitout;
@@ -73,6 +72,7 @@ void reverb_process(float in, float* reverbLout, float* reverbRout)
         sampData = 1.0f;
     if (sampData < -1.0f)
         sampData = -1.0f;
+
     sampData = allpass(0, &allPassWP0, sampData, 1345, 0.7f);
     delay_write(0, 6249, &delWP0, sampData);
     sampData = delay_read_linear(0, 6249, delWP0, reverb_time);
