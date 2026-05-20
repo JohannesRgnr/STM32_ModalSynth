@@ -23,7 +23,8 @@
 #include "stereo_delay.h"
 
 
-#define FX 1
+#define DELAY_FX 1
+#define REVERB_FX 1
 
 /**
  * @brief Audio Buffer - x samples X 2 channels = 2 * x samples
@@ -66,11 +67,16 @@ void AUDIO_Init()
     spectrum_xfade(&spectrum, 0.0f);
 
     filterbank_init(&filterbank, &spectrum);
-    multiLFO_init(&lfo, 0.6f, 1.0f );
+    multiLFO_init(&lfo, 0.9f, 0.5f );
     freq.val = freq.dst = 0.f;
 
+#if DELAY_FX == 1
     Delay_init();
+#endif
+
+#if REVERB_FX == 1
     reverb_Init();
+#endif
 }
 
  void audioBlock(int16_t *output, const int32_t samples)
@@ -78,7 +84,7 @@ void AUDIO_Init()
     freq.inc = (freq.dst - freq.val) * (float)samples * TS;
     // freq.inc = 0.f;
     // delay_wet = delay_btn * 0.5f;
-    delay_wet = 0.25;
+    delay_wet = 0.25f;
     delay_feedback = 0.6f;
     // reverb_amount = reverb_btn * 0.7f;
     reverb_feedback = 0.6f;
@@ -105,9 +111,18 @@ void AUDIO_Init()
         samp = filterbank_process(&filterbank, samp);
 
 
-#if FX == 1
+#if DELAY_FX == 1
         // Apply delay effect
-        Delay_process(samp, 22050, &delayLOut, &delayROut);
+        DelayInt16_process(samp, 15000, &delayLOut, &delayROut);
+
+#else
+
+        delayLOut = 0.5*samp;
+        delayROut = 0.5*samp;
+
+#endif
+
+#if REVERB_FX == 1
 
         // Send to Reverb
         reverbsend = reverb_amount * (delayLOut+ delayROut);
@@ -118,10 +133,11 @@ void AUDIO_Init()
 
 #else
 
-        float sampleL = samp;
-        float sampleR = samp;
+        float sampleL = delayLOut;
+        float sampleR = delayROut;
 
 #endif
+
 
         sampleL = SoftClip(sampleL);
         sampleR = SoftClip(sampleR);
