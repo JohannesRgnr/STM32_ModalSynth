@@ -13,7 +13,7 @@
 #include <stdint.h>
 
 #define BANDS           16
-#define ONEOVERBANDS    (1.f/BANDS)
+#define ONEOVERBANDS    (1.0f/BANDS)
 #define LEFT_SPECTRUM   1
 #define RIGHT_SPECTRUM  2
 
@@ -50,8 +50,8 @@ void spectrum_load(spectrum_t *s, const float *freqRatios, const float *amps, ui
 
 
 void filterbank_init(filterbank_t *f, const spectrum_t *s);
-void filterbank_spectrum(filterbank_t *f, const spectrum_t *s);
+inline void filterbank_spectrum(filterbank_t *f, const spectrum_t *s);
 void filterbank_update(filterbank_t *f);
-float filterbank_process(const filterbank_t *f, float sample);
+inline float filterbank_process(const filterbank_t *f, float sample);
 
 #endif //MODAL_SYNTH_FILTERBANK_H

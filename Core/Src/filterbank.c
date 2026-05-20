@@ -151,18 +151,16 @@ void filterbank_update(filterbank_t *f)
 
         }
     }
-    if (f->freq != f->previousFreq)
+
+    for (int i = 0; i < BANDS; i++)
     {
-        for (int i = 0; i < BANDS; i++)
+        if ( f->freq * f->band_freqratios[i] < 0.45 * FS) // safe NYQUIST limit
         {
-            if ( f->freq * f->band_freqratios[i] < 0.45 * FS) // safe NYQUIST limit
-            {
-                reson[i].g = freq_to_g(f->freq * f->band_freqratios[i]);
-            }
-            else
-            {
-                reson[i].g  = 0.f;
-            }
+            reson[i].g = freq_to_g(f->freq * f->band_freqratios[i]);
+        }
+        else
+        {
+            reson[i].g  = 0.f;
         }
     }
 
@@ -180,8 +178,10 @@ void filterbank_update(filterbank_t *f)
 float filterbank_process(const filterbank_t *f, const float sample)
 {
     float sumOuts = 0.0f;
-
+    int i = 0;
     // sum outputs of resonating filters
+
+
     for(int i = 0; i < BANDS; i++)
     {
         sumOuts = sumOuts + lfo.output[i] * f->band_gains[i] * SVF_BP_compute(&reson[i], sample);
