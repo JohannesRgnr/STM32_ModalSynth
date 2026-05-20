@@ -35,7 +35,7 @@ float smoothingLP(smoothingLP_t *f, const float sample, const float alpha){
  * @return filtered sample
  */
 float onepoleLP(onepoleLP_t *f, const float sample, const float cutoff){
-    float c = exp(-TWOPI * cutoff * TS);
+    float c = expf(-TWOPI * cutoff * TS);
     const float output = c * f->old_value + (1 - c) * sample;
     f->old_value = output;
     return output;
