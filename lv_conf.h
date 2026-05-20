@@ -69,7 +69,7 @@
 
 #if LV_USE_STDLIB_MALLOC == LV_STDLIB_BUILTIN
     /** Size of memory available for `lv_malloc()` in bytes (>= 2kB) */
-    #define LV_MEM_SIZE (16 * 1024U)          /**< [bytes] */
+    #define LV_MEM_SIZE (32 * 1024U)          /**< [bytes] */
 
     /** Size of the memory expand for `lv_malloc()` in bytes */
     #define LV_MEM_POOL_EXPAND_SIZE 0
@@ -88,7 +88,7 @@
  *====================*/
 
 /** Default display refresh, input device read and animation step period. */
-#define LV_DEF_REFR_PERIOD  20      /**< [ms] */
+#define LV_DEF_REFR_PERIOD  25      /**< [ms] */
 
 /** Default Dots Per Inch. Used to initialize default sizes such as widgets sized, style paddings.
  * (Not so important, you can adjust it to modify default sizes and spaces.) */
@@ -166,7 +166,7 @@
  *  Make sure the priority value aligns with the OS-specific priority levels.
  *  On systems with limited priority levels (e.g., FreeRTOS), a higher value can improve
  *  rendering performance but might cause other tasks to starve. */
-#define LV_DRAW_THREAD_PRIO LV_THREAD_PRIO_HIGH
+#define LV_DRAW_THREAD_PRIO LV_THREAD_PRIO_MID
 
 #define LV_USE_DRAW_SW 1
 #if LV_USE_DRAW_SW
