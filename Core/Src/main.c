@@ -27,7 +27,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 // #include "dfsdm.h"
-// #include "dma2d.h"
+#include "dma2d.h"
 #include "dsihost.h"
 // #include "hdmi_cec.h"
 #include "i2c.h"
@@ -83,7 +83,7 @@ extern spectrum_t spectrum;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void PeriphCommonClock_Config(void);
-
+static void MPU_Config(void);
 /* USER CODE BEGIN PFP */
 static void CPU_CACHE_Enable(void);
 
@@ -101,6 +101,9 @@ char* intro_string = "Entering main application... \r\n";
   */
 int main(void)
 {
+    /* Configure the MPU attributes */
+    MPU_Config();
+
     CPU_CACHE_Enable();
 
     /* MCU Configuration--------------------------------------------------------*/
@@ -126,14 +129,14 @@ int main(void)
     MX_GPIO_Init();
     MX_I2C1_Init();
     MX_SAI1_Init();
-
+    // MX_DMA2D_Init();
     MX_DSIHOST_DSI_Init();
     MX_USART1_UART_Init();
     /* USER CODE BEGIN 2 */
     HAL_UART_Transmit(&huart1, (uint8_t*)intro_string, strlen(intro_string), HAL_MAX_DELAY);
 
     /* Configure the Tamper push-button in GPIO Mode */
-    BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
+    // BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
 
     lv_init();
     tft_init();
@@ -155,10 +158,9 @@ int main(void)
     while (1)
     {
       //  UserButton();
-       // Touchscreen();
-       // do_ts();
+
         lv_task_handler();
-        // GUI_LCDProcess();
+
         HAL_Delay(1);
     }
 }
@@ -249,6 +251,66 @@ void PeriphCommonClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+/**
+  * @brief  Configure the MPU attributes
+  * @param  None
+  * @retval None
+  */
+static void MPU_Config(void)
+{
+  MPU_Region_InitTypeDef MPU_InitStruct;
+
+  /* Disable the MPU */
+  HAL_MPU_Disable();
+
+  /* Configure the MPU as Strongly ordered for not defined regions */
+  MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+  MPU_InitStruct.BaseAddress = 0x00;
+  MPU_InitStruct.Size = MPU_REGION_SIZE_4GB;
+  MPU_InitStruct.AccessPermission = MPU_REGION_NO_ACCESS;
+  MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
+  MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
+  MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
+  MPU_InitStruct.Number = MPU_REGION_NUMBER0;
+  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
+  MPU_InitStruct.SubRegionDisable = 0x87;
+  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_DISABLE;
+
+  HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+  /* Configure the MPU attributes as WT for SDRAM */
+  MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+  MPU_InitStruct.BaseAddress = 0xC0000000;
+  MPU_InitStruct.Size = MPU_REGION_SIZE_32MB;
+  MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+  MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
+  MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
+  MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
+  MPU_InitStruct.Number = MPU_REGION_NUMBER1;
+  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
+  MPU_InitStruct.SubRegionDisable = 0x00;
+  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
+
+  HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+  /* Configure the MPU attributes FMC control registers */
+  MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+  MPU_InitStruct.BaseAddress = 0xA0000000;
+  MPU_InitStruct.Size = MPU_REGION_SIZE_8KB;
+  MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+  MPU_InitStruct.IsBufferable = MPU_ACCESS_BUFFERABLE;
+  MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
+  MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
+  MPU_InitStruct.Number = MPU_REGION_NUMBER2;
+  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
+  MPU_InitStruct.SubRegionDisable = 0x0;
+  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_DISABLE;
+
+  HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+  /* Enable the MPU */
+  HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
+}
 /* USER CODE END 4 */
 
 /**
