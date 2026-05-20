@@ -14,6 +14,9 @@
 static float		delaylineL[DELAY_BUFF_SIZE];
 static float		delaylineR[DELAY_BUFF_SIZE];
 
+static int16_t		delaylineInt16L[DELAY_BUFF_SIZE];
+static int16_t		delaylineInt16R[DELAY_BUFF_SIZE];
+
 
 float delay_feedback	= INIT_FEEDB;
 float delay_wet			= INIT_DELAY_WET;
@@ -57,6 +60,29 @@ static float Delay_readBufferR(uint32_t delay)
 	return delaylineR[readPointer & mask];
 }
 
+static void DelayInt16_writeBufferL(float value)
+{
+	*(delaylineInt16L + (++writePointerL & mask)) = (int16_t)(32767.0f * value);
+}
+
+static void DelayInt16_writeBufferR(float value)
+{
+	*(delaylineInt16R + (++writePointerR & mask)) = (int16_t)(32767.0f * value);
+}
+
+
+static float DelayInt16_readBufferL(uint32_t delay)
+{
+	uint32_t readPointer = (writePointerL - delay);
+	return ONEOVER16BITS * (float)delaylineInt16L[readPointer & mask];
+}
+
+static float DelayInt16_readBufferR(uint32_t delay)
+{
+	uint32_t readPointer = (writePointerR - delay);
+	return ONEOVER16BITS * (float)delaylineInt16R[readPointer & mask];
+}
+
 
 /** @brief Ping pong delay effect, with crossfeedback, softclip and lowpass filtering
  * @note requires 2 delay lines (L and R)
@@ -83,6 +109,25 @@ void Delay_process(float inputSample, uint32_t delay, float *delayLOut, float *d
 	/**************************** write into delay line *******************************/
 	Delay_writeBufferL(inputSample + delay_feedback * delayedSampleR);
 	Delay_writeBufferR(delay_feedback * delayedSampleL);
+}
+
+void DelayInt16_process(float inputSample, uint32_t delay, float *delayLOut, float *delayROut)
+{
+	/***************************** read from delay line *******************************/
+	// Without interpolation.. delay time truncated to integer samples
+	float delayedSampleL = SoftClip(SVF_LP_compute(&lp_L,DelayInt16_readBufferL(delay)));
+	float delayedSampleR = SoftClip(DelayInt16_readBufferR(delay));
+
+	/***************************** dry/wet mix and output *****************************/
+	float outputSampleL = Crossfade(inputSample, delayedSampleL, delay_wet);
+	float outputSampleR = Crossfade(inputSample, delayedSampleR, delay_wet);
+
+	*delayLOut = outputSampleL;
+	*delayROut = outputSampleR;
+
+	/**************************** write into delay line *******************************/
+	DelayInt16_writeBufferL(inputSample + delay_feedback * delayedSampleR);
+	DelayInt16_writeBufferR(delay_feedback * delayedSampleL);
 }
 
 
