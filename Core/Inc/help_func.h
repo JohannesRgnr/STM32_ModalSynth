@@ -14,17 +14,16 @@
 #include <math.h>
 #include <stdint.h>
 
-#ifndef NOMINMAX
 
-#ifndef max
+
+
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
-#endif
 
-#ifndef min
+
+
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
-#endif
 
-#endif  /* NOMINMAX */
+
 
 
 typedef struct
