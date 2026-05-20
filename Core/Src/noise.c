@@ -11,6 +11,11 @@
 
 #include <stdint.h>
 
+#include "filters.h"
+
+
+smoothingLP_t filterLP;
+
 /**
  * @brief Fast white noise generator
  * @return random float value between -1 and 1
@@ -21,5 +26,14 @@ float whiteNoise(noise_t *osc)
     static uint32_t seed = 1;
     seed *= 16807;
     osc->output = osc->amp * ((float)seed * 4.6566129e-010f - 1.f);
+    return osc->output;
+}
+
+
+float filteredNoise(noise_t *osc)
+{
+    static uint32_t seed = 1;
+    seed *= 16807;
+    osc->output = smoothingLP(&filterLP, osc->amp * ((float)seed * 4.6566129e-010f - 1.f), 0.368); // 7 kHz lowpass
     return osc->output;
 }

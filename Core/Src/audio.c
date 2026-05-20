@@ -78,17 +78,16 @@ void AUDIO_Init()
     freq.inc = (freq.dst - freq.val) * (float)samples * TS;
     // freq.inc = 0.f;
     // delay_wet = delay_btn * 0.5f;
+    delay_wet = 0.25;
     delay_feedback = 0.6f;
     // reverb_amount = reverb_btn * 0.7f;
     reverb_feedback = 0.6f;
-
-
     reverb_amount = 0.4f;
 
     for (int i = 0; i < samples; i++)
     {
         // Exciter
-        float samp = whiteNoise(&noise);
+        float samp = filteredNoise(&noise);
         exciterAmp.val += exciterAmp.inc;
         if(exciterAmp.inc < 0.0f && exciterAmp.val < exciterAmp.dst)
             exciterAmp.val = exciterAmp.dst;
@@ -102,8 +101,7 @@ void AUDIO_Init()
        samp = samp * exciterAmp.val * exciterAmp.val;
 
         // going through filterbank
-         filterbank.freq = freq.val;
-        // filterbank.freq = 1000;
+        filterbank.freq = freq.val;
         samp = filterbank_process(&filterbank, samp);
 
 
@@ -112,7 +110,7 @@ void AUDIO_Init()
         Delay_process(samp, 22050, &delayLOut, &delayROut);
 
         // Send to Reverb
-        reverbsend = reverb_amount * (delayLOut*0.707f + delayROut*0.707f);
+        reverbsend = reverb_amount * (delayLOut+ delayROut);
         reverb_process(reverbsend, &reverbLout, &reverbRout);
 
         float sampleL = delayLOut + reverbLout;
@@ -124,6 +122,9 @@ void AUDIO_Init()
         float sampleR = samp;
 
 #endif
+
+        sampleL = SoftClip(sampleL);
+        sampleR = SoftClip(sampleR);
 
         // float to int16 conversion
         const int16_t sampleLOut = (int16_t)(32767.0f * sampleL);

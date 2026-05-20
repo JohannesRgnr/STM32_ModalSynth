@@ -17,5 +17,6 @@ typedef struct
 } noise_t;
 
 float whiteNoise(noise_t *osc);
+float filteredNoise(noise_t *osc);
 
 #endif //MODAL_SYNTH_NOISE_H
