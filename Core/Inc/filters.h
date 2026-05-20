@@ -41,8 +41,8 @@ typedef struct
     float g;
 } ZDFLP_t;
 
-float smoothingLP(smoothingLP_t *f, float sample, float alpha);
-float onepoleLP(onepoleLP_t *f, const float sample, const float cutoff);
+inline float smoothingLP(smoothingLP_t *f, float sample, float alpha);
+inline float onepoleLP(onepoleLP_t *f, float sample, float cutoff);
 float SVF_BP_compute(reson_t *f, float sample);
 void  SVF_LP_init(ZDFLP_t *filter);
 float freq_to_g(float freq_hz);
