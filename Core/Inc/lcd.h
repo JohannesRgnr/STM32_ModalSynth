@@ -37,12 +37,16 @@
 #define PARTIALSAREA_X              80
 #define PARTIALSAREA_Y              100
 #define PARTIALSAREAWIDTH           640.0f
+#define PARTIALSAREAHWIDTH_small    320.0f
 #define PARTIALSPACING              (PARTIALSAREAWIDTH / 12.0f)
+#define PARTIALSPACING_small        (PARTIALSAREAHWIDTH_small / 12.0f)
 #define PARTIALSAREAHEIGHT          160.0f
-#define MAXPARTIALHEIGHT            100.0f
+#define BIGPARTIALHEIGHT            100.0f
+#define SMALLPARTIALHEIGHT          60.0f
 
 #define PARTIALSAREA_Left           PARTIALSAREA_X
 #define PARTIALSAREA_Right          (PARTIALSAREA_X + PARTIALSAREAWIDTH)
+#define PARTIALSAREA_Right_small    (PARTIALSAREA_X + PARTIALSAREAHWIDTH_small)
 #define PARTIALSAREA_Top            PARTIALSAREA_Y
 #define PARTIALSAREA_Bottom         (PARTIALSAREA_Y + PARTIALSAREAHEIGHT)
 
@@ -67,6 +71,7 @@
 void GUI_Init();
 static void GUI_mainScreen();
 static void GUI_spectrumScreen();
+static void GUI_spectrumTab();
 static void GUI_lfoScreen();
 static void GUI_effectsScreen();
 static void tabview_event_cb(lv_event_t * event);

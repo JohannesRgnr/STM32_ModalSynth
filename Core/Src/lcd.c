@@ -34,11 +34,15 @@ lv_obj_t * tabview_lfo;
 lv_obj_t * tabview_effects;
 uint8_t active_tab;
 
-static lv_style_t style_partials;
+static lv_style_t partials_style;
+static lv_style_t trigArea_style;
+static lv_style_t dropdown_style;
+
+lv_obj_t * trigArea;
 
 TS_StateTypeDef  TS_State;
 
-
+int32_t maxPartialHeight = BIGPARTIALHEIGHT;
 
 
 void GUI_Init()
@@ -79,12 +83,12 @@ static void GUI_mainScreen()
 
 
 	/************************ Draw trigger area   ***************************/
-	static lv_style_t trigArea_style;
+	// static lv_style_t trigArea_style;
 	lv_style_init(&trigArea_style);
 	lv_style_set_radius(&trigArea_style, 5);
 
 	/*Create an object with the new style*/
-	lv_obj_t * trigArea = lv_obj_create(scr_main);
+	trigArea = lv_obj_create(scr_main);
 	lv_obj_add_style(trigArea, &trigArea_style, 0);
 	lv_obj_remove_flag(trigArea, LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CHECKABLE | LV_OBJ_FLAG_CLICKABLE);
 	lv_obj_set_style_bg_color(trigArea, lv_palette_darken(LV_PALETTE_GREY, 4), 0);
@@ -104,15 +108,15 @@ static void GUI_mainScreen()
 	/**************************** Init partials  ****************************/
 	// create style for all the partials
 
-	lv_style_init(&style_partials);
-	lv_style_set_bg_color(&style_partials, lv_palette_main(LV_PALETTE_LIGHT_BLUE));
-	lv_style_set_radius(&style_partials, 0);
+	lv_style_init(&partials_style);
+	lv_style_set_bg_color(&partials_style, lv_palette_main(LV_PALETTE_LIGHT_BLUE));
+	lv_style_set_radius(&partials_style, 0);
 
 	for (int i = 0; i < BANDS; i++)
 	{
 		partial[i] = lv_obj_create(scr_main);
 		lv_obj_remove_flag(partial[i], LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CHECKABLE | LV_OBJ_FLAG_CLICKABLE);
-		lv_obj_add_style(partial[i], &style_partials, 0);
+		lv_obj_add_style(partial[i], &partials_style, 0);
 		lv_obj_set_size(partial[i], 8, 0);
 	}
 }
@@ -125,6 +129,55 @@ static void GUI_spectrumScreen()
 	tabview_spectrum = lv_tabview_create(scr_spectrum);
 
 	create_tabview(tabview_spectrum);
+}
+
+static void GUI_spectrumTab()
+{
+	lv_obj_set_size(trigArea, 760, 130);
+	lv_obj_set_pos(trigArea, 20, TRIGGERAREAHEIGHT - 40);
+	maxPartialHeight = SMALLPARTIALHEIGHT;
+
+
+	/**** dropdown menus ****/
+	lv_style_init(&dropdown_style);
+
+	lv_style_set_bg_color(&dropdown_style, lv_palette_darken(LV_PALETTE_GREY, 4));
+	lv_style_set_size(&dropdown_style, 200, 38);
+	lv_style_set_border_color(&dropdown_style, lv_palette_darken(LV_PALETTE_GREY, 2));
+	lv_style_set_border_width(&dropdown_style, 3);
+	lv_style_set_radius(&dropdown_style, 4);
+	lv_style_set_text_color(&dropdown_style, lv_palette_lighten(LV_PALETTE_GREY, 5));
+	lv_style_set_text_font(&dropdown_style, &lv_font_montserrat_24);
+	lv_style_set_text_align(&dropdown_style, LV_TEXT_ALIGN_CENTER);
+
+	lv_obj_t * spectrum_a = lv_dropdown_create(scr_main);
+
+	lv_obj_add_style(spectrum_a, &dropdown_style, 0);
+	lv_obj_set_pos(spectrum_a, 450, 380);
+	lv_dropdown_set_dir(spectrum_a, LV_DIR_TOP);
+	lv_dropdown_set_options(spectrum_a, "Bell 1\nBell 2\nGong\nChord\nSaw\nSquare\n808 CB");
+	lv_dropdown_set_symbol(spectrum_a, NULL);
+
+	lv_obj_t * dropdown_a=lv_dropdown_get_list(spectrum_a);
+	lv_obj_set_style_text_align(dropdown_a, LV_TEXT_ALIGN_CENTER, 0);
+	lv_obj_set_style_text_font(dropdown_a, &lv_font_montserrat_24, 0);
+	lv_obj_set_style_pad_all(dropdown_a, 8, 0);
+	lv_obj_set_style_pad_row(dropdown_a, 8, 0);
+
+	lv_obj_t * spectrum_b = lv_dropdown_create(scr_main);
+
+	lv_obj_add_style(spectrum_b, &dropdown_style, 0);
+	lv_obj_set_pos(spectrum_b, 150, 380);
+	lv_dropdown_set_dir(spectrum_b, LV_DIR_TOP);
+	lv_dropdown_set_options(spectrum_b, "Bell 1\nBell 2\nGong\nChord\nSaw\nSquare\n808 CB");
+	lv_dropdown_set_symbol(spectrum_b, NULL);
+
+	lv_obj_t * dropdown_b=lv_dropdown_get_list(spectrum_b);
+	lv_obj_set_style_text_align(dropdown_b, LV_TEXT_ALIGN_CENTER, 0);
+	lv_obj_set_style_text_font(dropdown_b, &lv_font_montserrat_24, 0);
+	lv_obj_set_style_pad_all(dropdown_b, 8, 0);
+	lv_obj_set_style_pad_row(dropdown_b, 8, 0);
+
 }
 
 
@@ -160,13 +213,17 @@ static void tabview_event_cb(lv_event_t * event)
 	default:
 	case 0:
 		lv_screen_load(scr_main);
+		lv_obj_set_size(trigArea, 760, 230);
+		lv_obj_set_pos(trigArea, 20, TRIGGERAREAHEIGHT);
+		maxPartialHeight = BIGPARTIALHEIGHT;
 		lv_tabview_set_active(tabview_main, 0, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_spectrum, 0, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_lfo, 0, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_effects, 0, LV_ANIM_OFF);
 		break;
 	case 1:
-		lv_screen_load(scr_spectrum);
+		// lv_screen_load(scr_spectrum);
+		GUI_spectrumTab();
 		lv_tabview_set_active(tabview_main, 1, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_spectrum, 1, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_lfo, 1, LV_ANIM_OFF);
@@ -209,9 +266,9 @@ void GUI_refreshPartials(lv_timer_t * timer)
 	{
 		float amplitude = spectrum.amps[i] * lfo.output[i];
 
-		int32_t height = (int32_t)(MAXPARTIALHEIGHT * amplitude);
+		int32_t height = (int32_t)(maxPartialHeight * amplitude);
 		const int32_t xPos = (uint16_t)((spectrum.freqRatios[i] -1) * PARTIALSPACING + PARTIALSAREA_X);
-		const int32_t yPos = PARTIALSAREA_Y + (MAXPARTIALHEIGHT - height);
+		const int32_t yPos = PARTIALSAREA_Y + (maxPartialHeight - height);
 		// display only if partial fits within the partials area
 		if (xPos < PARTIALSAREA_X + PARTIALSAREAWIDTH)
 		{
@@ -260,9 +317,9 @@ static void create_tabview(lv_obj_t * tv)
 		lv_obj_set_style_bg_color(button, lv_palette_main(LV_PALETTE_NONE), 0);
 		lv_obj_set_style_bg_color(button, lv_palette_darken(LV_PALETTE_GREY, 4), LV_PART_MAIN | LV_STATE_CHECKED);
 		lv_obj_set_style_text_color(button, lv_palette_lighten(LV_PALETTE_GREY, 5), LV_PART_MAIN | LV_STATE_CHECKED);
-		lv_obj_set_style_border_side(button, LV_BORDER_SIDE_BOTTOM, LV_PART_MAIN | LV_STATE_CHECKED);
+		lv_obj_set_style_border_side(button, LV_BORDER_SIDE_TOP, LV_PART_MAIN | LV_STATE_CHECKED);
 		lv_obj_set_style_border_color(button, lv_palette_main(LV_PALETTE_ORANGE), LV_PART_MAIN | LV_STATE_CHECKED);
-		lv_obj_set_style_border_width(button, 4, LV_PART_MAIN | LV_STATE_CHECKED);
+		lv_obj_set_style_border_width(button, 8, LV_PART_MAIN | LV_STATE_CHECKED);
 	}
 
 	lv_obj_set_style_bg_color(tab1, lv_palette_main(LV_PALETTE_NONE), 0);
