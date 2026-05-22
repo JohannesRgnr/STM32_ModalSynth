@@ -39,6 +39,8 @@ extern line_t exciterAmp, freq;
 extern filterbank_t filterbank;
 extern spectrum_t spectrum;
 
+extern int32_t trigAreaWidth;
+
 // extern lv_timer_t * timer_partialDisplay;
 
 extern uint8_t active_tab;
@@ -88,12 +90,12 @@ static void GUI_TSProcess(lv_indev_t * indev, lv_indev_data_t *data)
 			data->state = LV_INDEV_STATE_PR;
 
 			// if inside trigger area
-			if (active_tab == 0 && data->point.x < 790 && data->point.y > 245  && data->point.y < 480)
+			if (active_tab < 2 && data->point.x < trigAreaWidth && data->point.y > TRIGGERAREA_Top  && data->point.y < TRIGGERAREA_Bottom)
 			{
 				GUI_triggerArea(data->point.x, data->point.y, wasTouched, data);
 			}
 			// if inside partials area
-			else if (active_tab == 0 && data->point.y > 80 && data->point.y < 235)
+			else if (active_tab < 2 && data->point.y > 80 && data->point.y < 235)
 			{
 				GUI_MorphArea(data->point.x);
 			}
@@ -123,7 +125,7 @@ static void GUI_triggerArea(uint16_t x, uint16_t y, uint8_t state, lv_indev_data
 		if (LV_INDEV_STATE_PR == 1) // new single finger touch
 		{
 			// evaluate fundamental frequency
-			float midiNote = scale(TRIGGERAREA_Left, TRIGGERAREA_Right, 24, 90, x);
+			float midiNote = scale(TRIGGERAREA_Left, trigAreaWidth - 40, 24, 90, x);
 			midiNote = clip(midiNote, 24, 90);
 			float frequency = mtof(midiNote);
 
@@ -144,7 +146,7 @@ static void GUI_triggerArea(uint16_t x, uint16_t y, uint8_t state, lv_indev_data
 		{
 			// data->continue_reading = true;
 
-			float midiNote = scale(TRIGGERAREA_Left, TRIGGERAREA_Right, 24, 90, x);
+			float midiNote = scale(TRIGGERAREA_Left, trigAreaWidth - 40, 24, 90, x);
 			midiNote = clip(midiNote, 24, 90);
 			const float duration = scale(TRIGGERAREA_Bottom,TRIGGERAREA_Top, 5, 10, y);
 			freq.dst = mtof(midiNote);
@@ -161,7 +163,6 @@ static void GUI_triggerArea(uint16_t x, uint16_t y, uint8_t state, lv_indev_data
  */
 static void GUI_MorphArea(uint16_t x)
 {
-	GUI_refreshMorphCursor(x);
 	x = clip(x, PARTIALSAREA_Left, PARTIALSAREA_Right);
 	float xfade = scale( PARTIALSAREA_Left, PARTIALSAREA_Right, 0.0f, 1.0f, x);
 	xfade = clip(xfade, 0.f, 1.f);
@@ -169,4 +170,6 @@ static void GUI_MorphArea(uint16_t x)
 	spectrum_xfade(&spectrum, xfade);
 	filterbank_spectrum(&filterbank, &spectrum);
 	filterbank_update(&filterbank);
+
+	GUI_refreshMorphCursor(x);
 }
