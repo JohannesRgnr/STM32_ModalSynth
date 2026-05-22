@@ -50,7 +50,7 @@ void spectrum_load(spectrum_t *s, const float *freqRatios, const float *amps, ui
 
 
 void filterbank_init(filterbank_t *f, const spectrum_t *s);
-inline void filterbank_spectrum(filterbank_t *f, const spectrum_t *s);
+inline void filterbank_spectrumLoad(filterbank_t *f, const spectrum_t *s);
 void filterbank_update(filterbank_t *f);
 inline float filterbank_process(const filterbank_t *f, float sample);
 

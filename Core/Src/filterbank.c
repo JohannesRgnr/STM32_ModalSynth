@@ -110,7 +110,7 @@ void filterbank_init(filterbank_t *f, const spectrum_t *s)
     f->decay = 8.0f;
     f->previousDecay = f->decay;
 
-    filterbank_spectrum(f, s);
+    filterbank_spectrumLoad(f, s);
     filterbank_update(f);
 }
 
@@ -120,7 +120,7 @@ void filterbank_init(filterbank_t *f, const spectrum_t *s)
  * @param f instance of the filterbank
  * @param s instance of the spectrum
  */
-void filterbank_spectrum(filterbank_t *f, const spectrum_t *s)
+void filterbank_spectrumLoad(filterbank_t *f, const spectrum_t *s)
 {
     for (int i = 0; i < BANDS; i++)
     {
