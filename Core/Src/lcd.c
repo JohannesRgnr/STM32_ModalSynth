@@ -7,50 +7,55 @@
  * @note
  */
 
+
+
 #include "../Inc/lcd.h"
 
 #include "filterbank.h"
 #include "filters.h"
 #include "help_func.h"
 #include "multiLFO.h"
+#include "spectra.h"
 #include "touchpad.h"
 #include "touchscreen.h"
 
 extern spectrum_t spectrum;
 extern lfo_t lfo;
 
-// static lv_obj_t * label;
 static lv_obj_t * partial[BANDS];
 static lv_obj_t * morphCursor;
 
 lv_obj_t * scr_main;
-lv_obj_t * scr_spectrum;
 lv_obj_t * scr_lfo;
 lv_obj_t * scr_effects;
+lv_obj_t * scr_settings;
 
 lv_obj_t * tabview_main;
-lv_obj_t * tabview_spectrum;
 lv_obj_t * tabview_lfo;
 lv_obj_t * tabview_effects;
+lv_obj_t * tabview_settings;
+
 uint8_t active_tab;
+uint8_t active_presetA, active_presetB;
 
 static lv_style_t partials_style;
 static lv_style_t trigArea_style;
-static lv_style_t dropdown_style;
+
 
 lv_obj_t * trigArea;
 
 TS_StateTypeDef  TS_State;
 
 int32_t maxPartialHeight = BIGPARTIALHEIGHT;
-
+int32_t trigAreaWidth = TRIGGERAREAWIDTH;
 
 void GUI_Init()
 {
 	GUI_mainScreen();
-	GUI_spectrumScreen();
+	// GUI_spectrumScreen();
 	GUI_lfoScreen();
 	GUI_effectsScreen();
+	GUI_settingsScreen();
 	lv_screen_load(scr_main);
 }
 
@@ -61,11 +66,9 @@ static void GUI_mainScreen()
 	/************* Create timer for partials display refresh ************/
 	lv_timer_t * timer_partialDisplay = lv_timer_create(GUI_refreshPartials, 60, NULL);
 
-
+	/************* Create tabs ************/
 	tabview_main = lv_tabview_create(scr_main);
-
 	create_tabview(tabview_main);
-
 
 	/*************** Draw line separating partials from trigger area   *******************/
 	// lv_obj_t * middleLine = lv_line_create(scr_main);
@@ -81,7 +84,6 @@ static void GUI_mainScreen()
 	// lv_obj_add_style(middleLine, &style_line, 0);
 	// lv_obj_center(middleLine);
 
-
 	/************************ Draw trigger area   ***************************/
 	// static lv_style_t trigArea_style;
 	lv_style_init(&trigArea_style);
@@ -93,11 +95,11 @@ static void GUI_mainScreen()
 	lv_obj_remove_flag(trigArea, LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CHECKABLE | LV_OBJ_FLAG_CLICKABLE);
 	lv_obj_set_style_bg_color(trigArea, lv_palette_darken(LV_PALETTE_GREY, 4), 0);
 	// lv_obj_set_style_radius(trigArea, 4, 0);
-	lv_obj_set_pos(trigArea, 20, TRIGGERAREAHEIGHT);
-	lv_obj_set_size(trigArea, 760, 230);
+	lv_obj_set_pos(trigArea, 20, TRIGGERAREA_Y);
+	lv_obj_set_size(trigArea, trigAreaWidth - 40, TRIGGERAREAHEIGHT - 10);
 
 
-	/*************** Draw cursor indicating morph position   *******************/
+	/*************** Draw line indicating morph position   *******************/
 	morphCursor = lv_obj_create(scr_main);
 	lv_obj_set_size(morphCursor, 20,1);
 	lv_obj_set_pos(morphCursor, 0, TABRHEIGHT + 32);
@@ -119,66 +121,69 @@ static void GUI_mainScreen()
 		lv_obj_add_style(partial[i], &partials_style, 0);
 		lv_obj_set_size(partial[i], 8, 0);
 	}
-}
 
+	/**************************** Dropdown menus ****************************/
+	// create labels
+	lv_obj_t * spectrum_a_label = lv_label_create(scr_main);
+	lv_label_set_text(spectrum_a_label, "preset A");
+	lv_obj_set_pos(spectrum_a_label, 24, 230);
+	lv_obj_set_style_text_align(spectrum_a_label, LV_TEXT_ALIGN_RIGHT, 0);
+	lv_obj_set_style_text_font(spectrum_a_label, &lv_font_montserrat_20, 0);
+	lv_obj_set_style_text_color(spectrum_a_label, lv_palette_darken(LV_PALETTE_GREY, 1),0);
 
-static void GUI_spectrumScreen()
-{
-	scr_spectrum = lv_obj_create(NULL);
+	lv_obj_t * spectrum_b_label = lv_label_create(scr_main);
+	lv_label_set_text(spectrum_b_label, "preset B");
+	lv_obj_set_pos(spectrum_b_label, 564, 230);
+	lv_obj_set_style_text_align(spectrum_b_label, LV_TEXT_ALIGN_RIGHT, 0);
+	lv_obj_set_style_text_font(spectrum_b_label, &lv_font_montserrat_20, 0);
+	lv_obj_set_style_text_color(spectrum_b_label, lv_palette_darken(LV_PALETTE_GREY, 1),0);
 
-	tabview_spectrum = lv_tabview_create(scr_spectrum);
-
-	create_tabview(tabview_spectrum);
-}
-
-static void GUI_spectrumTab()
-{
-	lv_obj_set_size(trigArea, 760, 130);
-	lv_obj_set_pos(trigArea, 20, TRIGGERAREAHEIGHT - 40);
-	maxPartialHeight = SMALLPARTIALHEIGHT;
-
-
-	/**** dropdown menus ****/
+	// specify dropdown styles
+	static lv_style_t dropdown_style;
 	lv_style_init(&dropdown_style);
 
-	lv_style_set_bg_color(&dropdown_style, lv_palette_darken(LV_PALETTE_GREY, 4));
-	lv_style_set_size(&dropdown_style, 200, 38);
+	lv_style_set_bg_color(&dropdown_style, lv_palette_main(LV_PALETTE_NONE));
+	lv_style_set_size(&dropdown_style, 100, 32);
 	lv_style_set_border_color(&dropdown_style, lv_palette_darken(LV_PALETTE_GREY, 2));
-	lv_style_set_border_width(&dropdown_style, 3);
-	lv_style_set_radius(&dropdown_style, 4);
-	lv_style_set_text_color(&dropdown_style, lv_palette_lighten(LV_PALETTE_GREY, 5));
-	lv_style_set_text_font(&dropdown_style, &lv_font_montserrat_24);
+	lv_style_set_border_width(&dropdown_style, 1);
+	lv_style_set_radius(&dropdown_style, 5);
+	lv_style_set_text_color(&dropdown_style, lv_palette_lighten(LV_PALETTE_GREY, 1));
+	lv_style_set_text_font(&dropdown_style, &lv_font_montserrat_20);
 	lv_style_set_text_align(&dropdown_style, LV_TEXT_ALIGN_CENTER);
 
-	lv_obj_t * spectrum_a = lv_dropdown_create(scr_main);
 
+	// create dropdown menus
+	lv_obj_t * spectrum_a = lv_dropdown_create(scr_main);
 	lv_obj_add_style(spectrum_a, &dropdown_style, 0);
-	lv_obj_set_pos(spectrum_a, 450, 380);
+	lv_obj_set_pos(spectrum_a, 120, 224);
 	lv_dropdown_set_dir(spectrum_a, LV_DIR_TOP);
-	lv_dropdown_set_options(spectrum_a, "Bell 1\nBell 2\nGong\nChord\nSaw\nSquare\n808 CB");
+	lv_dropdown_set_options(spectrum_a, "bell 1\nbell 2\ngong\nchord\nsaw\nsquare\n808 CB");
 	lv_dropdown_set_symbol(spectrum_a, NULL);
+	lv_dropdown_set_selected(spectrum_a, Bell1);
 
 	lv_obj_t * dropdown_a=lv_dropdown_get_list(spectrum_a);
 	lv_obj_set_style_text_align(dropdown_a, LV_TEXT_ALIGN_CENTER, 0);
-	lv_obj_set_style_text_font(dropdown_a, &lv_font_montserrat_24, 0);
+	lv_obj_set_style_text_font(dropdown_a, &lv_font_montserrat_20, 0);
 	lv_obj_set_style_pad_all(dropdown_a, 8, 0);
 	lv_obj_set_style_pad_row(dropdown_a, 8, 0);
 
 	lv_obj_t * spectrum_b = lv_dropdown_create(scr_main);
-
 	lv_obj_add_style(spectrum_b, &dropdown_style, 0);
-	lv_obj_set_pos(spectrum_b, 150, 380);
+	lv_obj_set_pos(spectrum_b, 660, 224);
 	lv_dropdown_set_dir(spectrum_b, LV_DIR_TOP);
-	lv_dropdown_set_options(spectrum_b, "Bell 1\nBell 2\nGong\nChord\nSaw\nSquare\n808 CB");
+	lv_dropdown_set_options(spectrum_b, "bell 1\nbell 2\ngong\nchord\nsaw\nsquare\n808 CB");
 	lv_dropdown_set_symbol(spectrum_b, NULL);
+	lv_dropdown_set_selected(spectrum_b, Saw);
 
 	lv_obj_t * dropdown_b=lv_dropdown_get_list(spectrum_b);
 	lv_obj_set_style_text_align(dropdown_b, LV_TEXT_ALIGN_CENTER, 0);
-	lv_obj_set_style_text_font(dropdown_b, &lv_font_montserrat_24, 0);
+	lv_obj_set_style_text_font(dropdown_b, &lv_font_montserrat_20, 0);
 	lv_obj_set_style_pad_all(dropdown_b, 8, 0);
 	lv_obj_set_style_pad_row(dropdown_b, 8, 0);
-
 }
+
+
+
 
 
 static void GUI_lfoScreen()
@@ -186,7 +191,6 @@ static void GUI_lfoScreen()
 	scr_lfo = lv_obj_create(NULL);
 
 	tabview_lfo = lv_tabview_create(scr_lfo);
-
 	create_tabview(tabview_lfo);
 }
 
@@ -196,8 +200,15 @@ static void GUI_effectsScreen()
 	scr_effects = lv_obj_create(NULL);
 
 	tabview_effects = lv_tabview_create(scr_effects);
-
 	create_tabview(tabview_effects);
+}
+
+static void GUI_settingsScreen()
+{
+	scr_settings = lv_obj_create(NULL);
+
+	tabview_settings = lv_tabview_create(scr_settings);
+	create_tabview(tabview_settings);
 }
 
 
@@ -213,35 +224,37 @@ static void tabview_event_cb(lv_event_t * event)
 	default:
 	case 0:
 		lv_screen_load(scr_main);
-		lv_obj_set_size(trigArea, 760, 230);
-		lv_obj_set_pos(trigArea, 20, TRIGGERAREAHEIGHT);
-		maxPartialHeight = BIGPARTIALHEIGHT;
+		// lv_obj_set_pos(trigArea, 20, TRIGGERAREAHEIGHT);
+		trigAreaWidth = TRIGGERAREAWIDTH;
+		lv_obj_set_width(trigArea, trigAreaWidth - 40);
+		// maxPartialHeight = BIGPARTIALHEIGHT;
 		lv_tabview_set_active(tabview_main, 0, LV_ANIM_OFF);
-		lv_tabview_set_active(tabview_spectrum, 0, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_lfo, 0, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_effects, 0, LV_ANIM_OFF);
+		lv_tabview_set_active(tabview_settings, 0, LV_ANIM_OFF);
 		break;
 	case 1:
-		// lv_screen_load(scr_spectrum);
-		GUI_spectrumTab();
+		lv_screen_load(scr_main);
+		trigAreaWidth = TRIGGERAREAWIDTH / 2;
+		lv_obj_set_width(trigArea, trigAreaWidth - 40);
 		lv_tabview_set_active(tabview_main, 1, LV_ANIM_OFF);
-		lv_tabview_set_active(tabview_spectrum, 1, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_lfo, 1, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_effects, 1, LV_ANIM_OFF);
+		lv_tabview_set_active(tabview_settings, 1, LV_ANIM_OFF);
 		break;
 	case 2:
-		lv_screen_load(scr_lfo);
+		lv_screen_load(scr_effects);
 		lv_tabview_set_active(tabview_main, 2, LV_ANIM_OFF);
-		lv_tabview_set_active(tabview_spectrum, 2, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_lfo, 2, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_effects, 2, LV_ANIM_OFF);
+		lv_tabview_set_active(tabview_settings, 2, LV_ANIM_OFF);
 		break;
 	case 3:
-		lv_screen_load(scr_effects);
+		lv_screen_load(scr_settings);
 		lv_tabview_set_active(tabview_main, 3, LV_ANIM_OFF);
-		lv_tabview_set_active(tabview_spectrum, 3, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_lfo, 3, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_effects, 3, LV_ANIM_OFF);
+		lv_tabview_set_active(tabview_settings, 3, LV_ANIM_OFF);
 		break;
 	}
 
@@ -305,9 +318,9 @@ static void create_tabview(lv_obj_t * tv)
 
 	// Add 4 tabs
 	lv_obj_t * tab1 = lv_tabview_add_tab(tabview, "main");
-	lv_obj_t * tab2 = lv_tabview_add_tab(tabview, "spectrum");
-	lv_obj_t * tab3 = lv_tabview_add_tab(tabview, "lfo");
-	lv_obj_t * tab4 = lv_tabview_add_tab(tabview, "effects");
+	lv_obj_t * tab2 = lv_tabview_add_tab(tabview, "lfo");
+	lv_obj_t * tab3 = lv_tabview_add_tab(tabview, "effects");
+	lv_obj_t * tab4 = lv_tabview_add_tab(tabview, "settings");
 
 	tab_count = lv_tabview_get_tab_count(tabview);
 

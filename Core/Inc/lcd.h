@@ -53,9 +53,9 @@
 
 
 #define TRIGGERAREA_X               0
-#define TRIGGERAREA_Y               240
+#define TRIGGERAREA_Y               280
 #define TRIGGERAREAWIDTH            800
-#define TRIGGERAREAHEIGHT           240
+#define TRIGGERAREAHEIGHT           200
 
 #define TRIGGERAREA_Left            TRIGGERAREA_X
 #define TRIGGERAREA_Right           TRIGGERAREAWIDTH
@@ -70,11 +70,12 @@
 
 void GUI_Init();
 static void GUI_mainScreen();
-static void GUI_spectrumScreen();
-static void GUI_spectrumTab();
 static void GUI_lfoScreen();
 static void GUI_effectsScreen();
+static void GUI_settingsScreen();
+
 static void tabview_event_cb(lv_event_t * event);
+
 void GUI_refreshPartials(lv_timer_t * timer);
 void GUI_refreshMorphCursor(float x);
 static void create_tabview(lv_obj_t * tabview);
