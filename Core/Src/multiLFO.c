@@ -17,7 +17,8 @@ void multiLFO_init(lfo_t *lfo, float amp, float freq)
 {
     lfo->amp = amp;
     lfo->freq = freq;
-    lfo->phase = 0;
+    lfo->phase = 0.0f;
+    lfo->phaseShift = 0.0f;
 
     for (int i = 0; i < BANDS; ++i)
     {
@@ -35,7 +36,7 @@ void multiLFO_process(lfo_t *lfo)
 
     for (int i = 0; i < BANDS; ++i)
     {
-        float phase = lfo->phase + 0.12 * i;
+        float phase = lfo->phase + lfo->phaseShift * i;
         phase = wrap(phase, 1.0f);
         float sine = lutLerp(lut_sine, LUT_SINE_SIZE,LUT_SINE_SIZE * phase); // linear-interpolated sinewave
 

@@ -50,6 +50,10 @@ float delayROut = 0;		// right output of ping pong delay
 
 float reverbLout, reverbRout;
 
+float lfo_speed = 0.1f;
+float lfo_amp = 0.5f;
+float lfo_phaseShift = 0.1f;
+
 /**
  * @brief Init audio
  *
@@ -67,7 +71,7 @@ void AUDIO_Init()
     spectrum_xfade(&spectrum, 0.0f);
 
     filterbank_init(&filterbank, &spectrum);
-    multiLFO_init(&lfo, 0.9f, 0.5f );
+    multiLFO_init(&lfo, lfo_amp, lfo_speed);
     freq.val = freq.dst = 0.f;
 
 #if DELAY_FX == 1
@@ -101,6 +105,9 @@ void AUDIO_Init()
             exciterAmp.val = exciterAmp.dst;
 
         // Process one sample of the multi LFO
+        lfo.freq = lfo_speed;
+        lfo.amp = lfo_amp;
+        lfo.phaseShift = lfo_phaseShift;
         multiLFO_process(&lfo);
 
         // generate noise burst

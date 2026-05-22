@@ -12,7 +12,6 @@
 #include "../Inc/lcd.h"
 
 #include "filterbank.h"
-#include "filters.h"
 #include "help_func.h"
 #include "multiLFO.h"
 #include "spectra.h"
@@ -22,6 +21,9 @@
 extern spectrum_t spectrum;
 extern filterbank_t filterbank;
 extern lfo_t lfo;
+extern float lfo_speed;
+extern float lfo_amp;
+extern float lfo_phaseShift;
 
 static lv_obj_t * partial[BANDS];
 static lv_obj_t * morphCursor;
@@ -38,6 +40,7 @@ lv_obj_t * tabview_settings;
 
 uint8_t active_tab;
 uint8_t active_presetA, active_presetB;
+
 
 static lv_style_t partials_style;
 static lv_style_t trigArea_style;
@@ -187,6 +190,93 @@ static void GUI_mainScreen()
 
 
 	/**************************** LFO sliders ****************************/
+	// specify dropdown styles
+	static lv_style_t style_slider_track;
+	static lv_style_t style_slider_indicator;
+	static lv_style_t style_slider_knob;
+	static lv_style_t style_slider_knob_pressed;
+
+
+    lv_style_init(&style_slider_track);
+    // lv_style_set_bg_opa(&style_slider_track, (255 * 100 / 100));
+    lv_style_set_bg_color(&style_slider_track, lv_palette_main(LV_PALETTE_LIGHT_BLUE));
+    lv_style_set_radius(&style_slider_track, 12);
+    lv_style_set_border_color(&style_slider_track, lv_color_hex(0x0f172a));
+    lv_style_set_border_width(&style_slider_track, 1);
+
+    lv_style_init(&style_slider_indicator);
+    // lv_style_set_bg_opa(&style_slider_indicator, (255 * 100 / 100));
+    lv_style_set_bg_color(&style_slider_indicator, lv_palette_darken(LV_PALETTE_LIGHT_BLUE, 4));
+    // lv_style_set_bg_grad_color(&style_slider_indicator, lv_color_hex(0xec4899));
+    // lv_style_set_bg_grad_dir(&style_slider_indicator, LV_GRAD_DIR_HOR);
+    lv_style_set_radius(&style_slider_indicator, 12);
+
+    lv_style_init(&style_slider_knob);
+    // lv_style_set_bg_opa(&style_slider_knob, (255 * 100 / 100));
+    lv_style_set_bg_color(&style_slider_knob, lv_color_hex(0xffffff));
+    lv_style_set_radius(&style_slider_knob, 100);
+    lv_style_set_border_color(&style_slider_knob, lv_color_hex(0x8b5cf6));
+    lv_style_set_border_width(&style_slider_knob, 3);
+    lv_style_set_pad_all(&style_slider_knob, 6);
+
+
+    lv_style_init(&style_slider_knob_pressed);
+    lv_style_set_bg_color(&style_slider_knob_pressed, lv_color_hex(0xfff7ed));
+    lv_style_set_outline_color(&style_slider_knob_pressed, lv_palette_main(LV_PALETTE_RED));
+    lv_style_set_outline_width(&style_slider_knob_pressed, 6);
+    lv_style_set_outline_pad(&style_slider_knob_pressed, 4);
+    lv_style_set_outline_opa(&style_slider_knob_pressed, 120);
+
+	// speed slider
+	lv_obj_t * slider_lfo_speed = lv_slider_create(scr_main);
+
+	lv_obj_set_size(slider_lfo_speed, 16, 240);
+	lv_slider_set_orientation(slider_lfo_speed, LV_SLIDER_ORIENTATION_VERTICAL);
+	lv_obj_set_pos(slider_lfo_speed, 400, 200);
+	lv_slider_set_min_value(slider_lfo_speed, 0);
+	lv_slider_set_max_value(slider_lfo_speed, 127);
+	lv_slider_set_value(slider_lfo_speed, 0, false);
+
+	lv_obj_add_style(slider_lfo_speed, &style_slider_track, LV_PART_MAIN);
+	lv_obj_add_style(slider_lfo_speed, &style_slider_indicator, LV_PART_INDICATOR);
+	lv_obj_add_style(slider_lfo_speed, &style_slider_knob, LV_PART_KNOB);
+	lv_obj_add_style(slider_lfo_speed, &style_slider_knob_pressed, LV_PART_KNOB | LV_STATE_PRESSED);
+
+	// amp slider
+	lv_obj_t * slider_lfo_amp = lv_slider_create(scr_main);
+
+	lv_obj_set_size(slider_lfo_amp, 16, 240);
+	lv_slider_set_orientation(slider_lfo_amp, LV_SLIDER_ORIENTATION_VERTICAL);
+	lv_obj_set_pos(slider_lfo_amp, 500, 200);
+	lv_slider_set_min_value(slider_lfo_amp, 0);
+	lv_slider_set_max_value(slider_lfo_amp, 127);
+	lv_slider_set_value(slider_lfo_amp, 0, false);
+
+	lv_obj_add_style(slider_lfo_amp, &style_slider_track, LV_PART_MAIN);
+	lv_obj_add_style(slider_lfo_amp, &style_slider_indicator, LV_PART_INDICATOR);
+	lv_obj_add_style(slider_lfo_amp, &style_slider_knob, LV_PART_KNOB);
+	lv_obj_add_style(slider_lfo_amp, &style_slider_knob_pressed, LV_PART_KNOB | LV_STATE_PRESSED);
+
+	// phase shift slider
+	lv_obj_t * slider_lfo_phase = lv_slider_create(scr_main);
+
+	lv_obj_set_size(slider_lfo_phase, 16, 240);
+	lv_slider_set_orientation(slider_lfo_phase, LV_SLIDER_ORIENTATION_VERTICAL);
+	lv_obj_set_pos(slider_lfo_phase, 600, 200);
+	lv_slider_set_min_value(slider_lfo_phase, 0);
+	lv_slider_set_max_value(slider_lfo_phase, 10);
+	lv_slider_set_value(slider_lfo_phase, 0, false);
+
+	lv_obj_add_style(slider_lfo_phase, &style_slider_track, LV_PART_MAIN);
+	lv_obj_add_style(slider_lfo_phase, &style_slider_indicator, LV_PART_INDICATOR);
+	lv_obj_add_style(slider_lfo_phase, &style_slider_knob, LV_PART_KNOB);
+	lv_obj_add_style(slider_lfo_phase, &style_slider_knob_pressed, LV_PART_KNOB | LV_STATE_PRESSED);
+
+	// add events to sliders
+	lv_obj_add_event_cb(slider_lfo_speed, lfo_speed_event_cb, LV_EVENT_VALUE_CHANGED, lv_slider_get_value);
+	lv_obj_add_event_cb(slider_lfo_amp, lfo_amp_event_cb, LV_EVENT_VALUE_CHANGED, lv_slider_get_value);
+	lv_obj_add_event_cb(slider_lfo_phase, lfo_phase_event_cb, LV_EVENT_VALUE_CHANGED, lv_slider_get_value);
+
 }
 
 
@@ -264,11 +354,6 @@ static void tabview_event_cb(lv_event_t * event)
 		lv_tabview_set_active(tabview_settings, 3, LV_ANIM_OFF);
 		break;
 	}
-
-	/*Refresh the text*/
-	//lv_label_set_text_fmt(label, "%" LV_PRId32, active_tab);
-	//lv_obj_align_to(label, tabview, LV_ALIGN_OUT_TOP_MID, 0, 32);    /*Align top of the slider*/
-
 }
 
 
@@ -306,13 +391,10 @@ static void spectrum_a_event_cb(lv_event_t * event)
 		filterbank_spectrumLoad(&filterbank, &spectrum);
 		break;
 	case CB808:
-		spectrum_load(&spectrum, CB808Partials, ConstAmp, LEFT_SPECTRUM);
+		spectrum_load(&spectrum, CB808Partials, RampAmp, LEFT_SPECTRUM);
 		filterbank_spectrumLoad(&filterbank, &spectrum);
 		break;
 	}
-	/*Refresh the text*/
-	//lv_label_set_text_fmt(label, "%" LV_PRId32, active_tab);
-	//lv_obj_align_to(label, tabview, LV_ALIGN_OUT_TOP_MID, 0, 32);    /*Align top of the slider*/
 }
 
 static void spectrum_b_event_cb(lv_event_t * event)
@@ -348,13 +430,42 @@ static void spectrum_b_event_cb(lv_event_t * event)
 		filterbank_spectrumLoad(&filterbank, &spectrum);
 		break;
 	case CB808:
-		spectrum_load(&spectrum, CB808Partials, ConstAmp, RIGHT_SPECTRUM);
+		spectrum_load(&spectrum, CB808Partials, RampAmp, RIGHT_SPECTRUM);
 		filterbank_spectrumLoad(&filterbank, &spectrum);
 		break;
 	}
-	/*Refresh the text*/
-	//lv_label_set_text_fmt(label, "%" LV_PRId32, active_tab);
-	//lv_obj_align_to(label, tabview, LV_ALIGN_OUT_TOP_MID, 0, 32);    /*Align top of the slider*/
+}
+
+
+static void lfo_speed_event_cb(lv_event_t * event)
+{
+	lv_obj_t * slider = lv_event_get_target_obj(event);
+	float value = lv_slider_get_value(slider);
+
+	value /= 127.;
+
+	lfo_speed = expf(11.0f * value - 2); // range of speed between ~0.1Hz and ~8kHz
+}
+
+
+static void lfo_amp_event_cb(lv_event_t * event)
+{
+	lv_obj_t * slider = lv_event_get_target_obj(event);
+	float value = lv_slider_get_value(slider);
+
+	value /= 127.;
+
+	lfo_amp = value; // range between 0. and 1.
+}
+
+static void lfo_phase_event_cb(lv_event_t * event)
+{
+	lv_obj_t * slider = lv_event_get_target_obj(event);
+	float value = lv_slider_get_value(slider);
+
+	value *= 0.1f;
+
+	lfo_phaseShift = value; // range between 0. and 1. and 0.1 steps
 }
 
 
@@ -434,17 +545,6 @@ static void create_tabview(lv_obj_t * tv)
 	lv_obj_set_style_bg_color(tab2, lv_palette_main(LV_PALETTE_NONE), 0);
 	lv_obj_set_style_bg_color(tab3, lv_palette_main(LV_PALETTE_NONE), 0);
 	lv_obj_set_style_bg_color(tab4, lv_palette_main(LV_PALETTE_NONE), 0);
-
-
-	/*Add content to the tabs*/
-	lv_obj_t * label = lv_label_create(tab1);
-	lv_label_set_text(label, "First tab");
-
-	label = lv_label_create(tab2);
-	lv_label_set_text(label, "Second tab");
-
-	label = lv_label_create(tab3);
-	lv_label_set_text(label, "Third tab");
 
 	lv_obj_remove_flag(lv_tabview_get_content(tabview), LV_OBJ_FLAG_SCROLLABLE);
 

@@ -17,6 +17,7 @@ typedef struct
     float amp;
     float freq;
     float phase;
+    float phaseShift;
     float output[BANDS];
 } lfo_t;
 

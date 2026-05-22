@@ -77,6 +77,9 @@ static void GUI_settingsScreen();
 static void tabview_event_cb(lv_event_t * event);
 static void spectrum_a_event_cb(lv_event_t * event);
 static void spectrum_b_event_cb(lv_event_t * event);
+static void lfo_speed_event_cb(lv_event_t * event);
+static void lfo_amp_event_cb(lv_event_t * event);
+static void lfo_phase_event_cb(lv_event_t * event);
 
 void GUI_refreshPartials(lv_timer_t * timer);
 void GUI_refreshMorphCursor(float x);
