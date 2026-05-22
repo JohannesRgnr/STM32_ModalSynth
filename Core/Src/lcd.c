@@ -20,6 +20,7 @@
 #include "touchscreen.h"
 
 extern spectrum_t spectrum;
+extern filterbank_t filterbank;
 extern lfo_t lfo;
 
 static lv_obj_t * partial[BANDS];
@@ -151,7 +152,6 @@ static void GUI_mainScreen()
 	lv_style_set_text_font(&dropdown_style, &lv_font_montserrat_20);
 	lv_style_set_text_align(&dropdown_style, LV_TEXT_ALIGN_CENTER);
 
-
 	// create dropdown menus
 	lv_obj_t * spectrum_a = lv_dropdown_create(scr_main);
 	lv_obj_add_style(spectrum_a, &dropdown_style, 0);
@@ -161,11 +161,11 @@ static void GUI_mainScreen()
 	lv_dropdown_set_symbol(spectrum_a, NULL);
 	lv_dropdown_set_selected(spectrum_a, Bell1);
 
-	lv_obj_t * dropdown_a=lv_dropdown_get_list(spectrum_a);
-	lv_obj_set_style_text_align(dropdown_a, LV_TEXT_ALIGN_CENTER, 0);
-	lv_obj_set_style_text_font(dropdown_a, &lv_font_montserrat_20, 0);
-	lv_obj_set_style_pad_all(dropdown_a, 8, 0);
-	lv_obj_set_style_pad_row(dropdown_a, 8, 0);
+	lv_obj_t * spectrum_a_list=lv_dropdown_get_list(spectrum_a);
+	lv_obj_set_style_text_align(spectrum_a_list, LV_TEXT_ALIGN_CENTER, 0);
+	lv_obj_set_style_text_font(spectrum_a_list, &lv_font_montserrat_20, 0);
+	lv_obj_set_style_pad_all(spectrum_a_list, 8, 0);
+	lv_obj_set_style_pad_row(spectrum_a_list, 8, 0);
 
 	lv_obj_t * spectrum_b = lv_dropdown_create(scr_main);
 	lv_obj_add_style(spectrum_b, &dropdown_style, 0);
@@ -175,11 +175,18 @@ static void GUI_mainScreen()
 	lv_dropdown_set_symbol(spectrum_b, NULL);
 	lv_dropdown_set_selected(spectrum_b, Saw);
 
-	lv_obj_t * dropdown_b=lv_dropdown_get_list(spectrum_b);
-	lv_obj_set_style_text_align(dropdown_b, LV_TEXT_ALIGN_CENTER, 0);
-	lv_obj_set_style_text_font(dropdown_b, &lv_font_montserrat_20, 0);
-	lv_obj_set_style_pad_all(dropdown_b, 8, 0);
-	lv_obj_set_style_pad_row(dropdown_b, 8, 0);
+	lv_obj_t * spectrum_b_list=lv_dropdown_get_list(spectrum_b);
+	lv_obj_set_style_text_align(spectrum_b_list, LV_TEXT_ALIGN_CENTER, 0);
+	lv_obj_set_style_text_font(spectrum_b_list, &lv_font_montserrat_20, 0);
+	lv_obj_set_style_pad_all(spectrum_b_list, 8, 0);
+	lv_obj_set_style_pad_row(spectrum_b_list, 8, 0);
+
+	// add events to dropdowns
+	lv_obj_add_event_cb(spectrum_a, spectrum_a_event_cb, LV_EVENT_VALUE_CHANGED, lv_dropdown_get_selected);
+	lv_obj_add_event_cb(spectrum_b, spectrum_b_event_cb, LV_EVENT_VALUE_CHANGED, lv_dropdown_get_selected);
+
+
+	/**************************** LFO sliders ****************************/
 }
 
 
@@ -263,6 +270,94 @@ static void tabview_event_cb(lv_event_t * event)
 	//lv_obj_align_to(label, tabview, LV_ALIGN_OUT_TOP_MID, 0, 32);    /*Align top of the slider*/
 
 }
+
+
+
+static void spectrum_a_event_cb(lv_event_t * event)
+{
+	lv_obj_t * dropdown = lv_event_get_target_obj(event);
+	uint8_t selection = lv_dropdown_get_selected(dropdown);
+
+	switch ( selection )
+	{
+	default:
+	case Bell1:
+		spectrum_load(&spectrum, Bell1Partials, ExpAmp, LEFT_SPECTRUM);
+		filterbank_spectrumLoad(&filterbank, &spectrum);
+		break;
+	case Bell2:
+		spectrum_load(&spectrum, Bell2Partials, ExpAmp, LEFT_SPECTRUM);
+		filterbank_spectrumLoad(&filterbank, &spectrum);
+		break;
+	case Gong:
+		spectrum_load(&spectrum, GongPartials, ExpAmp, LEFT_SPECTRUM);
+		filterbank_spectrumLoad(&filterbank, &spectrum);
+		break;
+	case Chord:
+		spectrum_load(&spectrum, ChordPartials, RampAmp, LEFT_SPECTRUM);
+		filterbank_spectrumLoad(&filterbank, &spectrum);
+		break;
+	case Saw:
+		spectrum_load(&spectrum, SawPartials, SawAmp, LEFT_SPECTRUM);
+		filterbank_spectrumLoad(&filterbank, &spectrum);
+		break;
+	case Square:
+		spectrum_load(&spectrum, SquarePartials, SquareAmp, LEFT_SPECTRUM);
+		filterbank_spectrumLoad(&filterbank, &spectrum);
+		break;
+	case CB808:
+		spectrum_load(&spectrum, CB808Partials, ConstAmp, LEFT_SPECTRUM);
+		filterbank_spectrumLoad(&filterbank, &spectrum);
+		break;
+	}
+	/*Refresh the text*/
+	//lv_label_set_text_fmt(label, "%" LV_PRId32, active_tab);
+	//lv_obj_align_to(label, tabview, LV_ALIGN_OUT_TOP_MID, 0, 32);    /*Align top of the slider*/
+}
+
+static void spectrum_b_event_cb(lv_event_t * event)
+{
+	lv_obj_t * dropdown = lv_event_get_target_obj(event);
+	uint8_t selection = lv_dropdown_get_selected(dropdown);
+
+	switch ( selection )
+	{
+	default:
+	case Bell1:
+		spectrum_load(&spectrum, Bell1Partials, ExpAmp, RIGHT_SPECTRUM);
+		filterbank_spectrumLoad(&filterbank, &spectrum);
+		break;
+	case Bell2:
+		spectrum_load(&spectrum, Bell2Partials, ExpAmp, RIGHT_SPECTRUM);
+		filterbank_spectrumLoad(&filterbank, &spectrum);
+		break;
+	case Gong:
+		spectrum_load(&spectrum, GongPartials, ExpAmp, RIGHT_SPECTRUM);
+		filterbank_spectrumLoad(&filterbank, &spectrum);
+		break;
+	case Chord:
+		spectrum_load(&spectrum, ChordPartials, RampAmp, RIGHT_SPECTRUM);
+		filterbank_spectrumLoad(&filterbank, &spectrum);
+		break;
+	case Saw:
+		spectrum_load(&spectrum, SawPartials, SawAmp, RIGHT_SPECTRUM);
+		filterbank_spectrumLoad(&filterbank, &spectrum);
+		break;
+	case Square:
+		spectrum_load(&spectrum, SquarePartials, SquareAmp, RIGHT_SPECTRUM);
+		filterbank_spectrumLoad(&filterbank, &spectrum);
+		break;
+	case CB808:
+		spectrum_load(&spectrum, CB808Partials, ConstAmp, RIGHT_SPECTRUM);
+		filterbank_spectrumLoad(&filterbank, &spectrum);
+		break;
+	}
+	/*Refresh the text*/
+	//lv_label_set_text_fmt(label, "%" LV_PRId32, active_tab);
+	//lv_obj_align_to(label, tabview, LV_ALIGN_OUT_TOP_MID, 0, 32);    /*Align top of the slider*/
+}
+
+
 
 void GUI_refreshMorphCursor(float x)
 {

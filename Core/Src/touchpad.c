@@ -168,7 +168,7 @@ static void GUI_MorphArea(uint16_t x)
 	xfade = clip(xfade, 0.f, 1.f);
 
 	spectrum_xfade(&spectrum, xfade);
-	filterbank_spectrum(&filterbank, &spectrum);
+	filterbank_spectrumLoad(&filterbank, &spectrum);
 	filterbank_update(&filterbank);
 
 	GUI_refreshMorphCursor(x);
