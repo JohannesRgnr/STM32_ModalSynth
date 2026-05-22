@@ -38,6 +38,10 @@ lv_obj_t * tabview_lfo;
 lv_obj_t * tabview_effects;
 lv_obj_t * tabview_settings;
 
+lv_obj_t * lfo_speed_arc;
+lv_obj_t * lfo_amp_arc;
+lv_obj_t * lfo_phase_arc;
+
 uint8_t active_tab;
 uint8_t active_presetA, active_presetB;
 
@@ -68,7 +72,7 @@ static void GUI_mainScreen()
 {
 	scr_main = lv_obj_create(NULL);
 	/************* Create timer for partials display refresh ************/
-	lv_timer_t * timer_partialDisplay = lv_timer_create(GUI_refreshPartials, 60, NULL);
+	lv_timer_t * timer_partialDisplay = lv_timer_create(GUI_refreshPartials, 40, NULL);
 
 	/************* Create tabs ************/
 	tabview_main = lv_tabview_create(scr_main);
@@ -189,93 +193,171 @@ static void GUI_mainScreen()
 	lv_obj_add_event_cb(spectrum_b, spectrum_b_event_cb, LV_EVENT_VALUE_CHANGED, lv_dropdown_get_selected);
 
 
-	/**************************** LFO sliders ****************************/
-	// specify dropdown styles
+	/**************************** LFO slider ****************************/
+	// // specify styles
 	static lv_style_t style_slider_track;
 	static lv_style_t style_slider_indicator;
 	static lv_style_t style_slider_knob;
 	static lv_style_t style_slider_knob_pressed;
 
+	 lv_style_init(&style_slider_track);
+	 // lv_style_set_bg_opa(&style_slider_track, (255 * 100 / 100));
+	 lv_style_set_bg_color(&style_slider_track, lv_palette_lighten(LV_PALETTE_GREY, 2));
+	 lv_style_set_radius(&style_slider_track, 12);
+	 lv_style_set_border_color(&style_slider_track, lv_color_hex(0x0f172a));
+	 lv_style_set_border_width(&style_slider_track, 1);
 
-    lv_style_init(&style_slider_track);
-    // lv_style_set_bg_opa(&style_slider_track, (255 * 100 / 100));
-    lv_style_set_bg_color(&style_slider_track, lv_palette_main(LV_PALETTE_LIGHT_BLUE));
-    lv_style_set_radius(&style_slider_track, 12);
-    lv_style_set_border_color(&style_slider_track, lv_color_hex(0x0f172a));
-    lv_style_set_border_width(&style_slider_track, 1);
+	 lv_style_init(&style_slider_indicator);
+	 // lv_style_set_bg_opa(&style_slider_indicator, (255 * 100 / 100));
+	 lv_style_set_bg_color(&style_slider_indicator, lv_palette_main(LV_PALETTE_ORANGE));
+	 // lv_style_set_bg_grad_color(&style_slider_indicator, lv_color_hex(0xec4899));
+	 // lv_style_set_bg_grad_dir(&style_slider_indicator, LV_GRAD_DIR_HOR);
+	 lv_style_set_radius(&style_slider_indicator, 12);
 
-    lv_style_init(&style_slider_indicator);
-    // lv_style_set_bg_opa(&style_slider_indicator, (255 * 100 / 100));
-    lv_style_set_bg_color(&style_slider_indicator, lv_palette_darken(LV_PALETTE_LIGHT_BLUE, 4));
-    // lv_style_set_bg_grad_color(&style_slider_indicator, lv_color_hex(0xec4899));
-    // lv_style_set_bg_grad_dir(&style_slider_indicator, LV_GRAD_DIR_HOR);
-    lv_style_set_radius(&style_slider_indicator, 12);
-
-    lv_style_init(&style_slider_knob);
-    // lv_style_set_bg_opa(&style_slider_knob, (255 * 100 / 100));
-    lv_style_set_bg_color(&style_slider_knob, lv_color_hex(0xffffff));
-    lv_style_set_radius(&style_slider_knob, 100);
-    lv_style_set_border_color(&style_slider_knob, lv_color_hex(0x8b5cf6));
-    lv_style_set_border_width(&style_slider_knob, 3);
-    lv_style_set_pad_all(&style_slider_knob, 6);
+	 lv_style_init(&style_slider_knob);
+	 // lv_style_set_bg_opa(&style_slider_knob, (255 * 100 / 100));
+	 lv_style_set_bg_color(&style_slider_knob, lv_palette_main(LV_PALETTE_ORANGE));
+	 lv_style_set_radius(&style_slider_knob, 100);
+	 // lv_style_set_border_color(&style_slider_knob, lv_color_hex(0x8b5cf6));
+	 // lv_style_set_border_width(&style_slider_knob, 3);
+	 // lv_style_set_pad_all(&style_slider_knob, 6);
 
 
-    lv_style_init(&style_slider_knob_pressed);
-    lv_style_set_bg_color(&style_slider_knob_pressed, lv_color_hex(0xfff7ed));
-    lv_style_set_outline_color(&style_slider_knob_pressed, lv_palette_main(LV_PALETTE_RED));
-    lv_style_set_outline_width(&style_slider_knob_pressed, 6);
-    lv_style_set_outline_pad(&style_slider_knob_pressed, 4);
-    lv_style_set_outline_opa(&style_slider_knob_pressed, 120);
+	 lv_style_init(&style_slider_knob_pressed);
+	 lv_style_set_bg_color(&style_slider_knob_pressed, lv_color_hex(0xfff7ed));
+	 lv_style_set_outline_color(&style_slider_knob_pressed, lv_palette_main(LV_PALETTE_RED));
+	 lv_style_set_outline_width(&style_slider_knob_pressed, 6);
+	 lv_style_set_outline_pad(&style_slider_knob_pressed, 4);
+	 lv_style_set_outline_opa(&style_slider_knob_pressed, 120);
+ //
+	// // speed slider
+	// lv_obj_t * slider_lfo_speed = lv_slider_create(scr_main);
+ //
+	// lv_obj_set_size(slider_lfo_speed, 16, 200);
+	// lv_slider_set_orientation(slider_lfo_speed, LV_SLIDER_ORIENTATION_VERTICAL);
+	// lv_obj_set_pos(slider_lfo_speed, 400, 200);
+	// lv_slider_set_min_value(slider_lfo_speed, 0);
+	// lv_slider_set_max_value(slider_lfo_speed, 127);
+	// lv_slider_set_value(slider_lfo_speed, 0, false);
+ //
+	// lv_obj_add_style(slider_lfo_speed, &style_slider_track, LV_PART_MAIN);
+	// lv_obj_add_style(slider_lfo_speed, &style_slider_indicator, LV_PART_INDICATOR);
+	// lv_obj_add_style(slider_lfo_speed, &style_slider_knob, LV_PART_KNOB);
+	// lv_obj_add_style(slider_lfo_speed, &style_slider_knob_pressed, LV_PART_KNOB | LV_STATE_PRESSED);
 
-	// speed slider
-	lv_obj_t * slider_lfo_speed = lv_slider_create(scr_main);
-
-	lv_obj_set_size(slider_lfo_speed, 16, 240);
-	lv_slider_set_orientation(slider_lfo_speed, LV_SLIDER_ORIENTATION_VERTICAL);
-	lv_obj_set_pos(slider_lfo_speed, 400, 200);
-	lv_slider_set_min_value(slider_lfo_speed, 0);
-	lv_slider_set_max_value(slider_lfo_speed, 127);
-	lv_slider_set_value(slider_lfo_speed, 0, false);
-
-	lv_obj_add_style(slider_lfo_speed, &style_slider_track, LV_PART_MAIN);
-	lv_obj_add_style(slider_lfo_speed, &style_slider_indicator, LV_PART_INDICATOR);
-	lv_obj_add_style(slider_lfo_speed, &style_slider_knob, LV_PART_KNOB);
-	lv_obj_add_style(slider_lfo_speed, &style_slider_knob_pressed, LV_PART_KNOB | LV_STATE_PRESSED);
-
-	// amp slider
-	lv_obj_t * slider_lfo_amp = lv_slider_create(scr_main);
-
-	lv_obj_set_size(slider_lfo_amp, 16, 240);
-	lv_slider_set_orientation(slider_lfo_amp, LV_SLIDER_ORIENTATION_VERTICAL);
-	lv_obj_set_pos(slider_lfo_amp, 500, 200);
-	lv_slider_set_min_value(slider_lfo_amp, 0);
-	lv_slider_set_max_value(slider_lfo_amp, 127);
-	lv_slider_set_value(slider_lfo_amp, 0, false);
-
-	lv_obj_add_style(slider_lfo_amp, &style_slider_track, LV_PART_MAIN);
-	lv_obj_add_style(slider_lfo_amp, &style_slider_indicator, LV_PART_INDICATOR);
-	lv_obj_add_style(slider_lfo_amp, &style_slider_knob, LV_PART_KNOB);
-	lv_obj_add_style(slider_lfo_amp, &style_slider_knob_pressed, LV_PART_KNOB | LV_STATE_PRESSED);
-
+	// // amp slider
+	// lv_obj_t * slider_lfo_amp = lv_slider_create(scr_main);
+	//
+	// lv_obj_set_size(slider_lfo_amp, 16, 240);
+	// lv_slider_set_orientation(slider_lfo_amp, LV_SLIDER_ORIENTATION_VERTICAL);
+	// lv_obj_set_pos(slider_lfo_amp, 500, 200);
+	// lv_slider_set_min_value(slider_lfo_amp, 0);
+	// lv_slider_set_max_value(slider_lfo_amp, 127);
+	// lv_slider_set_value(slider_lfo_amp, 0, false);
+	//
+	// lv_obj_add_style(slider_lfo_amp, &style_slider_track, LV_PART_MAIN);
+	// lv_obj_add_style(slider_lfo_amp, &style_slider_indicator, LV_PART_INDICATOR);
+	// lv_obj_add_style(slider_lfo_amp, &style_slider_knob, LV_PART_KNOB);
+	// lv_obj_add_style(slider_lfo_amp, &style_slider_knob_pressed, LV_PART_KNOB | LV_STATE_PRESSED);
+	//
 	// phase shift slider
-	lv_obj_t * slider_lfo_phase = lv_slider_create(scr_main);
+	// lv_obj_t * lfo_phase_slider = lv_slider_create(scr_main);
+	//
+	// lv_obj_set_size(lfo_phase_slider, 200, 20);
+	// lv_slider_set_orientation(lfo_phase_slider, LV_SLIDER_ORIENTATION_HORIZONTAL);
+	// lv_obj_set_pos(lfo_phase_slider, 490, 420);
+	// lv_slider_set_min_value(lfo_phase_slider, 0);
+	// lv_slider_set_max_value(lfo_phase_slider, 10);
+	// lv_slider_set_value(lfo_phase_slider, 0, false);
+	//
+	// lv_obj_add_style(lfo_phase_slider, &style_slider_track, LV_PART_MAIN);
+	// lv_obj_add_style(lfo_phase_slider, &style_slider_indicator, LV_PART_INDICATOR);
+	// lv_obj_add_style(lfo_phase_slider, &style_slider_knob, LV_PART_KNOB);
+	// lv_obj_add_style(lfo_phase_slider, &style_slider_knob_pressed, LV_PART_KNOB | LV_STATE_PRESSED);
+	// lv_obj_t * phase_label = lv_label_create(lfo_phase_slider);
+	// lv_obj_set_align(phase_label, LV_ALIGN_CENTER);
+	// lv_label_set_text(phase_label, "phase");
+	// lv_obj_set_style_text_color(phase_label, lv_palette_darken(LV_PALETTE_GREY, 4),0);
 
-	lv_obj_set_size(slider_lfo_phase, 16, 240);
-	lv_slider_set_orientation(slider_lfo_phase, LV_SLIDER_ORIENTATION_VERTICAL);
-	lv_obj_set_pos(slider_lfo_phase, 600, 200);
-	lv_slider_set_min_value(slider_lfo_phase, 0);
-	lv_slider_set_max_value(slider_lfo_phase, 10);
-	lv_slider_set_value(slider_lfo_phase, 0, false);
+	/**************************** LFO dials ****************************/
 
-	lv_obj_add_style(slider_lfo_phase, &style_slider_track, LV_PART_MAIN);
-	lv_obj_add_style(slider_lfo_phase, &style_slider_indicator, LV_PART_INDICATOR);
-	lv_obj_add_style(slider_lfo_phase, &style_slider_knob, LV_PART_KNOB);
-	lv_obj_add_style(slider_lfo_phase, &style_slider_knob_pressed, LV_PART_KNOB | LV_STATE_PRESSED);
+	static lv_style_t style_arc_bg;
+	static lv_style_t style_arc_indicator;
+	static lv_style_t style_arc_knob;
 
-	// add events to sliders
-	lv_obj_add_event_cb(slider_lfo_speed, lfo_speed_event_cb, LV_EVENT_VALUE_CHANGED, lv_slider_get_value);
-	lv_obj_add_event_cb(slider_lfo_amp, lfo_amp_event_cb, LV_EVENT_VALUE_CHANGED, lv_slider_get_value);
-	lv_obj_add_event_cb(slider_lfo_phase, lfo_phase_event_cb, LV_EVENT_VALUE_CHANGED, lv_slider_get_value);
+	// static lv_subject_t subject_value2;
+
+	lv_style_init(&style_arc_bg);
+	lv_style_set_arc_color(&style_arc_bg, lv_palette_lighten(LV_PALETTE_GREY, 2));
+	lv_style_set_arc_width(&style_arc_bg, 10);
+	lv_style_set_arc_rounded(&style_arc_bg, true);
+	lv_style_set_arc_opa(&style_arc_bg, 180);
+
+	lv_style_init(&style_arc_indicator);
+	lv_style_set_arc_color(&style_arc_indicator, lv_palette_darken(LV_PALETTE_LIGHT_BLUE, 2));
+	lv_style_set_arc_width(&style_arc_indicator, 10);
+	lv_style_set_arc_rounded(&style_arc_indicator, true);
+	lv_style_set_pad_all(&style_arc_indicator, 0);
+
+	lv_style_init(&style_arc_knob);
+	lv_style_set_bg_color(&style_arc_knob, lv_palette_darken(LV_PALETTE_LIGHT_BLUE, 2));
+	// lv_style_set_border_color(&style_arc_knob, lv_color_hex(0xffffff));
+	// lv_style_set_border_width(&style_arc_knob, 2);
+	lv_style_set_pad_all(&style_arc_knob, 0);
+	lv_style_set_radius(&style_arc_knob, LV_RADIUS_CIRCLE);
+
+
+    lfo_speed_arc = lv_arc_create(scr_main);
+    lv_obj_set_size(lfo_speed_arc, 100, 100);
+    lv_arc_set_min_value(lfo_speed_arc, 0);
+    lv_arc_set_max_value(lfo_speed_arc, 127);
+    lv_arc_set_value(lfo_speed_arc, 0);
+    lv_obj_add_style(lfo_speed_arc, &style_arc_bg, LV_PART_MAIN);
+    lv_obj_add_style(lfo_speed_arc, &style_arc_indicator, LV_PART_INDICATOR);
+    lv_obj_add_style(lfo_speed_arc, &style_arc_knob, LV_PART_KNOB);
+    lv_obj_t * speed_label = lv_label_create(lfo_speed_arc);
+	lv_obj_set_pos(lfo_speed_arc, 440, 280);
+    lv_obj_set_align(speed_label, LV_ALIGN_CENTER);
+    lv_label_set_text(speed_label, "speed");
+	lv_obj_set_style_text_color(speed_label, lv_palette_lighten(LV_PALETTE_GREY, 2),0);
+
+	lfo_amp_arc = lv_arc_create(scr_main);
+	lv_obj_set_size(lfo_amp_arc, 100, 100);
+	lv_arc_set_min_value(lfo_amp_arc, 0);
+	lv_arc_set_max_value(lfo_amp_arc, 127);
+	lv_arc_set_value(lfo_amp_arc, 64);
+	lv_obj_add_style(lfo_amp_arc, &style_arc_bg, LV_PART_MAIN);
+	lv_obj_add_style(lfo_amp_arc, &style_arc_indicator, LV_PART_INDICATOR);
+	lv_obj_add_style(lfo_amp_arc, &style_arc_knob, LV_PART_KNOB);
+	lv_obj_t * amp_label = lv_label_create(lfo_amp_arc);
+	lv_obj_set_pos(lfo_amp_arc, 640, 280);
+	lv_obj_set_align(amp_label, LV_ALIGN_CENTER);
+	lv_label_set_text(amp_label, "amp");
+	lv_obj_set_style_text_color(amp_label, lv_palette_lighten(LV_PALETTE_GREY, 2),0);
+
+	lfo_phase_arc = lv_arc_create(scr_main);
+	lv_obj_set_size(lfo_phase_arc, 100, 100);
+	lv_arc_set_min_value(lfo_phase_arc, 0);
+	lv_arc_set_max_value(lfo_phase_arc, 10);
+	lv_arc_set_value(lfo_phase_arc, 0);
+	lv_obj_add_style(lfo_phase_arc, &style_arc_bg, LV_PART_MAIN);
+	lv_obj_add_style(lfo_phase_arc, &style_arc_indicator, LV_PART_INDICATOR);
+	lv_obj_add_style(lfo_phase_arc, &style_arc_knob, LV_PART_KNOB);
+	lv_obj_t * phase_label = lv_label_create(lfo_phase_arc);
+	lv_obj_set_pos(lfo_phase_arc, 540, 370);
+	lv_obj_set_align(phase_label, LV_ALIGN_CENTER);
+	lv_label_set_text(phase_label, "phase");
+	lv_obj_set_style_text_color(phase_label, lv_palette_lighten(LV_PALETTE_GREY, 2),0);
+
+
+	// add events to dials and sliders
+	lv_obj_add_event_cb(lfo_speed_arc, lfo_speed_event_cb, LV_EVENT_VALUE_CHANGED, lv_arc_get_value);
+	lv_obj_add_event_cb(lfo_amp_arc, lfo_amp_event_cb, LV_EVENT_VALUE_CHANGED, lv_arc_get_value);
+	lv_obj_add_event_cb(lfo_phase_arc, lfo_phase_event_cb, LV_EVENT_VALUE_CHANGED, lv_arc_get_value);
+
+	lv_obj_add_flag(lfo_speed_arc, LV_OBJ_FLAG_HIDDEN);
+	lv_obj_add_flag(lfo_amp_arc, LV_OBJ_FLAG_HIDDEN);
+	lv_obj_add_flag(lfo_phase_arc, LV_OBJ_FLAG_HIDDEN);
 
 }
 
@@ -324,6 +406,9 @@ static void tabview_event_cb(lv_event_t * event)
 		// lv_obj_set_pos(trigArea, 20, TRIGGERAREAHEIGHT);
 		trigAreaWidth = TRIGGERAREAWIDTH;
 		lv_obj_set_width(trigArea, trigAreaWidth - 40);
+		lv_obj_add_flag(lfo_speed_arc, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(lfo_amp_arc, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(lfo_phase_arc, LV_OBJ_FLAG_HIDDEN);
 		// maxPartialHeight = BIGPARTIALHEIGHT;
 		lv_tabview_set_active(tabview_main, 0, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_lfo, 0, LV_ANIM_OFF);
@@ -334,6 +419,9 @@ static void tabview_event_cb(lv_event_t * event)
 		lv_screen_load(scr_main);
 		trigAreaWidth = TRIGGERAREAWIDTH / 2;
 		lv_obj_set_width(trigArea, trigAreaWidth - 40);
+		lv_obj_clear_flag(lfo_speed_arc, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(lfo_amp_arc, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(lfo_phase_arc, LV_OBJ_FLAG_HIDDEN);
 		lv_tabview_set_active(tabview_main, 1, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_lfo, 1, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_effects, 1, LV_ANIM_OFF);
@@ -440,7 +528,7 @@ static void spectrum_b_event_cb(lv_event_t * event)
 static void lfo_speed_event_cb(lv_event_t * event)
 {
 	lv_obj_t * slider = lv_event_get_target_obj(event);
-	float value = lv_slider_get_value(slider);
+	float value = lv_arc_get_value(slider);
 
 	value /= 127.;
 
@@ -451,7 +539,7 @@ static void lfo_speed_event_cb(lv_event_t * event)
 static void lfo_amp_event_cb(lv_event_t * event)
 {
 	lv_obj_t * slider = lv_event_get_target_obj(event);
-	float value = lv_slider_get_value(slider);
+	float value = lv_arc_get_value(slider);
 
 	value /= 127.;
 
@@ -461,7 +549,7 @@ static void lfo_amp_event_cb(lv_event_t * event)
 static void lfo_phase_event_cb(lv_event_t * event)
 {
 	lv_obj_t * slider = lv_event_get_target_obj(event);
-	float value = lv_slider_get_value(slider);
+	float value = lv_arc_get_value(slider);
 
 	value *= 0.1f;
 
