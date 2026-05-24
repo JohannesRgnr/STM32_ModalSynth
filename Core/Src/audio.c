@@ -41,14 +41,13 @@ lfo_t lfo;
 extern float delay_feedback;
 extern float delay_wet;
 float reverb_amount;
-float reverbsend;
 extern float reverb_feedback;
 extern uint8_t LFO_btn, delay_btn, reverb_btn;
 
 float delayLOut = 0 ;		// left output of ping pong delay
 float delayROut = 0;		// right output of ping pong delay
 
-float reverbLout, reverbRout;
+float reverbIn, reverbLout, reverbRout;
 
 float lfo_speed = 0.1f;
 float lfo_amp = 0.5f;
@@ -94,6 +93,10 @@ void AUDIO_Init()
     reverb_feedback = 0.6f;
     reverb_amount = 0.4f;
 
+    lfo.freq = lfo_speed;
+    lfo.amp = lfo_amp;
+    lfo.phaseShift = lfo_phaseShift;
+
     for (int i = 0; i < samples; i++)
     {
         // Exciter
@@ -105,9 +108,6 @@ void AUDIO_Init()
             exciterAmp.val = exciterAmp.dst;
 
         // Process one sample of the multi LFO
-        lfo.freq = lfo_speed;
-        lfo.amp = lfo_amp;
-        lfo.phaseShift = lfo_phaseShift;
         multiLFO_process(&lfo);
 
         // generate noise burst
@@ -132,8 +132,8 @@ void AUDIO_Init()
 #if REVERB_FX == 1
 
         // Send to Reverb
-        reverbsend = reverb_amount * (delayLOut+ delayROut);
-        reverb_process(reverbsend, &reverbLout, &reverbRout);
+        reverbIn = reverb_amount * (delayLOut+ delayROut);
+        reverb_process(reverbIn, &reverbLout, &reverbRout);
 
         float sampleL = delayLOut + reverbLout;
         float sampleR = delayROut + reverbRout;
