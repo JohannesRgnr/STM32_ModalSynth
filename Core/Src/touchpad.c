@@ -92,6 +92,7 @@ static void GUI_TSProcess(lv_indev_t * indev, lv_indev_data_t *data)
 			// if inside trigger area
 			if (active_tab < 2 && data->point.x < trigAreaWidth && data->point.y > TRIGGERAREA_Top  && data->point.y < TRIGGERAREA_Bottom)
 			{
+				data->continue_reading = true;
 				GUI_triggerArea(data->point.x, data->point.y, wasTouched, data);
 			}
 			// if inside partials area
@@ -144,7 +145,7 @@ static void GUI_triggerArea(uint16_t x, uint16_t y, uint8_t state, lv_indev_data
 	{
 		if (LV_INDEV_STATE_PR == 1)
 		{
-			// data->continue_reading = true;
+
 
 			float midiNote = scale(TRIGGERAREA_Left, trigAreaWidth - 40, 24, 90, x);
 			midiNote = clip(midiNote, 24, 90);
