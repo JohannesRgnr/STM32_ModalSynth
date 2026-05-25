@@ -10,6 +10,7 @@
 #include "help_func.h"
 
 
+
 /**
  * @brief Constrain input value between lower and upper limits
  *
@@ -32,19 +33,17 @@ float clip(float input, float lower, float upper) {
  * @return float
  */
 float lutLerp(const float *table, uint16_t table_size, float index){
-    uint32_t trunc = (uint32_t)index; // truncate the index but don't overwrite
-    const float frac = index - (float)trunc; // get the fractional part
+    GET_INTEGRAL_FRACTIONAL(index); // get integral and fractional parts
+    uint16_t mask = table_size - 1;
+    float x0 = *(table + (index_integral & mask));
+    float x1 = *(table + ((index_integral + 1) & mask));
 
-    while (trunc > table_size)
-        trunc = trunc - table_size;
-
-    // if (trunc == table_size-1)
-    //     diff = table[0] - table[trunc]; // wrap
-    // else
-    const float diff = table[trunc + 1] - table[trunc]; // no need to check and wrap, table size is 1025
+    // while (index_integral > table_size)
+    //     index_integral = index_integral - table_size;
 
     // get the interpolated output
-    return table[trunc] + (diff * frac);
+   // return table[index_integral] + (table[index_integral + 1] - table[index_integral]) * index_fractional;
+    return x0 + (x1 - x0) * index_fractional;
 }
 
 
@@ -54,7 +53,7 @@ float lutLerp(const float *table, uint16_t table_size, float index){
  * @param upper_input
  * @param lower_output
  * @param upper_output
- * @param value
+ * @param value scaled value
  * @return
  */
 float scale(const float lower_input, const float upper_input, const float lower_output, const float upper_output, const float value)

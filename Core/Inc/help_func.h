@@ -18,10 +18,13 @@
 
 
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
-
-
-
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
+
+
+// convenient DEFINE from Mutable Instruments
+#define GET_INTEGRAL_FRACTIONAL(x)\
+int32_t x ## _integral = (int32_t)(x); \
+float x ## _fractional = x - (float)(x ## _integral);
 
 
 
@@ -42,7 +45,7 @@ typedef struct
  * @param max
  * @return float
  */
-static float wrap(float value, const float max)
+static inline float wrap(float value, const float max)
 {
     if (value < 0.f)
         value += max;
@@ -52,7 +55,7 @@ static float wrap(float value, const float max)
     return value;
 }
 
-static float Crossfade(const float a, const float b, const float fade)
+static inline float Crossfade(const float a, const float b, const float fade)
 {
     return a + (b - a) * fade;
 }
@@ -64,16 +67,16 @@ static float Crossfade(const float a, const float b, const float fade)
  * @param x float value to soft-clip
  * @return float
  */
-static float SoftClip(float x)
+static inline float SoftClip(float x)
 {
-    // if (x < -3.0f)
-    // {
-    //     return -1.0f;
-    // }
-    // if (x > 3.0f)
-    // {
-    //     return 1.0f;
-    // }
+    if (x < -3.0f)
+    {
+        return -1.0f;
+    }
+    if (x > 3.0f)
+    {
+        return 1.0f;
+    }
 
     return x * (27.0f + x * x) / (27.0f + 9.0f * x * x);
 }
