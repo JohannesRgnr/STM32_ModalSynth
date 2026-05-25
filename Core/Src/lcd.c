@@ -47,12 +47,19 @@ lv_obj_t * lfo_speed_arc;
 lv_obj_t * lfo_amp_arc;
 lv_obj_t * lfo_phase_arc;
 
+lv_obj_t * lfo_speed_label;
+lv_obj_t * lfo_amp_label;
+lv_obj_t * lfo_phase_label;
+
 uint8_t active_tab;
 uint8_t active_presetA, active_presetB;
 
 
 static lv_style_t partials_style;
 static lv_style_t trigArea_style;
+static lv_style_t style_arc_bg;
+static lv_style_t style_arc_indicator;
+static lv_style_t style_arc_knob;
 
 
 lv_obj_t * trigArea;
@@ -78,9 +85,11 @@ void GUI_Init()
 
 static void GUI_mainScreen()
 {
+	/************* Create main screen ************/
 	scr_main = lv_obj_create(NULL);
+
 	/************* Create timer for partials display refresh ************/
-	lv_timer_t * timer_partialDisplay = lv_timer_create(GUI_refreshPartials, 70, NULL);
+	lv_timer_t * timer_partialDisplay = lv_timer_create(GUI_refreshPartials, 66, NULL);
 
 	/************* Create tabs ************/
 	tabview_main = lv_tabview_create(scr_main);
@@ -128,14 +137,14 @@ static void GUI_mainScreen()
 
 	lv_style_init(&partials_style);
 	lv_style_set_bg_color(&partials_style, lv_palette_main(LV_PALETTE_LIGHT_BLUE));
-	lv_style_set_radius(&partials_style, 0);
+	lv_style_set_radius(&partials_style, 3);
 
 	for (int i = 0; i < BANDS; i++)
 	{
 		partial[i] = lv_obj_create(scr_main);
 		lv_obj_remove_flag(partial[i], LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CHECKABLE | LV_OBJ_FLAG_CLICKABLE);
 		lv_obj_add_style(partial[i], &partials_style, 0);
-		lv_obj_set_size(partial[i], 8, 0);
+		lv_obj_set_size(partial[i], 12, 0);
 	}
 
 	/**************************** Dropdown menus ****************************/
@@ -289,9 +298,7 @@ static void GUI_mainScreen()
 
 	/**************************** LFO dials ****************************/
 
-	static lv_style_t style_arc_bg;
-	static lv_style_t style_arc_indicator;
-	static lv_style_t style_arc_knob;
+
 
 	// static lv_subject_t subject_value2;
 
@@ -308,14 +315,6 @@ static void GUI_mainScreen()
 	lv_style_set_arc_rounded(&style_arc_indicator, true);
 	lv_style_set_pad_all(&style_arc_indicator, 0);
 
-	// lv_style_init(&style_arc_knob);
-	// lv_style_set_bg_color(&style_arc_knob, lv_palette_darken(LV_PALETTE_LIGHT_BLUE, 2));
-	// // lv_style_set_border_color(&style_arc_knob, lv_color_hex(0xffffff));
-	// // lv_style_set_border_width(&style_arc_knob, 2);
-	// lv_style_set_pad_all(&style_arc_knob, 0);
-	// lv_style_set_radius(&style_arc_knob, LV_RADIUS_CIRCLE);
-
-
     lfo_speed_arc = lv_arc_create(scr_main);
     lv_obj_set_size(lfo_speed_arc, 110, 110);
 	lv_obj_set_pos(lfo_speed_arc, 30, 240);
@@ -324,8 +323,7 @@ static void GUI_mainScreen()
     lv_arc_set_value(lfo_speed_arc, 0);
     lv_obj_add_style(lfo_speed_arc, &style_arc_bg, LV_PART_MAIN);
     lv_obj_add_style(lfo_speed_arc, &style_arc_indicator, LV_PART_INDICATOR);
-    // lv_obj_add_style(lfo_speed_arc, &style_arc_knob, LV_PART_KNOB);
-	lv_obj_remove_style(lfo_speed_arc, NULL, LV_PART_KNOB);
+    lv_obj_remove_style(lfo_speed_arc, NULL, LV_PART_KNOB);
     lv_obj_t * speed_label = lv_label_create(lfo_speed_arc);
     lv_obj_set_align(speed_label, LV_ALIGN_CENTER);
     lv_label_set_text(speed_label, "speed");
@@ -339,7 +337,6 @@ static void GUI_mainScreen()
 	lv_arc_set_value(lfo_amp_arc, 64);
 	lv_obj_add_style(lfo_amp_arc, &style_arc_bg, LV_PART_MAIN);
 	lv_obj_add_style(lfo_amp_arc, &style_arc_indicator, LV_PART_INDICATOR);
-	// lv_obj_add_style(lfo_amp_arc, &style_arc_knob, LV_PART_KNOB);
 	lv_obj_remove_style(lfo_amp_arc, NULL, LV_PART_KNOB);
 	lv_obj_t * amp_label = lv_label_create(lfo_amp_arc);
 	lv_obj_set_align(amp_label, LV_ALIGN_CENTER);
@@ -350,28 +347,48 @@ static void GUI_mainScreen()
 	lv_obj_set_size(lfo_phase_arc, 130, 130);
 	lv_obj_set_pos(lfo_phase_arc, 620, 300);
 	lv_arc_set_min_value(lfo_phase_arc, 0);
-	lv_arc_set_max_value(lfo_phase_arc, 10);
+	lv_arc_set_max_value(lfo_phase_arc, 16);
 	lv_arc_set_value(lfo_phase_arc, 0);
 	lv_obj_add_style(lfo_phase_arc, &style_arc_bg, LV_PART_MAIN);
 	lv_obj_add_style(lfo_phase_arc, &style_arc_indicator, LV_PART_INDICATOR);
-	// lv_obj_add_style(lfo_phase_arc, &style_arc_knob, LV_PART_KNOB);
 	lv_obj_remove_style(lfo_phase_arc, NULL, LV_PART_KNOB);
 	lv_obj_t * phase_label = lv_label_create(lfo_phase_arc);
 	lv_obj_set_align(phase_label, LV_ALIGN_CENTER);
 	lv_label_set_text(phase_label, "phase");
 	lv_obj_set_style_text_color(phase_label, lv_palette_lighten(LV_PALETTE_GREY, 2),0);
 
-
 	// add events to dials
 	lv_obj_add_event_cb(lfo_speed_arc, lfo_speed_event_cb, LV_EVENT_VALUE_CHANGED, lv_arc_get_value);
 	lv_obj_add_event_cb(lfo_amp_arc, lfo_amp_event_cb, LV_EVENT_VALUE_CHANGED, lv_arc_get_value);
 	lv_obj_add_event_cb(lfo_phase_arc, lfo_phase_event_cb, LV_EVENT_VALUE_CHANGED, lv_arc_get_value);
 
-	// hide the LFO dials in the first tab
+
+
+	// Add labels to display dial values
+	lfo_speed_label = lv_label_create(scr_main);
+	lv_obj_set_size(lfo_speed_label, 60, 40);
+	lv_obj_align_to(lfo_speed_label, lfo_speed_arc, LV_ALIGN_CENTER, 0, 60);
+	// lv_obj_set_pos(lfo_speed_label, 60, 350);
+	// lv_obj_set_align(lfo_speed_label, LV_ALIGN_CENTER);
+	lv_obj_set_style_text_color(lfo_speed_label, lv_palette_lighten(LV_PALETTE_GREY, 2),0);
+	lv_obj_set_style_text_align(lfo_speed_label, LV_TEXT_ALIGN_CENTER, 0);
+	lv_label_set_text(lfo_speed_label, "");
+
+	lfo_phase_label = lv_label_create(scr_main);
+	lv_obj_set_size(lfo_phase_label, 60, 40);
+	lv_obj_align_to(lfo_phase_label, lfo_phase_arc, LV_ALIGN_CENTER, 0, 60);
+	// lv_obj_set_pos(lfo_speed_label, 60, 350);
+	// lv_obj_set_align(lfo_speed_label, LV_ALIGN_CENTER);
+	lv_obj_set_style_text_color(lfo_phase_label, lv_palette_lighten(LV_PALETTE_GREY, 2),0);
+	lv_obj_set_style_text_align(lfo_phase_label, LV_TEXT_ALIGN_CENTER, 0);
+	lv_label_set_text(lfo_phase_label, "");
+
+	// keep the LFO dials hidden in the first tab
 	lv_obj_add_flag(lfo_speed_arc, LV_OBJ_FLAG_HIDDEN);
 	lv_obj_add_flag(lfo_amp_arc, LV_OBJ_FLAG_HIDDEN);
 	lv_obj_add_flag(lfo_phase_arc, LV_OBJ_FLAG_HIDDEN);
-
+	lv_obj_add_flag(lfo_speed_label, LV_OBJ_FLAG_HIDDEN);
+	lv_obj_add_flag(lfo_phase_label, LV_OBJ_FLAG_HIDDEN);
 }
 
 
@@ -391,6 +408,98 @@ static void GUI_effectsScreen()
 
 	tabview_effects = lv_tabview_create(scr_effects);
 	create_tabview(tabview_effects);
+
+	lv_obj_t * delay_time_arc;
+	lv_obj_t * delay_fbk_arc;
+	lv_obj_t * delay_drywet_arc;
+
+	lv_obj_t * rvb_time_arc;
+	lv_obj_t * rvb_fbk_arc;
+	lv_obj_t * rvb_drywet_arc;
+
+	delay_time_arc = lv_arc_create(scr_effects);
+	lv_obj_set_size(delay_time_arc, 110, 110);
+	lv_obj_set_pos(delay_time_arc, 30, 70);
+	lv_arc_set_min_value(delay_time_arc, 0);
+	lv_arc_set_max_value(delay_time_arc, 127);
+	lv_arc_set_value(delay_time_arc, 0);
+	lv_obj_add_style(delay_time_arc, &style_arc_bg, LV_PART_MAIN);
+	lv_obj_add_style(delay_time_arc, &style_arc_indicator, LV_PART_INDICATOR);
+	lv_obj_remove_style(delay_time_arc, NULL, LV_PART_KNOB);
+	lv_obj_t * delay_time_label = lv_label_create(delay_time_arc);
+	lv_obj_set_align(delay_time_label, LV_ALIGN_CENTER);
+	lv_label_set_text(delay_time_label, "time");
+	lv_obj_set_style_text_color(delay_time_label, lv_palette_lighten(LV_PALETTE_GREY, 2),0);
+
+	delay_fbk_arc = lv_arc_create(scr_effects);
+	lv_obj_set_size(delay_fbk_arc, 110, 110);
+	lv_obj_set_pos(delay_fbk_arc, 345, 70);
+	lv_arc_set_min_value(delay_fbk_arc, 0);
+	lv_arc_set_max_value(delay_fbk_arc, 127);
+	lv_arc_set_value(delay_fbk_arc, 0);
+	lv_obj_add_style(delay_fbk_arc, &style_arc_bg, LV_PART_MAIN);
+	lv_obj_add_style(delay_fbk_arc, &style_arc_indicator, LV_PART_INDICATOR);
+	lv_obj_remove_style(delay_fbk_arc, NULL, LV_PART_KNOB);
+	lv_obj_t * delay_fbk_label = lv_label_create(delay_fbk_arc);
+	lv_obj_set_align(delay_fbk_label, LV_ALIGN_CENTER);
+	lv_label_set_text(delay_fbk_label, "feedback");
+	lv_obj_set_style_text_color(delay_fbk_label, lv_palette_lighten(LV_PALETTE_GREY, 2),0);
+
+	delay_drywet_arc = lv_arc_create(scr_effects);
+	lv_obj_set_size(delay_drywet_arc, 110, 110);
+	lv_obj_set_pos(delay_drywet_arc, 660, 70);
+	lv_arc_set_min_value(delay_drywet_arc, 0);
+	lv_arc_set_max_value(delay_drywet_arc, 127);
+	lv_arc_set_value(delay_drywet_arc, 0);
+	lv_obj_add_style(delay_drywet_arc, &style_arc_bg, LV_PART_MAIN);
+	lv_obj_add_style(delay_drywet_arc, &style_arc_indicator, LV_PART_INDICATOR);
+	lv_obj_remove_style(delay_drywet_arc, NULL, LV_PART_KNOB);
+	lv_obj_t * delay_drywet_label = lv_label_create(delay_drywet_arc);
+	lv_obj_set_align(delay_drywet_label, LV_ALIGN_CENTER);
+	lv_label_set_text(delay_drywet_label, "dry/wet");
+	lv_obj_set_style_text_color(delay_drywet_label, lv_palette_lighten(LV_PALETTE_GREY, 2),0);
+
+	rvb_time_arc = lv_arc_create(scr_effects);
+	lv_obj_set_size(rvb_time_arc, 110, 110);
+	lv_obj_set_pos(rvb_time_arc, 30, 240);
+	lv_arc_set_min_value(rvb_time_arc, 0);
+	lv_arc_set_max_value(rvb_time_arc, 127);
+	lv_arc_set_value(rvb_time_arc, 0);
+	lv_obj_add_style(rvb_time_arc, &style_arc_bg, LV_PART_MAIN);
+	lv_obj_add_style(rvb_time_arc, &style_arc_indicator, LV_PART_INDICATOR);
+	lv_obj_remove_style(rvb_time_arc, NULL, LV_PART_KNOB);
+	lv_obj_t * rvb_time_label = lv_label_create(rvb_time_arc);
+	lv_obj_set_align(rvb_time_label, LV_ALIGN_CENTER);
+	lv_label_set_text(rvb_time_label, "time");
+	lv_obj_set_style_text_color(rvb_time_label, lv_palette_lighten(LV_PALETTE_GREY, 2),0);
+
+	rvb_fbk_arc = lv_arc_create(scr_effects);
+	lv_obj_set_size(rvb_fbk_arc, 110, 110);
+	lv_obj_set_pos(rvb_fbk_arc, 345, 240);
+	lv_arc_set_min_value(rvb_fbk_arc, 0);
+	lv_arc_set_max_value(rvb_fbk_arc, 127);
+	lv_arc_set_value(rvb_fbk_arc, 0);
+	lv_obj_add_style(rvb_fbk_arc, &style_arc_bg, LV_PART_MAIN);
+	lv_obj_add_style(rvb_fbk_arc, &style_arc_indicator, LV_PART_INDICATOR);
+	lv_obj_remove_style(rvb_fbk_arc, NULL, LV_PART_KNOB);
+	lv_obj_t * rvb_fbk_label = lv_label_create(rvb_fbk_arc);
+	lv_obj_set_align(rvb_fbk_label, LV_ALIGN_CENTER);
+	lv_label_set_text(rvb_fbk_label, "feedback");
+	lv_obj_set_style_text_color(rvb_fbk_label, lv_palette_lighten(LV_PALETTE_GREY, 2),0);
+
+	rvb_drywet_arc = lv_arc_create(scr_effects);
+	lv_obj_set_size(rvb_drywet_arc, 110, 110);
+	lv_obj_set_pos(rvb_drywet_arc, 660, 240);
+	lv_arc_set_min_value(rvb_drywet_arc, 0);
+	lv_arc_set_max_value(rvb_drywet_arc, 127);
+	lv_arc_set_value(rvb_drywet_arc, 0);
+	lv_obj_add_style(rvb_drywet_arc, &style_arc_bg, LV_PART_MAIN);
+	lv_obj_add_style(rvb_drywet_arc, &style_arc_indicator, LV_PART_INDICATOR);
+	lv_obj_remove_style(rvb_drywet_arc, NULL, LV_PART_KNOB);
+	lv_obj_t * rvb_drywet_label = lv_label_create(rvb_drywet_arc);
+	lv_obj_set_align(rvb_drywet_label, LV_ALIGN_CENTER);
+	lv_label_set_text(rvb_drywet_label, "dry/wet");
+	lv_obj_set_style_text_color(rvb_drywet_label, lv_palette_lighten(LV_PALETTE_GREY, 2),0);
 }
 
 static void GUI_settingsScreen()
@@ -411,32 +520,33 @@ static void tabview_event_cb(lv_event_t * event)
 	switch ( active_tab )
 	{
 	default:
-	case 0:
+	case 0: // load main screen, adjust trigger pad area, display/hide objects, update tabviews
 		lv_screen_load(scr_main);
 		trigAreaWidth = TRIGGERAREAWIDTH;
 		trigAreaX = TRIGGERAREA_X;
-		lv_obj_set_x(trigArea, trigAreaX);
+		lv_obj_set_x(trigArea, trigAreaX + 20);
 		lv_obj_set_width(trigArea, trigAreaWidth - 40);
 
 		lv_obj_add_flag(lfo_speed_arc, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_add_flag(lfo_amp_arc, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_add_flag(lfo_phase_arc, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(lfo_speed_label, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(lfo_phase_label, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_clear_flag(spectrum_a_label, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_clear_flag(spectrum_b_label, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_clear_flag(spectrum_a, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_clear_flag(spectrum_b, LV_OBJ_FLAG_HIDDEN);
 
 		lv_tabview_set_active(tabview_main, 0, LV_ANIM_OFF);
-		//lv_tabview_set_active(tabview_lfo, 0, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_effects, 0, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_settings, 0, LV_ANIM_OFF);
 		break;
-	case 1:
+	case 1: // load main screen, adjust trigger pad area, display/hide objects, update tabviews
 		lv_screen_load(scr_main);
 		trigAreaWidth = TRIGGERAREAWIDTH / 2.5f;
 		trigAreaX = 240;
 		lv_obj_set_x(trigArea, trigAreaX);
-		lv_obj_set_width(trigArea, trigAreaWidth - 40);
+		lv_obj_set_width(trigArea, trigAreaWidth);
 
 		lv_obj_add_flag(spectrum_a_label, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_add_flag(spectrum_b_label, LV_OBJ_FLAG_HIDDEN);
@@ -445,23 +555,22 @@ static void tabview_event_cb(lv_event_t * event)
 		lv_obj_clear_flag(lfo_speed_arc, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_clear_flag(lfo_amp_arc, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_clear_flag(lfo_phase_arc, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(lfo_speed_label, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(lfo_phase_label, LV_OBJ_FLAG_HIDDEN);
 
 		lv_tabview_set_active(tabview_main, 1, LV_ANIM_OFF);
-		//lv_tabview_set_active(tabview_lfo, 1, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_effects, 1, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_settings, 1, LV_ANIM_OFF);
 		break;
 	case 2:
 		lv_screen_load(scr_effects);
 		lv_tabview_set_active(tabview_main, 2, LV_ANIM_OFF);
-		//lv_tabview_set_active(tabview_lfo, 2, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_effects, 2, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_settings, 2, LV_ANIM_OFF);
 		break;
 	case 3:
 		lv_screen_load(scr_settings);
 		lv_tabview_set_active(tabview_main, 3, LV_ANIM_OFF);
-		//lv_tabview_set_active(tabview_lfo, 3, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_effects, 3, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_settings, 3, LV_ANIM_OFF);
 		break;
@@ -556,7 +665,8 @@ static void lfo_speed_event_cb(lv_event_t * event)
 
 	value /= 127.;
 
-	lfo_speed = expf(11.0f * value - 2); // range of speed between ~0.1Hz and ~8kHz
+	lfo_speed = expf(10.0f * value - 2); // range of speed between ~0.1Hz and ~3kHz
+	lv_label_set_text_fmt(lfo_speed_label, "%.02f Hz", lfo_speed);
 }
 
 
@@ -575,9 +685,10 @@ static void lfo_phase_event_cb(lv_event_t * event)
 	lv_obj_t * slider = lv_event_get_target_obj(event);
 	float value = lv_arc_get_value(slider);
 
-	value *= 0.1f;
+	value *= 0.0625f;
 
-	lfo_phaseShift = value; // range between 0. and 1. in 0.1 steps
+	lfo_phaseShift = value; // range between 0. and 1. in 1/16 steps
+	lv_label_set_text_fmt(lfo_phase_label, "%d/16", lv_arc_get_value(slider));
 }
 
 
@@ -601,6 +712,7 @@ void GUI_refreshPartials(lv_timer_t * timer)
 		const int32_t xPos = (uint16_t)((spectrum.freqRatios[i] -1) * PARTIALSPACING + PARTIALSAREA_X);
 		const int32_t yPos = PARTIALSAREA_Y + (maxPartialHeight - height);
 		const int32_t opacity = 75 + 180.0f * amplitude; // opacity proportional to amplitude
+
 		// display only if partial fits within the partials area
 		if (xPos < PARTIALSAREA_X + PARTIALSAREAWIDTH)
 		{
