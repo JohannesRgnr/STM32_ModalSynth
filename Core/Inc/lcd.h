@@ -70,7 +70,7 @@
 
 void GUI_Init();
 static void GUI_mainScreen();
-static void GUI_lfoScreen();
+// static void GUI_lfoScreen();
 static void GUI_effectsScreen();
 static void GUI_settingsScreen();
 

@@ -40,6 +40,7 @@ extern filterbank_t filterbank;
 extern spectrum_t spectrum;
 
 extern int32_t trigAreaWidth;
+extern int32_t trigAreaX;
 
 // extern lv_timer_t * timer_partialDisplay;
 
@@ -90,7 +91,7 @@ static void GUI_TSProcess(lv_indev_t * indev, lv_indev_data_t *data)
 			data->state = LV_INDEV_STATE_PR;
 
 			// if inside trigger area
-			if (active_tab < 2 && data->point.x < trigAreaWidth && data->point.y > TRIGGERAREA_Top  && data->point.y < TRIGGERAREA_Bottom)
+			if (active_tab < 2 && data->point.x > trigAreaX && data->point.x < (trigAreaWidth + trigAreaX) && data->point.y > TRIGGERAREA_Top  && data->point.y < TRIGGERAREA_Bottom)
 			{
 				data->continue_reading = true;
 				GUI_triggerArea(data->point.x, data->point.y, wasTouched, data);
@@ -126,7 +127,7 @@ static void GUI_triggerArea(uint16_t x, uint16_t y, uint8_t state, lv_indev_data
 		if (LV_INDEV_STATE_PR == 1) // new single finger touch
 		{
 			// evaluate fundamental frequency
-			float midiNote = scale(TRIGGERAREA_Left, trigAreaWidth - 40, 24, 90, x);
+			float midiNote = scale(trigAreaX, trigAreaWidth + trigAreaX, 24, 90, x );
 			midiNote = clip(midiNote, 24, 90);
 			float frequency = mtof(midiNote);
 
@@ -147,7 +148,7 @@ static void GUI_triggerArea(uint16_t x, uint16_t y, uint8_t state, lv_indev_data
 		{
 
 
-			float midiNote = scale(TRIGGERAREA_Left, trigAreaWidth - 40, 24, 90, x);
+			float midiNote = scale(trigAreaX, trigAreaWidth + trigAreaX, 24, 90, x);
 			midiNote = clip(midiNote, 24, 90);
 			const float duration = scale(TRIGGERAREA_Bottom,TRIGGERAREA_Top, 5, 10, y);
 			freq.dst = mtof(midiNote);
