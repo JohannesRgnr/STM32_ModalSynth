@@ -32,12 +32,15 @@
  */
 int16_t codecBuffer[BUFFER_SIZE]; // x samples X 2 channels (interleaved)
 
+
+/** DSP Global Variables **/
 noise_t noise;
 line_t exciterAmp, freq;
 spectrum_t spectrum;
 filterbank_t filterbank;
 lfo_t lfo;
 
+/** Extern global variables **/
 extern float delay_feedback;
 extern float delay_wet;
 float reverb_amount;
@@ -49,8 +52,8 @@ float delayROut = 0;		// right output of ping pong delay
 
 float reverbIn, reverbLout, reverbRout;
 
-float lfo_speed = 0.1f;
-float lfo_amp = 0.5f;
+float lfo_speed = 0.2f;
+float lfo_amp = 0.6f;
 float lfo_phaseShift = 0.1f;
 
 /**
@@ -70,7 +73,7 @@ void AUDIO_Init()
     spectrum_xfade(&spectrum, 0.0f);
 
     filterbank_init(&filterbank, &spectrum);
-    multiLFO_init(&lfo, lfo_amp, lfo_speed);
+    multiLFO_init(&lfo, 0.6f, 0.2f);
     freq.val = freq.dst = 0.f;
 
 #if DELAY_FX == 1
@@ -97,6 +100,9 @@ void AUDIO_Init()
     lfo.amp = lfo_amp;
     lfo.phaseShift = lfo_phaseShift;
 
+    /**  Main Audio Loop
+     *  Filtered noise --> Quadratic Amplitude Enveloppe --> Filterbank --> Delay --> Reverb --> Softclip --> Output
+     *  **/
     for (int i = 0; i < samples; i++)
     {
         // Exciter
@@ -108,10 +114,10 @@ void AUDIO_Init()
             exciterAmp.val = exciterAmp.dst;
 
         // Process one sample of the multi LFO
-        multiLFO_process(&lfo);
+        multiLFO_SineProcess(&lfo);
 
         // generate noise burst
-       samp = samp * exciterAmp.val * exciterAmp.val;
+        samp = samp * exciterAmp.val * exciterAmp.val;
 
         // going through filterbank
         filterbank.freq = freq.val;
@@ -145,7 +151,7 @@ void AUDIO_Init()
 
 #endif
 
-
+        // Softclip the audio output
         sampleL = SoftClip(sampleL);
         sampleR = SoftClip(sampleR);
 
