@@ -19,6 +19,7 @@ void multiLFO_init(lfo_t *lfo, float amp, float freq)
     lfo->freq = freq;
     lfo->phase = 0.0f;
     lfo->phaseShift = 0.0f;
+    lfo->shape = sawdown;
 
     for (int i = 0; i < BANDS; ++i)
     {
@@ -30,17 +31,21 @@ void multiLFO_init(lfo_t *lfo, float amp, float freq)
  * Generate n=BANDS sine waves, driven by the same phasor
  * @param lfo
  */
-void multiLFO_process(lfo_t *lfo)
+void multiLFO_SineProcess(lfo_t *lfo)
 {
     lfo->phase = wrap(lfo->phase, 1.0f);
+    float sine, phase;
 
     for (int i = 0; i < BANDS; ++i)
     {
-        float phase = lfo->phase + lfo->phaseShift * i;
+        phase = lfo->phase + lfo->phaseShift * i;
         phase = wrap(phase, 1.0f);
-        float sine = lutLerp(lut_sine, LUT_SINE_SIZE,LUT_SINE_SIZE * phase); // linear-interpolated sinewave
+
+        sine = lutLerp(lut_sine, LUT_SINE_SIZE,LUT_SINE_SIZE * phase); // linear-interpolated sinewave
 
         lfo->output[i] = 1.0f - lfo->amp * (sine * 0.5f + 0.5f);
     }
     lfo->phase += TS * lfo->freq; // increment phase (phase normalized from 0 to 1)
 }
+
+

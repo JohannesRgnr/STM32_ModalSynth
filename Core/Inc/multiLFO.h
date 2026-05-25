@@ -12,18 +12,26 @@
 #include "filterbank.h"
 
 
+typedef enum shapes
+{
+    sine,
+    sawup,
+    sawdown
+} shapes_t;
+
 typedef struct
 {
     float amp;
     float freq;
     float phase;
     float phaseShift;
+    uint8_t shape;
     float output[BANDS];
 } lfo_t;
 
 
 void multiLFO_init(lfo_t *lfo, float amp, float freq);
-void multiLFO_process(lfo_t *lfo);
+void multiLFO_SineProcess(lfo_t *lfo);
 
 
 
