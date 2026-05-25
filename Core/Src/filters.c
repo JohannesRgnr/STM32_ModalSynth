@@ -74,7 +74,7 @@ void SVF_LP_init(ZDFLP_t * filter){
  */
 float freq_to_g(float freq_hz)
 {
-    return tanf(PI * freq_hz * TS);
+    return tanf(PIOVERFS * freq_hz );
 }
 
 
