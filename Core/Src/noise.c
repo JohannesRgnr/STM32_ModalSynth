@@ -34,6 +34,6 @@ float filteredNoise(noise_t *osc)
 {
     static uint32_t seed = 1;
     seed *= 16807;
-    osc->output = smoothingLP(&filterLP, osc->amp * ((float)seed * 4.6566129e-010f - 1.f), 0.368); // 7 kHz lowpass
+    osc->output = smoothingLP(&filterLP, osc->amp * ((float)seed * 4.6566129e-010f - 1.f), 0.565); // 4 kHz lowpass
     return osc->output;
 }
