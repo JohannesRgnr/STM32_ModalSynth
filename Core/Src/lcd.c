@@ -99,7 +99,7 @@ static void GUI_mainScreen()
 	scr_main = lv_obj_create(NULL);
 
 	/************* Create timer for partials display refresh ************/
-	lv_timer_t * timer_partialDisplay = lv_timer_create(GUI_refreshPartials, 66, NULL);
+	lv_timer_t * timer_partialDisplay = lv_timer_create(GUI_refreshPartials, 50, NULL);
 
 	/************* Create tabs ************/
 	tabview_main = lv_tabview_create(scr_main);
