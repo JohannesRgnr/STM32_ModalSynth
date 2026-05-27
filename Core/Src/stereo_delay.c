@@ -20,6 +20,7 @@ static int16_t		delaylineInt16R[DELAY_BUFF_SIZE];
 
 float delay_feedback	= INIT_FEEDB;
 float delay_wet			= INIT_DELAY_WET;
+uint32_t delay_time		= INIT_DELAY_TIME;
 
 ZDFLP_t lp_L;
 
@@ -34,7 +35,7 @@ void Delay_init(void)
 	writePointerL = 0;
 	writePointerR = 0;
 
-	SVF_LP_init(&lp_L);
+	SVF_LP_init(&lp_L); // init LPs in the feedback path at 2kHz with gentle resonance
 }
 
 static void Delay_writeBufferL(float value)
@@ -84,7 +85,8 @@ static float DelayInt16_readBufferR(uint32_t delay)
 }
 
 
-/** @brief Ping pong delay effect, with crossfeedback, softclip and lowpass filtering
+/**
+ * Ping pong delay effect, with crossfeedback, softclip and lowpass filtering
  * @note requires 2 delay lines (L and R)
  *
  * @param inputSample
@@ -111,6 +113,14 @@ void Delay_process(float inputSample, uint32_t delay, float *delayLOut, float *d
 	Delay_writeBufferR(delay_feedback * delayedSampleL);
 }
 
+/**
+ * Ping pong delay effect, with crossfeedback, softclip and lowpass filtering
+ * @note requires 2 * int16_t delay lines (L and R)
+ * @param inputSample
+ * @param delay
+ * @param delayLOut
+ * @param delayROut
+ */
 void DelayInt16_process(float inputSample, uint32_t delay, float *delayLOut, float *delayROut)
 {
 	/***************************** read from delay line *******************************/

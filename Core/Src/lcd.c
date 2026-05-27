@@ -15,6 +15,7 @@
 #include "help_func.h"
 #include "multiLFO.h"
 #include "spectra.h"
+#include "stm32f769i_discovery_audio.h"
 #include "touchpad.h"
 #include "touchscreen.h"
 
@@ -25,11 +26,18 @@ extern float lfo_speed;
 extern float lfo_amp;
 extern float lfo_phaseShift;
 
+extern uint32_t delay_time;
+extern float delay_feedback;
+extern float delay_wet;
+
+extern float reverb_amount;
+extern float reverb_feedback;
+extern float reverb_time;
+
 static lv_obj_t * partial[BANDS];
 static lv_obj_t * morphCursor;
 
 lv_obj_t * scr_main;
-// lv_obj_t * scr_lfo;
 lv_obj_t * scr_effects;
 lv_obj_t * scr_settings;
 
@@ -67,8 +75,10 @@ lv_obj_t * trigArea;
 TS_StateTypeDef  TS_State;
 
 int32_t maxPartialHeight = BIGPARTIALHEIGHT;
+int32_t trigAreaHeight = TRIGGERAREAHEIGHT;
 int32_t trigAreaWidth = TRIGGERAREAWIDTH;
 int32_t trigAreaX = TRIGGERAREA_X;
+int32_t trigAreaTop;
 
 // void GUI_lfoScreen(void);
 
@@ -95,19 +105,6 @@ static void GUI_mainScreen()
 	tabview_main = lv_tabview_create(scr_main);
 	create_tabview(tabview_main);
 
-	/*************** Draw line separating partials from trigger area   *******************/
-	// lv_obj_t * middleLine = lv_line_create(scr_main);
-	// static lv_point_precise_t line_points[] = { {0, 0}, {780, 0} };
-	// static lv_style_t style_line;
-	//
-	// lv_style_init(&style_line);
-	// lv_style_set_line_width(&style_line, 4);
-	// lv_style_set_line_color(&style_line, lv_palette_main(LV_PALETTE_GREY));
-	// lv_style_set_line_rounded(&style_line, true);
-	//
-	// lv_line_set_points(middleLine, line_points, 2);     /*Set the points*/
-	// lv_obj_add_style(middleLine, &style_line, 0);
-	// lv_obj_center(middleLine);
 
 	/************************ Draw trigger area   ***************************/
 	// static lv_style_t trigArea_style;
@@ -121,7 +118,7 @@ static void GUI_mainScreen()
 	lv_obj_set_style_bg_color(trigArea, lv_palette_darken(LV_PALETTE_GREY, 4), 0);
 	// lv_obj_set_style_radius(trigArea, 4, 0);
 	lv_obj_set_pos(trigArea, 20, TRIGGERAREA_Y);
-	lv_obj_set_size(trigArea, trigAreaWidth - 40, TRIGGERAREAHEIGHT - 10);
+	lv_obj_set_size(trigArea, trigAreaWidth - 40, TRIGGERAREAHEIGHT);
 
 
 	/*************** Draw line indicating morph position   *******************/
@@ -317,7 +314,7 @@ static void GUI_mainScreen()
 
     lfo_speed_arc = lv_arc_create(scr_main);
     lv_obj_set_size(lfo_speed_arc, 110, 110);
-	lv_obj_set_pos(lfo_speed_arc, 30, 240);
+	lv_obj_set_pos(lfo_speed_arc, 60, 240);
     lv_arc_set_min_value(lfo_speed_arc, 0);
     lv_arc_set_max_value(lfo_speed_arc, 127);
     lv_arc_set_value(lfo_speed_arc, 0);
@@ -331,7 +328,7 @@ static void GUI_mainScreen()
 
 	lfo_amp_arc = lv_arc_create(scr_main);
 	lv_obj_set_size(lfo_amp_arc, 110, 110);
-	lv_obj_set_pos(lfo_amp_arc, 110, 360);
+	lv_obj_set_pos(lfo_amp_arc, 345, 240);
 	lv_arc_set_min_value(lfo_amp_arc, 0);
 	lv_arc_set_max_value(lfo_amp_arc, 127);
 	lv_arc_set_value(lfo_amp_arc, 64);
@@ -344,8 +341,8 @@ static void GUI_mainScreen()
 	lv_obj_set_style_text_color(amp_label, lv_palette_lighten(LV_PALETTE_GREY, 2),0);
 
 	lfo_phase_arc = lv_arc_create(scr_main);
-	lv_obj_set_size(lfo_phase_arc, 130, 130);
-	lv_obj_set_pos(lfo_phase_arc, 620, 300);
+	lv_obj_set_size(lfo_phase_arc, 110, 110);
+	lv_obj_set_pos(lfo_phase_arc, 630, 240);
 	lv_arc_set_min_value(lfo_phase_arc, 0);
 	lv_arc_set_max_value(lfo_phase_arc, 16);
 	lv_arc_set_value(lfo_phase_arc, 0);
@@ -417,12 +414,53 @@ static void GUI_effectsScreen()
 	lv_obj_t * rvb_fbk_arc;
 	lv_obj_t * rvb_drywet_arc;
 
+	/*Create trig area*/
+	lv_obj_t * trigAreaEffects = lv_obj_create(scr_effects);
+	lv_obj_add_style(trigAreaEffects, &trigArea_style, 0);
+	lv_obj_remove_flag(trigAreaEffects, LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CHECKABLE | LV_OBJ_FLAG_CLICKABLE);
+	lv_obj_set_style_bg_color(trigAreaEffects, lv_palette_darken(LV_PALETTE_GREY, 4), 0);
+	lv_obj_set_pos(trigAreaEffects, 20, 480 - TRIGGERAREAHEIGHT_SMALL);
+	lv_obj_set_size(trigAreaEffects, trigAreaWidth - 40, TRIGGERAREAHEIGHT_SMALL);
+
+	/* Draw line separating effects */
+	// lv_obj_t * middleLine = lv_line_create(scr_effects);
+	// static lv_point_precise_t line_points[] = { {200, 220}, {600, 220} };
+	// static lv_style_t style_line;
+	//
+	// lv_style_init(&style_line);
+	// lv_style_set_line_width(&style_line, 2);
+	// lv_style_set_line_color(&style_line, lv_palette_main(LV_PALETTE_GREY));
+	// lv_style_set_line_rounded(&style_line, true);
+	//
+	// lv_line_set_points(middleLine, line_points, 2);     /*Set the points*/
+	// lv_obj_add_style(middleLine, &style_line, 0);
+
+	lv_obj_t * delayArea = lv_obj_create(scr_effects);
+	lv_obj_add_style(delayArea, &trigArea_style, 0);
+	lv_obj_remove_flag(delayArea, LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CHECKABLE | LV_OBJ_FLAG_CLICKABLE);
+	lv_obj_set_style_bg_color(delayArea, lv_palette_darken(LV_PALETTE_GREY, 4), 0);
+	lv_obj_set_style_opa(delayArea, 160,0);
+	lv_obj_set_pos(delayArea, 20, 80);
+	lv_obj_set_size(delayArea, trigAreaWidth - 40, 130);
+	lv_obj_set_style_radius(delayArea, 16, 0);
+
+	lv_obj_t * reverbArea = lv_obj_create(scr_effects);
+	lv_obj_add_style(reverbArea, &trigArea_style, 0);
+	lv_obj_remove_flag(reverbArea, LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CHECKABLE | LV_OBJ_FLAG_CLICKABLE);
+	lv_obj_set_style_bg_color(reverbArea, lv_palette_darken(LV_PALETTE_GREY, 4), 0);
+	lv_obj_set_style_opa(reverbArea, 160,0);
+	lv_obj_set_pos(reverbArea, 20, 220);
+	lv_obj_set_size(reverbArea, trigAreaWidth - 40, 130);
+	lv_obj_set_style_radius(reverbArea, 16, 0);
+
+
+	/*Create parameter dials*/
 	delay_time_arc = lv_arc_create(scr_effects);
 	lv_obj_set_size(delay_time_arc, 110, 110);
-	lv_obj_set_pos(delay_time_arc, 30, 70);
+	lv_obj_set_pos(delay_time_arc, 260, 95);
 	lv_arc_set_min_value(delay_time_arc, 0);
 	lv_arc_set_max_value(delay_time_arc, 127);
-	lv_arc_set_value(delay_time_arc, 0);
+	lv_arc_set_value(delay_time_arc, 63);
 	lv_obj_add_style(delay_time_arc, &style_arc_bg, LV_PART_MAIN);
 	lv_obj_add_style(delay_time_arc, &style_arc_indicator, LV_PART_INDICATOR);
 	lv_obj_remove_style(delay_time_arc, NULL, LV_PART_KNOB);
@@ -433,10 +471,10 @@ static void GUI_effectsScreen()
 
 	delay_fbk_arc = lv_arc_create(scr_effects);
 	lv_obj_set_size(delay_fbk_arc, 110, 110);
-	lv_obj_set_pos(delay_fbk_arc, 345, 70);
+	lv_obj_set_pos(delay_fbk_arc, 445, 95);
 	lv_arc_set_min_value(delay_fbk_arc, 0);
 	lv_arc_set_max_value(delay_fbk_arc, 127);
-	lv_arc_set_value(delay_fbk_arc, 0);
+	lv_arc_set_value(delay_fbk_arc, 63);
 	lv_obj_add_style(delay_fbk_arc, &style_arc_bg, LV_PART_MAIN);
 	lv_obj_add_style(delay_fbk_arc, &style_arc_indicator, LV_PART_INDICATOR);
 	lv_obj_remove_style(delay_fbk_arc, NULL, LV_PART_KNOB);
@@ -447,10 +485,10 @@ static void GUI_effectsScreen()
 
 	delay_drywet_arc = lv_arc_create(scr_effects);
 	lv_obj_set_size(delay_drywet_arc, 110, 110);
-	lv_obj_set_pos(delay_drywet_arc, 660, 70);
+	lv_obj_set_pos(delay_drywet_arc, 630, 95);
 	lv_arc_set_min_value(delay_drywet_arc, 0);
 	lv_arc_set_max_value(delay_drywet_arc, 127);
-	lv_arc_set_value(delay_drywet_arc, 0);
+	lv_arc_set_value(delay_drywet_arc, 63);
 	lv_obj_add_style(delay_drywet_arc, &style_arc_bg, LV_PART_MAIN);
 	lv_obj_add_style(delay_drywet_arc, &style_arc_indicator, LV_PART_INDICATOR);
 	lv_obj_remove_style(delay_drywet_arc, NULL, LV_PART_KNOB);
@@ -461,10 +499,10 @@ static void GUI_effectsScreen()
 
 	rvb_time_arc = lv_arc_create(scr_effects);
 	lv_obj_set_size(rvb_time_arc, 110, 110);
-	lv_obj_set_pos(rvb_time_arc, 30, 240);
+	lv_obj_set_pos(rvb_time_arc, 260, 235);
 	lv_arc_set_min_value(rvb_time_arc, 0);
 	lv_arc_set_max_value(rvb_time_arc, 127);
-	lv_arc_set_value(rvb_time_arc, 0);
+	lv_arc_set_value(rvb_time_arc, 63);
 	lv_obj_add_style(rvb_time_arc, &style_arc_bg, LV_PART_MAIN);
 	lv_obj_add_style(rvb_time_arc, &style_arc_indicator, LV_PART_INDICATOR);
 	lv_obj_remove_style(rvb_time_arc, NULL, LV_PART_KNOB);
@@ -475,10 +513,10 @@ static void GUI_effectsScreen()
 
 	rvb_fbk_arc = lv_arc_create(scr_effects);
 	lv_obj_set_size(rvb_fbk_arc, 110, 110);
-	lv_obj_set_pos(rvb_fbk_arc, 345, 240);
+	lv_obj_set_pos(rvb_fbk_arc, 445, 235);
 	lv_arc_set_min_value(rvb_fbk_arc, 0);
 	lv_arc_set_max_value(rvb_fbk_arc, 127);
-	lv_arc_set_value(rvb_fbk_arc, 0);
+	lv_arc_set_value(rvb_fbk_arc, 63);
 	lv_obj_add_style(rvb_fbk_arc, &style_arc_bg, LV_PART_MAIN);
 	lv_obj_add_style(rvb_fbk_arc, &style_arc_indicator, LV_PART_INDICATOR);
 	lv_obj_remove_style(rvb_fbk_arc, NULL, LV_PART_KNOB);
@@ -489,17 +527,39 @@ static void GUI_effectsScreen()
 
 	rvb_drywet_arc = lv_arc_create(scr_effects);
 	lv_obj_set_size(rvb_drywet_arc, 110, 110);
-	lv_obj_set_pos(rvb_drywet_arc, 660, 240);
+	lv_obj_set_pos(rvb_drywet_arc, 630, 235);
 	lv_arc_set_min_value(rvb_drywet_arc, 0);
 	lv_arc_set_max_value(rvb_drywet_arc, 127);
-	lv_arc_set_value(rvb_drywet_arc, 0);
+	lv_arc_set_value(rvb_drywet_arc, 63);
 	lv_obj_add_style(rvb_drywet_arc, &style_arc_bg, LV_PART_MAIN);
 	lv_obj_add_style(rvb_drywet_arc, &style_arc_indicator, LV_PART_INDICATOR);
 	lv_obj_remove_style(rvb_drywet_arc, NULL, LV_PART_KNOB);
 	lv_obj_t * rvb_drywet_label = lv_label_create(rvb_drywet_arc);
 	lv_obj_set_align(rvb_drywet_label, LV_ALIGN_CENTER);
-	lv_label_set_text(rvb_drywet_label, "dry/wet");
+	lv_label_set_text(rvb_drywet_label, "amount");
 	lv_obj_set_style_text_color(rvb_drywet_label, lv_palette_lighten(LV_PALETTE_GREY, 2),0);
+
+	// add labels
+	lv_obj_t * delay_label = lv_label_create(scr_effects);
+	lv_obj_align_to(delay_label, delay_time_arc,LV_ALIGN_CENTER, -220, -16);
+	lv_obj_set_style_text_font(delay_label, &lv_font_montserrat_32, 0);
+	lv_label_set_text(delay_label, "DELAY");
+	lv_obj_set_style_text_color(delay_label, lv_palette_darken(LV_PALETTE_GREY, 1),0);
+
+	lv_obj_t * reverb_label = lv_label_create(scr_effects);
+	lv_obj_align_to(reverb_label, rvb_time_arc, LV_ALIGN_CENTER, -220, -16);
+	lv_obj_set_style_text_font(reverb_label, &lv_font_montserrat_32, 0);
+	lv_label_set_text(reverb_label, "REVERB");
+	lv_obj_set_style_text_color(reverb_label, lv_palette_darken(LV_PALETTE_GREY, 1),0);
+
+
+	// add events to dials
+	lv_obj_add_event_cb(delay_time_arc, delay_time_event_cb, LV_EVENT_VALUE_CHANGED, lv_arc_get_value);
+	lv_obj_add_event_cb(delay_fbk_arc, delay_fbk_event_cb, LV_EVENT_VALUE_CHANGED, lv_arc_get_value);
+	lv_obj_add_event_cb(delay_drywet_arc, delay_drywet_event_cb, LV_EVENT_VALUE_CHANGED, lv_arc_get_value);
+	lv_obj_add_event_cb(rvb_time_arc, rvb_time_event_cb, LV_EVENT_VALUE_CHANGED, lv_arc_get_value);
+	lv_obj_add_event_cb(rvb_fbk_arc, rvb_fbk_event_cb, LV_EVENT_VALUE_CHANGED, lv_arc_get_value);
+	lv_obj_add_event_cb(rvb_drywet_arc, rvb_amount_event_cb, LV_EVENT_VALUE_CHANGED, lv_arc_get_value);
 }
 
 static void GUI_settingsScreen()
@@ -508,6 +568,25 @@ static void GUI_settingsScreen()
 
 	tabview_settings = lv_tabview_create(scr_settings);
 	create_tabview(tabview_settings);
+
+
+	lv_obj_t * volume_arc = lv_arc_create(scr_settings);
+	lv_obj_set_size(volume_arc, 160, 160);
+	lv_obj_align(volume_arc,LV_ALIGN_CENTER,0, 0);
+	lv_arc_set_min_value(volume_arc, 0);
+	lv_arc_set_max_value(volume_arc, 100);
+	lv_arc_set_value(volume_arc, 80);
+	lv_obj_add_style(volume_arc, &style_arc_bg, LV_PART_MAIN);
+	lv_obj_add_style(volume_arc, &style_arc_indicator, LV_PART_INDICATOR);
+	lv_obj_remove_style(volume_arc, NULL, LV_PART_KNOB);
+
+	lv_obj_t * volume_label = lv_label_create(volume_arc);
+	lv_obj_set_style_text_font(volume_label, &lv_font_montserrat_20, 0);
+	lv_obj_set_align(volume_label, LV_ALIGN_CENTER);
+	lv_label_set_text(volume_label, "volume");
+	lv_obj_set_style_text_color(volume_label, lv_palette_lighten(LV_PALETTE_GREY, 2),0);
+
+	lv_obj_add_event_cb(volume_arc, volume_event_cb, LV_EVENT_VALUE_CHANGED, lv_arc_get_value);
 }
 
 
@@ -517,15 +596,18 @@ static void tabview_event_cb(lv_event_t * event)
 
 	active_tab = lv_tabview_get_tab_active(tabview);
 
+
 	switch ( active_tab )
 	{
 	default:
 	case 0: // load main screen, adjust trigger pad area, display/hide objects, update tabviews
 		lv_screen_load(scr_main);
-		trigAreaWidth = TRIGGERAREAWIDTH;
-		trigAreaX = TRIGGERAREA_X;
-		lv_obj_set_x(trigArea, trigAreaX + 20);
-		lv_obj_set_width(trigArea, trigAreaWidth - 40);
+		trigAreaHeight = TRIGGERAREAHEIGHT;
+		trigAreaTop = 480 - trigAreaHeight;
+		// trigAreaWidth = TRIGGERAREAWIDTH;
+		// trigAreaX = TRIGGERAREA_X;
+		lv_obj_set_y(trigArea, trigAreaTop);
+		lv_obj_set_height(trigArea, trigAreaHeight);
 
 		lv_obj_add_flag(lfo_speed_arc, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_add_flag(lfo_amp_arc, LV_OBJ_FLAG_HIDDEN);
@@ -543,10 +625,12 @@ static void tabview_event_cb(lv_event_t * event)
 		break;
 	case 1: // load main screen, adjust trigger pad area, display/hide objects, update tabviews
 		lv_screen_load(scr_main);
-		trigAreaWidth = TRIGGERAREAWIDTH / 2.5f;
-		trigAreaX = 240;
-		lv_obj_set_x(trigArea, trigAreaX);
-		lv_obj_set_width(trigArea, trigAreaWidth);
+		trigAreaHeight = TRIGGERAREAHEIGHT_SMALL;
+		trigAreaTop = 480 - trigAreaHeight;
+		// trigAreaWidth = TRIGGERAREAWIDTH;
+		// trigAreaX = TRIGGERAREA_X;
+		lv_obj_set_y(trigArea, trigAreaTop);
+		lv_obj_set_height(trigArea, trigAreaHeight);
 
 		lv_obj_add_flag(spectrum_a_label, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_add_flag(spectrum_b_label, LV_OBJ_FLAG_HIDDEN);
@@ -564,6 +648,8 @@ static void tabview_event_cb(lv_event_t * event)
 		break;
 	case 2:
 		lv_screen_load(scr_effects);
+		trigAreaHeight = TRIGGERAREAHEIGHT_SMALL;
+		trigAreaTop = 480 - trigAreaHeight;
 		lv_tabview_set_active(tabview_main, 2, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_effects, 2, LV_ANIM_OFF);
 		lv_tabview_set_active(tabview_settings, 2, LV_ANIM_OFF);
@@ -660,10 +746,10 @@ static void spectrum_b_event_cb(lv_event_t * event)
 
 static void lfo_speed_event_cb(lv_event_t * event)
 {
-	lv_obj_t * slider = lv_event_get_target_obj(event);
-	float value = lv_arc_get_value(slider);
+	lv_obj_t * arc = lv_event_get_target_obj(event);
+	float value = lv_arc_get_value(arc);
 
-	value /= 127.;
+	value /= 127.0f;
 
 	lfo_speed = expf(10.0f * value - 2); // range of speed between ~0.1Hz and ~3kHz
 	lv_label_set_text_fmt(lfo_speed_label, "%.02f Hz", lfo_speed);
@@ -672,25 +758,103 @@ static void lfo_speed_event_cb(lv_event_t * event)
 
 static void lfo_amp_event_cb(lv_event_t * event)
 {
-	lv_obj_t * slider = lv_event_get_target_obj(event);
-	float value = lv_arc_get_value(slider);
+	lv_obj_t * arc = lv_event_get_target_obj(event);
+	float value = lv_arc_get_value(arc);
 
-	value /= 127.;
+	value /= 127.0f;
 
 	lfo_amp = value; // range between 0. and 1.
 }
 
 static void lfo_phase_event_cb(lv_event_t * event)
 {
-	lv_obj_t * slider = lv_event_get_target_obj(event);
-	float value = lv_arc_get_value(slider);
+	lv_obj_t * arc = lv_event_get_target_obj(event);
+	float value = lv_arc_get_value(arc);
 
 	value *= 0.0625f;
 
 	lfo_phaseShift = value; // range between 0. and 1. in 1/16 steps
-	lv_label_set_text_fmt(lfo_phase_label, "%d/16", lv_arc_get_value(slider));
+	lv_label_set_text_fmt(lfo_phase_label, "%d/16", lv_arc_get_value(arc));
 }
 
+
+
+static void delay_time_event_cb(lv_event_t * event)
+{
+	lv_obj_t * arc = lv_event_get_target_obj(event);
+	float value = lv_arc_get_value(arc);
+
+	// value /= 127.0f;
+	delay_time = scale(0.0f, 127.0f, 300, 32767, value);
+
+	// delay_time = (uint32_t)(value * 32767.0f);
+
+}
+
+
+static void delay_fbk_event_cb(lv_event_t * event)
+{
+	lv_obj_t * arc = lv_event_get_target_obj(event);
+	float value = lv_arc_get_value(arc);
+
+	value /= 127.0f;
+
+	delay_feedback = value;
+}
+
+
+static void delay_drywet_event_cb(lv_event_t * event)
+{
+	lv_obj_t * arc = lv_event_get_target_obj(event);
+	float value = lv_arc_get_value(arc);
+
+	value /= 127.0f;
+
+	delay_wet = value;
+}
+
+
+static void rvb_time_event_cb(lv_event_t * event)
+{
+	lv_obj_t * arc = lv_event_get_target_obj(event);
+	float value = lv_arc_get_value(arc);
+
+	value /= 127.0f;
+
+	reverb_time = value;
+}
+
+static void rvb_fbk_event_cb(lv_event_t * event)
+{
+	lv_obj_t * arc = lv_event_get_target_obj(event);
+
+	float value = lv_arc_get_value(arc);
+
+	value /= 127.0f;
+
+	reverb_feedback = value;
+}
+
+static void rvb_amount_event_cb(lv_event_t * event)
+{
+	lv_obj_t * arc = lv_event_get_target_obj(event);
+
+	float value = lv_arc_get_value(arc);
+
+	value /= 127.0f;
+
+	reverb_amount = value;
+}
+
+
+static void volume_event_cb(lv_event_t * event)
+{
+	lv_obj_t * arc = lv_event_get_target_obj(event);
+	float value = lv_arc_get_value(arc);
+
+	BSP_AUDIO_OUT_SetVolume(value);
+
+}
 
 
 void GUI_refreshMorphCursor(float x)

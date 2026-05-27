@@ -25,7 +25,8 @@ int32_t delWP0, delWP1, delWP2, delWP3;
 
 float reverb_time;
 float del2Out, del4Out;
-float reverb_feedback = 0.8;
+float reverb_feedback;
+float reverb_amount;
 float sixteenbitout;
 
 // filters
@@ -54,7 +55,8 @@ void reverb_Init(void) // Tom's code
     allPassWP3 = 0;
     delWP0 = delWP1 = delWP2 = delWP3 = 0;
     reverb_time = 0.5f;
-    reverb_feedback = 0.4f;
+    reverb_feedback = 0.5f;
+    reverb_amount = 0.5f;
     del2Out = del4Out = 0.0f;
     sixteenbitout = 1.0f / 32767.0f;
 }

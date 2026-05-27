@@ -30,7 +30,7 @@
 // #include "grad/lv_example_grad.h"
 
 
-#define PADDING                     8
+// #define PADDING                     8
 
 #define TABRHEIGHT                  48
 
@@ -56,6 +56,7 @@
 #define TRIGGERAREA_Y               280
 #define TRIGGERAREAWIDTH            800
 #define TRIGGERAREAHEIGHT           200
+#define TRIGGERAREAHEIGHT_SMALL     120
 
 #define TRIGGERAREA_Left            TRIGGERAREA_X
 #define TRIGGERAREA_Right           TRIGGERAREAWIDTH
@@ -70,7 +71,6 @@
 
 void GUI_Init();
 static void GUI_mainScreen();
-// static void GUI_lfoScreen();
 static void GUI_effectsScreen();
 static void GUI_settingsScreen();
 
@@ -80,6 +80,13 @@ static void spectrum_b_event_cb(lv_event_t * event);
 static void lfo_speed_event_cb(lv_event_t * event);
 static void lfo_amp_event_cb(lv_event_t * event);
 static void lfo_phase_event_cb(lv_event_t * event);
+static void delay_time_event_cb(lv_event_t * event);
+static void delay_fbk_event_cb(lv_event_t * event);
+static void delay_drywet_event_cb(lv_event_t * event);
+static void rvb_time_event_cb(lv_event_t * event);
+static void rvb_fbk_event_cb(lv_event_t * event);
+static void rvb_amount_event_cb(lv_event_t * event);
+static void volume_event_cb(lv_event_t * event);
 
 void GUI_refreshPartials(lv_timer_t * timer);
 void GUI_refreshMorphCursor(float x);

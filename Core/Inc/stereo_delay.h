@@ -16,11 +16,12 @@
 
 
 
-#define DELAY_BUFF_SIZE         32768                   // will need to be smaller if using the float buffers
-#define INIT_DELAY_L            15000
-#define INIT_DELAY_R            15000
-#define INIT_FEEDB              0.6f
-#define INIT_DELAY_WET			0.4f
+#define DELAY_BUFF_SIZE         32768                   // has to be smaller when using the float buffers
+#define INIT_DELAY_L            16384
+#define INIT_DELAY_R            16384
+#define INIT_DELAY_TIME         16384
+#define INIT_FEEDB              0.5f
+#define INIT_DELAY_WET			0.5f
 #define ONEOVER16BITS           (1.0f / 32767.0f)
 
 

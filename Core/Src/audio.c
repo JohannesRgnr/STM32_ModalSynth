@@ -41,11 +41,12 @@ filterbank_t filterbank;
 lfo_t lfo;
 
 /** Extern global variables **/
+extern uint32_t delay_time;
 extern float delay_feedback;
 extern float delay_wet;
-float reverb_amount;
+extern float reverb_amount;
 extern float reverb_feedback;
-extern uint8_t LFO_btn, delay_btn, reverb_btn;
+extern float reverb_time;
 
 float delayLOut = 0 ;		// left output of ping pong delay
 float delayROut = 0;		// right output of ping pong delay
@@ -88,13 +89,6 @@ void AUDIO_Init()
  void audioBlock(int16_t *output, const int32_t samples)
 {
     freq.inc = (freq.dst - freq.val) * (float)samples * TS;
-    // freq.inc = 0.f;
-    // delay_wet = delay_btn * 0.5f;
-    delay_wet = 0.25f;
-    delay_feedback = 0.6f;
-    // reverb_amount = reverb_btn * 0.7f;
-    reverb_feedback = 0.6f;
-    reverb_amount = 0.4f;
 
     lfo.freq = lfo_speed;
     lfo.amp = lfo_amp;
@@ -126,7 +120,7 @@ void AUDIO_Init()
 
 #if DELAY_FX == 1
         // Apply delay effect
-        DelayInt16_process(samp, 15000, &delayLOut, &delayROut);
+        DelayInt16_process(samp, delay_time, &delayLOut, &delayROut);
 
 #else
 

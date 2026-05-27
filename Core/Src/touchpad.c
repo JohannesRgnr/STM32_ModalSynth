@@ -39,9 +39,10 @@ extern line_t exciterAmp, freq;
 extern filterbank_t filterbank;
 extern spectrum_t spectrum;
 
-extern int32_t trigAreaWidth;
-extern int32_t trigAreaX;
-
+// extern int32_t trigAreaWidth;
+extern int32_t trigAreaHeight;
+//extern int32_t trigAreaX;
+extern int32_t trigAreaTop;
 // extern lv_timer_t * timer_partialDisplay;
 
 extern uint8_t active_tab;
@@ -90,8 +91,10 @@ static void GUI_TSProcess(lv_indev_t * indev, lv_indev_data_t *data)
 			last_y = data->point.y;
 			data->state = LV_INDEV_STATE_PR;
 
+			trigAreaTop = 480 - trigAreaHeight;
+
 			// if inside trigger area
-			if (active_tab < 2 && data->point.x > trigAreaX && data->point.x < (trigAreaWidth + trigAreaX) && data->point.y > TRIGGERAREA_Top  && data->point.y < TRIGGERAREA_Bottom)
+			if (active_tab < 3 && data->point.x > 0 && data->point.x < 800 && data->point.y > trigAreaTop  && data->point.y < 480)
 			{
 				data->continue_reading = true;
 				GUI_triggerArea(data->point.x, data->point.y, wasTouched, data);
@@ -127,11 +130,11 @@ static void GUI_triggerArea(uint16_t x, uint16_t y, uint8_t state, lv_indev_data
 		if (LV_INDEV_STATE_PR == 1) // new single finger touch
 		{
 			// evaluate fundamental frequency
-			float midiNote = scale(trigAreaX, trigAreaWidth + trigAreaX, 24, 90, x );
+			float midiNote = scale(0, 800, 24, 90, x );
 			midiNote = clip(midiNote, 24, 90);
 			float frequency = mtof(midiNote);
 
-			const float duration = scale(TRIGGERAREA_Bottom,TRIGGERAREA_Top, 5, 10, y);
+			const float duration = scale(480,trigAreaTop, 5, 10, y);
 
 			// immediately jump to frequency
 			freq.val = frequency;
@@ -148,9 +151,9 @@ static void GUI_triggerArea(uint16_t x, uint16_t y, uint8_t state, lv_indev_data
 		{
 
 
-			float midiNote = scale(trigAreaX, trigAreaWidth + trigAreaX, 24, 90, x);
+			float midiNote = scale(0, 800, 24, 90, x);
 			midiNote = clip(midiNote, 24, 90);
-			const float duration = scale(TRIGGERAREA_Bottom,TRIGGERAREA_Top, 5, 10, y);
+			const float duration = scale(480,trigAreaTop, 5, 10, y);
 			freq.dst = mtof(midiNote);
 
 			filterbank.decay = duration;
